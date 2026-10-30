@@ -39,7 +39,7 @@ class Storage {
   readJson(key) {
     let content;
     try { content = this.adapter.read(key); }
-    catch (error) { throw new ScheduleError("STORAGE_READ_ERROR", "Local data could not be read."); }
+    catch (error) { throw new ScheduleError("STORAGE_READ_ERROR", "Local data could not be read.", { cause: error.message }); }
     if (content === null) return null;
     try { return JSON.parse(content); }
     catch (error) { throw new ScheduleError("CORRUPT_DATA", "Local JSON is corrupted."); }
@@ -47,7 +47,7 @@ class Storage {
 
   writeJson(key, data) {
     try { this.adapter.writeAtomic(key, JSON.stringify(data)); }
-    catch (error) { throw new ScheduleError("STORAGE_WRITE_ERROR", "Local data could not be saved."); }
+    catch (error) { throw new ScheduleError("STORAGE_WRITE_ERROR", "Local data could not be saved.", { cause: error.message }); }
   }
 
   settings() {

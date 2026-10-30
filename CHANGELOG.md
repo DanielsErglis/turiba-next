@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-rc.2 — 2026-10-30
+
+- Investigated owner-reported rc.1 failure immediately after language selection. The screenshot did not expose the underlying exception; no root cause is claimed.
+- Added on-device stage/code/cause diagnostics without remote logging, preserving native local-storage failure details and redacting local paths.
+- Added a native-dialog dismissal grace period before the next controller, plus regression tests for a still-dismissing controller, group-form failure and language-save failure.
+- Removed the misleading generic claim that a valid timetable necessarily existed on first setup. Error rendering no longer depends on a functioning time-zone provider.
+- 78 automated tests passed. A setup language-save/group-form probe also passed in macOS JavaScriptCore with mocked Scriptable APIs; real iPhone retest remains required.
+
 ## 1.0.0-rc.1 — 2026-10-30
 
 - Completed access verification and private repository read/write proof before implementation.

@@ -1,6 +1,6 @@
 # Physical iPhone Acceptance — Pending
 
-Version: 1.0.0-rc.1. **No item below has been performed on a real iPhone by the developer.** Fill Actual result and Pass/Fail only after observing the device. Do not infer success from automated mocks or browser previews.
+Version: 1.0.0-rc.2. **The developer has not operated a real iPhone. The owner reported an rc.1 startup failure after language selection; rc.2 requires a fresh retest.** Fill Actual result and Pass/Fail only after observing the device. Do not infer success from automated mocks or browser previews.
 
 Device: pending. iOS version: pending. Scriptable version: pending. Test date/time (Europe/Riga): pending. Group: pending.
 
@@ -47,3 +47,7 @@ Use a real future selected lesson with enough time before its trigger. Do not in
 ## Acceptance decision
 
 Current decision: **PENDING**. Owner-confirmed basic device evidence is needed first; remaining failures must be fixed and retested before final v1.0 acceptance. Record any skipped optional automation separately. No public release is authorized by completing this checklist alone.
+
+## Owner report — rc.1
+
+On 2026-10-30 the owner supplied an iPhone screenshot of the generic error alert and confirmed it appears immediately after language selection. This confirms import/execution and reaching language selection, but setup did not complete. The exact underlying exception was hidden by rc.1. Device/iOS/Scriptable versions are not yet known. rc.2 exposes local diagnostic stage/code/cause and adds a native dismissal grace period; the cause and fix on the actual phone remain unconfirmed.

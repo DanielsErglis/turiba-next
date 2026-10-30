@@ -90,6 +90,31 @@ test("initial setup uses the chosen language, saves a group and leaves reminders
   assert.ok(env.calls.every(call => call[0] === "request")); assert.equal(env.queue.length, 0);
 });
 
+test("initial setup tolerates a native dialog remaining busy until dismissal has settled", async () => {
+  const env = environment(null, { config: { runsInWidget: false } });
+  let busy = false, waits = 0;
+  const original = env.api.Alert.prototype.presentAlert;
+  env.api.Alert.prototype.presentAlert = async function () {
+    assert.equal(busy, false, "A native controller is still dismissing");
+    const value = await original.call(this); busy = true; return value;
+  };
+  env.api.Timer = { schedule: (milliseconds, repeats, callback) => { busy = false; waits++; callback(); } };
+  env.queue.push(1, { index: 0, text: "TVL2D1" }, -1);
+  await fixedRun(env);
+  assert.equal(JSON.parse(env.files.get(ROOT + "settings.json")).group, "TVL2D1");
+  assert.equal(waits, 3);
+});
+
+test("a native group-field failure after language selection reports its actual setup stage", async () => {
+  const env = environment(null, { config: { runsInWidget: false } });
+  env.api.Alert.prototype.addTextField = () => { throw new Error("Native text field unavailable"); };
+  env.queue.push(1, 0, -1);
+  await fixedRun(env);
+  const report = env.dialogs.find(dialog => (dialog.message || "").includes("Stage: setup.group.configure"));
+  assert.ok(report); assert.ok(report.message.includes("Native text field unavailable"));
+  assert.equal(JSON.parse(env.files.get(ROOT + "settings.json")).group, null);
+});
+
 test("group changes cancel only owned reminders before saving the new primary group", async () => {
   const settings = defaults(); settings.group = "TVL2D1"; settings.notifications.enabled = true;
   const env = environment(settings, { config: { runsInWidget: false } });
@@ -158,6 +183,19 @@ test("the generated single-file package runs with Scriptable mocks and no Node r
   const result = new vm.Script("(async () => {\n" + source + "\n})()").runInNewContext(env.api);
   await result;
   assert.ok(env.result.complete); assert.ok(env.result.widget);
+});
+
+test("the generated package exposes a language-save failure instead of replacing it with a generic network error", async () => {
+  const source = fs.readFileSync(__dirname + "/../dist/TURIBA NEXT.js", "utf8");
+  const env = environment(null, { config: { runsInWidget: false } });
+  env.api.FileManager.local().writeString = () => { throw new Error("Native write rejected"); };
+  env.queue.push(1, 0);
+  await new vm.Script("(async () => {\n" + source + "\n})()").runInNewContext(env.api);
+  const message = env.dialogs[env.dialogs.length - 1].message;
+  assert.ok(message.includes("Stage: settings.save"));
+  assert.ok(message.includes("STORAGE_WRITE_ERROR"));
+  assert.ok(message.includes("Native write rejected"));
+  assert.ok(env.result.complete);
 });
 
 module.exports = { environment, fixedRun };

@@ -10,29 +10,43 @@ const { renderWidget } = require("./widget");
 const { scheduleState } = require("./engine");
 const { localAdapter, transport, notificationAdapter } = require("./scriptable-adapters");
 const { clearReminders, reconcileReminders } = require("./notifications");
+const { errorReport, presentDialog } = require("./diagnostics");
 
 async function run(api) {
   api.runUrl = "scriptable:///run?scriptName=" + encodeURIComponent(api.Script.name());
+  api.stage = "storage.initialize";
   const storage = new Storage(localAdapter(api));
   const service = new ScheduleService(new SourceClient(transport(api)), storage);
   const reminders = notificationAdapter(api);
   let settings = defaults(), settingsIssue = null, state = null;
+  api.stage = "settings.load";
   try { settings = storage.settings(); } catch (error) { settingsIssue = error.code; }
+  api.language = settings.language;
   const language = () => resolveLanguage(settings.language, api.Device.preferredLanguages());
   const t = key => translator(language())(key);
-  async function alert(title, message, actions, destructive) {
+  async function alert(title, message, actions, destructive, stage) {
     const dialog = new api.Alert(); dialog.title = title; dialog.message = message || "";
     for (const action of actions || []) dialog.addAction(action);
     if (destructive) dialog.addDestructiveAction(destructive);
-    dialog.addCancelAction(t("cancel")); return dialog.presentAlert();
+    dialog.addCancelAction(t("cancel")); return presentDialog(api, dialog, stage || "settings.dialog");
   }
   async function tell(message) { await alert("TURĪBA NEXT", message, [t("done")]); }
-  function save() { settings = validateSettings(settings); storage.saveSettings(settings); }
+  async function tellFailure(error, stage) {
+    const details = errorReport(error, stage || api.stage, api.version);
+    await tell(t("failure") + "\n\n" + details);
+  }
+  function save() {
+    api.stage = "settings.save";
+    api.language = settings.language;
+    settings = validateSettings(settings); storage.saveSettings(settings);
+  }
   async function load(group, force) {
     try { return await service.state(settings, group, Date.now(), force); }
     catch (error) {
-      const fallback = scheduleState({ now: Date.now(), group, issue: error.code || "SCHEDULE_UNAVAILABLE" });
-      return Object.assign(fallback, { group, weeks: [] });
+      // The error view must remain usable even if the clock provider itself failed.
+      return { status: "error", now: Date.now(), group, weeks: [], current: null, next: null,
+        issue: error.code || "SCHEDULE_UNAVAILABLE", failure: error,
+        refreshAt: Date.now() + 900000, stale: true, coverageIncomplete: true };
     }
   }
   async function syncReminders() {
@@ -41,13 +55,15 @@ async function run(api) {
     catch (error) { await tell(t("permissionFailure")); }
   }
   async function changeGroup() {
+    api.stage = "setup.group.configure";
     const dialog = new api.Alert(); dialog.title = t("group"); dialog.message = t("groupPrompt");
     dialog.addTextField(t("group"), settings.group || ""); dialog.addAction(t("save")); dialog.addCancelAction(t("cancel"));
-    if (await dialog.presentAlert() < 0) return;
+    if (await presentDialog(api, dialog, "setup.group.present") < 0) return;
+    api.stage = "setup.group.validate";
     const group = normalizeGroup(dialog.textFieldValue(0));
     const candidate = await load(group, true);
     if (!candidate.weeks.length && !["SOURCE_UNPUBLISHED", "SOURCE_EMPTYUNCONFIRMED"].includes(candidate.issue)) {
-      await tell(t("failure")); return;
+      await tellFailure(candidate.failure || { code: candidate.issue, message: "The group schedule could not be verified." }, "setup.group.load"); return;
     }
     if (settings.group && settings.group !== group) await clearReminders(reminders);
     settings.group = group; save(); state = candidate;
@@ -115,9 +131,9 @@ async function run(api) {
     if (!await deleteData()) { api.Script.complete(); return; }
   }
   if (!settings.group) {
-    const choice = await alert(t("language"), "", ["Latviešu", "English", "Русский", t("system")]);
+    const choice = await alert(t("language"), "", ["Latviešu", "English", "Русский", t("system")], null, "setup.language");
     if (choice >= 0) { settings.language = ["lv", "en", "ru", "system"][choice]; save(); }
-    try { await changeGroup(); } catch (error) { await tell(t("failure")); }
+    try { await changeGroup(); } catch (error) { await tellFailure(error); }
   }
   while (true) {
     const actions = [t("group") + ": " + (settings.group || t("noGroup")), t("choices"), t("sync"), t("theme"), t("language"),
@@ -129,7 +145,8 @@ async function run(api) {
       if (action === 1) await chooseCourses();
       if (action === 2) {
         state = await load(settings.group, true); await syncReminders();
-        await tell(state.issue ? t("failure") : t("synced"));
+        if (state.issue) await tellFailure(state.failure || { code: state.issue, message: "The schedule could not be refreshed." }, "schedule.refresh");
+        else await tell(t("synced"));
       }
       if (action === 3) {
         const index = await alert(t("theme"), "", [t("system"), t("light"), t("dark")]);
@@ -148,7 +165,7 @@ async function run(api) {
       }
       if (action === 8) await tell(t("privacy"));
       if (action === 9 && await deleteData()) await changeGroup();
-    } catch (error) { await tell(t("failure")); }
+    } catch (error) { await tellFailure(error); }
   }
   api.Script.complete();
 }

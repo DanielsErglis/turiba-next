@@ -1,6 +1,6 @@
 // Variables used by Scriptable.
 // icon-color: cyan; icon-glyph: graduation-cap;
-// TURIBA NEXT 1.0.0-rc.1 — independent student project. Native device acceptance pending.
+// TURIBA NEXT 1.0.0-rc.2 — independent student project. Native device acceptance pending.
 const __factories = {
 "app": function(module, exports) {
 "use strict";
@@ -15,29 +15,43 @@ const { renderWidget } = __load("widget");
 const { scheduleState } = __load("engine");
 const { localAdapter, transport, notificationAdapter } = __load("scriptable-adapters");
 const { clearReminders, reconcileReminders } = __load("notifications");
+const { errorReport, presentDialog } = __load("diagnostics");
 
 async function run(api) {
   api.runUrl = "scriptable:///run?scriptName=" + encodeURIComponent(api.Script.name());
+  api.stage = "storage.initialize";
   const storage = new Storage(localAdapter(api));
   const service = new ScheduleService(new SourceClient(transport(api)), storage);
   const reminders = notificationAdapter(api);
   let settings = defaults(), settingsIssue = null, state = null;
+  api.stage = "settings.load";
   try { settings = storage.settings(); } catch (error) { settingsIssue = error.code; }
+  api.language = settings.language;
   const language = () => resolveLanguage(settings.language, api.Device.preferredLanguages());
   const t = key => translator(language())(key);
-  async function alert(title, message, actions, destructive) {
+  async function alert(title, message, actions, destructive, stage) {
     const dialog = new api.Alert(); dialog.title = title; dialog.message = message || "";
     for (const action of actions || []) dialog.addAction(action);
     if (destructive) dialog.addDestructiveAction(destructive);
-    dialog.addCancelAction(t("cancel")); return dialog.presentAlert();
+    dialog.addCancelAction(t("cancel")); return presentDialog(api, dialog, stage || "settings.dialog");
   }
   async function tell(message) { await alert("TURĪBA NEXT", message, [t("done")]); }
-  function save() { settings = validateSettings(settings); storage.saveSettings(settings); }
+  async function tellFailure(error, stage) {
+    const details = errorReport(error, stage || api.stage, api.version);
+    await tell(t("failure") + "\n\n" + details);
+  }
+  function save() {
+    api.stage = "settings.save";
+    api.language = settings.language;
+    settings = validateSettings(settings); storage.saveSettings(settings);
+  }
   async function load(group, force) {
     try { return await service.state(settings, group, Date.now(), force); }
     catch (error) {
-      const fallback = scheduleState({ now: Date.now(), group, issue: error.code || "SCHEDULE_UNAVAILABLE" });
-      return Object.assign(fallback, { group, weeks: [] });
+      // The error view must remain usable even if the clock provider itself failed.
+      return { status: "error", now: Date.now(), group, weeks: [], current: null, next: null,
+        issue: error.code || "SCHEDULE_UNAVAILABLE", failure: error,
+        refreshAt: Date.now() + 900000, stale: true, coverageIncomplete: true };
     }
   }
   async function syncReminders() {
@@ -46,13 +60,15 @@ async function run(api) {
     catch (error) { await tell(t("permissionFailure")); }
   }
   async function changeGroup() {
+    api.stage = "setup.group.configure";
     const dialog = new api.Alert(); dialog.title = t("group"); dialog.message = t("groupPrompt");
     dialog.addTextField(t("group"), settings.group || ""); dialog.addAction(t("save")); dialog.addCancelAction(t("cancel"));
-    if (await dialog.presentAlert() < 0) return;
+    if (await presentDialog(api, dialog, "setup.group.present") < 0) return;
+    api.stage = "setup.group.validate";
     const group = normalizeGroup(dialog.textFieldValue(0));
     const candidate = await load(group, true);
     if (!candidate.weeks.length && !["SOURCE_UNPUBLISHED", "SOURCE_EMPTYUNCONFIRMED"].includes(candidate.issue)) {
-      await tell(t("failure")); return;
+      await tellFailure(candidate.failure || { code: candidate.issue, message: "The group schedule could not be verified." }, "setup.group.load"); return;
     }
     if (settings.group && settings.group !== group) await clearReminders(reminders);
     settings.group = group; save(); state = candidate;
@@ -120,9 +136,9 @@ async function run(api) {
     if (!await deleteData()) { api.Script.complete(); return; }
   }
   if (!settings.group) {
-    const choice = await alert(t("language"), "", ["Latviešu", "English", "Русский", t("system")]);
+    const choice = await alert(t("language"), "", ["Latviešu", "English", "Русский", t("system")], null, "setup.language");
     if (choice >= 0) { settings.language = ["lv", "en", "ru", "system"][choice]; save(); }
-    try { await changeGroup(); } catch (error) { await tell(t("failure")); }
+    try { await changeGroup(); } catch (error) { await tellFailure(error); }
   }
   while (true) {
     const actions = [t("group") + ": " + (settings.group || t("noGroup")), t("choices"), t("sync"), t("theme"), t("language"),
@@ -134,7 +150,8 @@ async function run(api) {
       if (action === 1) await chooseCourses();
       if (action === 2) {
         state = await load(settings.group, true); await syncReminders();
-        await tell(state.issue ? t("failure") : t("synced"));
+        if (state.issue) await tellFailure(state.failure || { code: state.issue, message: "The schedule could not be refreshed." }, "schedule.refresh");
+        else await tell(t("synced"));
       }
       if (action === 3) {
         const index = await alert(t("theme"), "", [t("system"), t("light"), t("dark")]);
@@ -153,12 +170,38 @@ async function run(api) {
       }
       if (action === 8) await tell(t("privacy"));
       if (action === 9 && await deleteData()) await changeGroup();
-    } catch (error) { await tell(t("failure")); }
+    } catch (error) { await tellFailure(error); }
   }
   api.Script.complete();
 }
 
 module.exports = { run };
+
+},
+"diagnostics": function(module, exports) {
+"use strict";
+
+// Diagnostics stay on the device. They are never uploaded or sent to another service.
+function errorReport(error, stage, version) {
+  const clean = value => String(value || "Unknown error").replace(/\/(?:private|var|Users)\/[^\s]+/g, "[local path]").slice(0, 240);
+  const code = error && error.code || error && error.name || "UNEXPECTED_ERROR";
+  const lines = ["Build: " + (version || "development"), "Stage: " + (stage || "unknown"),
+    "Code: " + clean(code), "Message: " + clean(error && error.message)];
+  if (error && error.details && error.details.cause) lines.push("Cause: " + clean(error.details.cause));
+  return lines.join("\n");
+}
+
+async function presentDialog(api, dialog, stage) {
+  api.stage = stage;
+  const result = await dialog.presentAlert();
+  // Allow the native dismissal transition to settle before presenting another controller.
+  if (api.Timer && typeof api.Timer.schedule === "function") {
+    await new Promise(resolve => { api.Timer.schedule(350, false, resolve); });
+  }
+  return result;
+}
+
+module.exports = { errorReport, presentDialog };
 
 },
 "engine": function(module, exports) {
@@ -333,7 +376,7 @@ const STRINGS = {
     sync: "Sync now", synced: "Timetable refreshed", notifications: "Class reminders", on: "On", off: "Off", minutes: "minutes", reminderHint: "Optional local reminders for the main group. iOS may request notification permission. Refresh regularly to keep reminders current.",
     previewSmall: "Preview Small", previewMedium: "Preview Medium", deleteData: "Delete My Data", deleteConfirm: "Delete local settings, timetable cache and pending TURĪBA NEXT reminders?", cancel: "Cancel", done: "Done", save: "Save", back: "Back",
     about: "Privacy & about", independent: "Unofficial student project", privacy: "Independent student project. Not affiliated with Turība administration. No accounts or telemetry. Timetable requests go directly to Turība over HTTPS. Settings stay in local Scriptable storage. Local files are not claimed to be encrypted.",
-    failure: "The operation could not be completed. Your last valid timetable is retained. Check your connection, group code and the public source.", selection: "Review study choices", unknownCoverage: "Current week not verified", updated: "Updated", permissionFailure: "Reminders could not be scheduled. Check Scriptable notification permission in iPhone Settings. The widget still works.",
+    failure: "The operation could not be completed. See the diagnostic details below.", selection: "Review study choices", unknownCoverage: "Current week not verified", updated: "Updated", permissionFailure: "Reminders could not be scheduled. Check Scriptable notification permission in iPhone Settings. The widget still works.",
     sourceUnavailable: "This week is not published or could not be verified. This does not confirm a day off.", resetCorrupt: "Local settings could not be read. Use Delete My Data to reset; existing files have been preserved.", unsupported: "Choose a Small or Medium widget.", nextDay: "Next known class", noGroup: "Not configured"
   },
   lv: {
@@ -344,7 +387,7 @@ const STRINGS = {
     sync: "Atjaunināt tagad", synced: "Saraksts atjaunināts", notifications: "Nodarbību atgādinājumi", on: "Ieslēgts", off: "Izslēgts", minutes: "minūtes", reminderHint: "Izvēles atgādinājumi pamatgrupai. iOS var pieprasīt atļauju. Regulāri atjaunini sarakstu, lai atgādinājumi būtu aktuāli.",
     previewSmall: "Mazā logrīka priekšskatījums", previewMedium: "Vidējā logrīka priekšskatījums", deleteData: "Dzēst manus datus", deleteConfirm: "Dzēst vietējos iestatījumus, saraksta kešatmiņu un gaidošos TURĪBA NEXT atgādinājumus?", cancel: "Atcelt", done: "Gatavs", save: "Saglabāt", back: "Atpakaļ",
     about: "Privātums un informācija", independent: "Neoficiāls studentu projekts", privacy: "Neoficiāls studentu projekts. Nav saistīts ar Turība administrāciju. Nav kontu vai telemetrijas. Saraksts tiek saņemts no Turība ar HTTPS. Iestatījumi glabājas lokāli Scriptable. Vietējie faili netiek uzskatīti par šifrētiem.",
-    failure: "Darbību neizdevās pabeigt. Pēdējais derīgais saraksts ir saglabāts. Pārbaudi savienojumu, grupas kodu un publisko avotu.", selection: "Pārskati studiju izvēles", unknownCoverage: "Pašreizējā nedēļa nav pārbaudīta", updated: "Atjaunināts", permissionFailure: "Neizdevās ieplānot atgādinājumus. Pārbaudi Scriptable paziņojumu atļauju iPhone iestatījumos. Logrīks turpina darboties.",
+    failure: "Darbību neizdevās pabeigt. Skati diagnostikas informāciju zemāk.", selection: "Pārskati studiju izvēles", unknownCoverage: "Pašreizējā nedēļa nav pārbaudīta", updated: "Atjaunināts", permissionFailure: "Neizdevās ieplānot atgādinājumus. Pārbaudi Scriptable paziņojumu atļauju iPhone iestatījumos. Logrīks turpina darboties.",
     sourceUnavailable: "Nedēļas saraksts nav publicēts vai nav pārbaudāms. Tas nenozīmē, ka nodarbību nav.", resetCorrupt: "Vietējie iestatījumi nav nolasāmi. Atiestatīšanai izmanto datu dzēšanu; esošie faili ir saglabāti.", unsupported: "Izvēlies mazo vai vidējo logrīku.", nextDay: "Nākamā zināmā nodarbība", noGroup: "Nav iestatīts"
   },
   ru: {
@@ -355,7 +398,7 @@ const STRINGS = {
     sync: "Обновить сейчас", synced: "Расписание обновлено", notifications: "Напоминания о занятиях", on: "Вкл.", off: "Выкл.", minutes: "минут", reminderHint: "Необязательные напоминания для основной группы. iOS может запросить разрешение. Регулярно обновляйте расписание для актуальности напоминаний.",
     previewSmall: "Предпросмотр Small", previewMedium: "Предпросмотр Medium", deleteData: "Удалить мои данные", deleteConfirm: "Удалить локальные настройки, кеш расписания и ожидающие напоминания TURĪBA NEXT?", cancel: "Отмена", done: "Готово", save: "Сохранить", back: "Назад",
     about: "Приватность и информация", independent: "Независимый студенческий проект", privacy: "Независимый студенческий проект. Не связан с администрацией Turība. Нет аккаунтов и телеметрии. Расписание загружается напрямую с Turība через HTTPS. Настройки хранятся локально в Scriptable. Локальные файлы не называются зашифрованными.",
-    failure: "Не удалось выполнить действие. Последнее корректное расписание сохранено. Проверьте соединение, код группы и публичный источник.", selection: "Проверьте выбор курсов", unknownCoverage: "Текущая неделя не проверена", updated: "Обновлено", permissionFailure: "Не удалось запланировать напоминания. Проверьте разрешение уведомлений Scriptable в настройках iPhone. Виджет продолжает работать.",
+    failure: "Не удалось выполнить действие. Ниже указаны диагностические сведения.", selection: "Проверьте выбор курсов", unknownCoverage: "Текущая неделя не проверена", updated: "Обновлено", permissionFailure: "Не удалось запланировать напоминания. Проверьте разрешение уведомлений Scriptable в настройках iPhone. Виджет продолжает работать.",
     sourceUnavailable: "Расписание недели не опубликовано или не подтверждено. Это не означает отсутствие занятий.", resetCorrupt: "Локальные настройки не читаются. Для сброса удалите данные через меню; существующие файлы сохранены.", unsupported: "Выберите виджет Small или Medium.", nextDay: "Следующее известное занятие", noGroup: "Не настроено"
   }
 };
@@ -1005,7 +1048,7 @@ class Storage {
   readJson(key) {
     let content;
     try { content = this.adapter.read(key); }
-    catch (error) { throw new ScheduleError("STORAGE_READ_ERROR", "Local data could not be read."); }
+    catch (error) { throw new ScheduleError("STORAGE_READ_ERROR", "Local data could not be read.", { cause: error.message }); }
     if (content === null) return null;
     try { return JSON.parse(content); }
     catch (error) { throw new ScheduleError("CORRUPT_DATA", "Local JSON is corrupted."); }
@@ -1013,7 +1056,7 @@ class Storage {
 
   writeJson(key, data) {
     try { this.adapter.writeAtomic(key, JSON.stringify(data)); }
-    catch (error) { throw new ScheduleError("STORAGE_WRITE_ERROR", "Local data could not be saved."); }
+    catch (error) { throw new ScheduleError("STORAGE_WRITE_ERROR", "Local data could not be saved.", { cause: error.message }); }
   }
 
   settings() {
@@ -1213,5 +1256,6 @@ module.exports = { widgetModel, renderWidget, dateLabel };
 };
 const __cache = {};
 function __load(name) { if (__cache[name]) return __cache[name].exports; const module = {exports:{}}; __cache[name] = module; __factories[name](module, module.exports); return module.exports; }
-try { await __load("app").run({FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color}); }
-catch (error) { const lang = __load("localization").resolveLanguage("system", Device.preferredLanguages()); const t = __load("localization").translator(lang); if (config.runsInWidget) { const widget = new ListWidget(); widget.addText("TURĪBA NEXT"); widget.addText(t("error")); widget.refreshAfterDate = new Date(Date.now() + 900000); Script.setWidget(widget); } else { const alert = new Alert(); alert.title = "TURĪBA NEXT"; alert.message = t("failure"); alert.addAction(t("done")); await alert.presentAlert(); } Script.complete(); }
+const __api = {FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color, Timer: typeof Timer === "undefined" ? null : Timer, version: "1.0.0-rc.2", stage: "bootstrap"};
+try { await __load("app").run(__api); }
+catch (error) { const lang = __load("localization").resolveLanguage(__api.language || "system", Device.preferredLanguages()); const t = __load("localization").translator(lang); const details = __load("diagnostics").errorReport(error, __api.stage, __api.version); if (config.runsInWidget) { const widget = new ListWidget(); widget.addText("TURĪBA NEXT"); widget.addText(t("error")); widget.addText(String(error.code || error.name || "UNEXPECTED_ERROR")); widget.refreshAfterDate = new Date(Date.now() + 900000); Script.setWidget(widget); } else { const alert = new Alert(); alert.title = "TURĪBA NEXT"; alert.message = t("failure") + "\n\n" + details; alert.addAction(t("done")); await alert.presentAlert(); } Script.complete(); }

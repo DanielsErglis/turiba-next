@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0–5 development checks complete. Phase 6 installation candidate and documentation prepared. **Awaiting physical-iPhone acceptance** before v1.0 can be accepted. No public release has been performed.
+Phases 0–5 development checks complete. Phase 6 installation candidate and documentation prepared. **Owner reported an rc.1 startup failure after language selection. rc.2 diagnostics/compatibility update prepared; awaiting real-device retest** before v1.0 can be accepted. No public release has been performed.
 
 ## Completed
 
@@ -89,3 +89,12 @@ Owner: import dist/TURIBA NEXT.js, perform the initial smoke checks in docs/IPHO
 - Script SHA-256: 1dc2bb5e78fc6fdbbf565cac063618cd8f27f8d6bb333470cb6676d1831fac6f.
 - Archive SHA-256: 851775041727c3b1228c4aace92af0fc67b35e4ad4f2f12bff1541d8dce41ded.
 - Remaining required work depends on actual iPhone results. No device test, notification delivery or optional automation is marked passed. Continue by reviewing the owner's initial smoke-check report, then fix/retest any native differences and complete the checklist before final acceptance.
+
+## Native startup failure follow-up — 1.0.0-rc.2
+
+- Owner supplied an iPhone screenshot of the generic failure alert and confirmed it appeared immediately after choosing a language. Import/execution and language-selection reachability are evidenced; successful setup is not. Device model/iOS/Scriptable versions remain unknown.
+- rc.1 suppressed the underlying exception, so neither a network failure nor a storage/UI failure can be confirmed from the screenshot. Do not describe the underlying cause as diagnosed or the iPhone issue as resolved.
+- Added local stage/code/native-cause diagnostics, local-path redaction, a 350 ms native-dialog dismissal grace period, and failure rendering independent of time-zone calculations. No telemetry or new permissions were added.
+- Added regressions for a dismissing native controller, native group-form failure after language selection, and storage rejection during language persistence in the actual generated bundle. Full suite: 78 passed, 0 failed.
+- Ran a JavaScriptCore setup language-save/group-form probe on macOS using mocked native APIs: passed. This is an additional engine check, not an iPhone UI/storage test.
+- Next owner action: replace only the script code with rc.2 and retry setup. Do not delete local data. If it fails, report the displayed Build, Stage, Code, Message and Cause. Continue from that actual exception rather than guessing.
