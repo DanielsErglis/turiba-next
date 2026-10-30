@@ -1,31 +1,35 @@
-# TURĪBA NEXT
+# TURĪBA NEXT — 1.0.0-rc.1
 
-Independent student timetable widget for iPhone using Scriptable. The project is under development in a private repository; it is not an installable release yet and has not been verified on a physical iPhone.
+Independent student timetable widgets for iPhone using Scriptable. **Release candidate: physical-iPhone acceptance is still pending.** This is not an official Turība product and must remain in the private project repository until the owner authorizes public distribution.
 
-## Current implementation
+## Installation package
 
-Phase 0 access is complete. Phase 1 provides dependency-free HTML parsing, group/branch catalog discovery, source-derived day/branch time grids, normalized lessons, explicit publication uncertainty, and an injectable HTTPS source client. See PROJECT_SPEC.md for complete requirements, PROGRESS.md for status, and docs/SOURCE_RESEARCH.md for actual evidence and limitations.
+The ready-to-import script is `dist/TURIBA NEXT.js`. The install archive is `dist/TURIBA-NEXT-1.0.0-rc.1.zip`. No Node.js, university password, account or additional runtime module is required on the iPhone.
 
-No credentials, developer server, telemetry or external runtime dependencies are required. Source scripts are never executed. Research HTML remains static test evidence and will not be included in the product package.
+Follow [Russian installation/setup/update instructions](docs/INSTALL_RU.md), [troubleshooting](docs/TROUBLESHOOTING.md), [privacy policy](docs/PRIVACY.md), and the [iPhone acceptance checklist](docs/IPHONE_CHECKLIST.md).
 
-## Development checks
+Features: Small/Medium widgets; group entry without code edits; per-widget group parameters; LV/EN/RU UI; system/light/dark themes; current/next lessons; explicit elective/subgroup selection; local cache; manual/best-effort widget refresh; optional main-group local reminders (OFF by default); and Delete My Data.
 
-With Node.js 20 or later available:
+Runtime data requests go directly to the public timetable at nodarbibas.turiba.lv over HTTPS. Settings use FileManager.local(). No developer server, registration, analytics, external SDK, remote logging or remote code execution is included. Local files are not represented as encrypted. Full installed JavaScript remains readable by recipients.
+
+## Development
+
+With Node.js 20 or later:
 
 ```sh
+node tools/build.js
 node --test tests/*.test.js
+node tools/preview-widgets.js
 ```
 
-In this workspace the bundled executable is:
+The configured bundled Node executable in this workspace is `/Users/danielerglis/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node`. Standard npm scripts are provided, but npm installation is not required.
 
-```sh
-/Users/danielerglis/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --test tests/*.test.js
-```
+Offline tests use captured fixtures and labeled synthetic cases; they do not query the live server. `python3 tools/capture-fixtures.py` explicitly refreshes the bounded evidence. `node tools/live-source-check.js` performs six live source requests and updates its report. These are manual research checks, not background product tasks.
 
-Tests use captured fixtures and synthetic edge cases; they do not query the live server. `python3 tools/capture-fixtures.py` explicitly refreshes the bounded public-source evidence over HTTPS and is a manual research operation. Refreshing replaces snapshots; review resulting source changes and update assertions only after investigating them.
+## Evidence and limitations
 
-## Known limitations
+73 full-suite tests and 14 alternate-host-zone core tests passed. The native API mocks and browser renderer preview do not establish iPhone behavior. See [validation](docs/VALIDATION.md), [source research](docs/SOURCE_RESEARCH.md), [architecture](docs/ARCHITECTURE.md), PROJECT_SPEC.md and PROGRESS.md for exact results and remaining work.
 
-Source negative week navigation returned the next week in observed requests; requested week dates must be checked. The source's unpublished message is also returned for unknown groups, so group existence requires catalog verification. Empty tables do not establish a published week with no lessons. Native UI, cache, temporal engine, settings, reminders and installation packaging are later phases.
+The source returns the same unpublished message for unknown groups, so catalog verification is independent. Empty/unpublished weeks never prove a day off or replace valid cache. Observed negative week links returned the next week; every requested week is checked against returned dates. Sunday is treated specially by the source. Missing rooms and unpublished personal BATIS information remain unknown. No exact refresh, reminder-delivery or Shortcuts automation timing is guaranteed.
 
-The project must remain private until the owner authorizes public distribution. No official university logo is included.
+The package contains no official university logo or commercial font files. No public release, hosting, App Store publication or paid service has been enabled.

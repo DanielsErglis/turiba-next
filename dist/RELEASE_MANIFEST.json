@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0-rc.1",
+  "acceptance": "physical-iPhone verification pending",
+  "files": {
+    "README.md": "661946e6143700406f919b4e7f6536aa565ff62f5ed33f36826d0b2ba8519658",
+    "SHA256SUMS": "50912b9d9c2629bbe3a3aa65afce24b1787f2a7016a0d13ab0184be069ec7acb",
+    "TURIBA NEXT.js": "1dc2bb5e78fc6fdbbf565cac063618cd8f27f8d6bb333470cb6676d1831fac6f",
+    "docs/INSTALL_RU.md": "574d9c7333339c8a137a864af65276084ac3f5e2a90f13ea38d655f1b13da076",
+    "docs/IPHONE_CHECKLIST.md": "aa15df57ac84537b2de07513cdfc5a0f25c2ffc95f62f57845bfcecd42cb6453",
+    "docs/PRIVACY.md": "fda9dd7aa5365ad7e0a3ae60f69cbb9f2fa30ebddbcfaf06e670bd89a1eb043b",
+    "docs/TROUBLESHOOTING.md": "89df19a5e4ddd92a163afeb78c478ce3689388519511e373defe6b3d4e1acb12",
+    "docs/VALIDATION.md": "98e9c71ca35de4e851fa7a844a546c31c0022f5c7d99adf2367f5b5696ce74cf"
+  }
+}

@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0–5 development checks complete. Current phase: Phase 6 — Release Preparation. Physical-iPhone acceptance remains required before v1.0 can be accepted.
+Phases 0–5 development checks complete. Phase 6 installation candidate and documentation prepared. **Awaiting physical-iPhone acceptance** before v1.0 can be accepted. No public release has been performed.
 
 ## Completed
 
@@ -47,7 +47,7 @@ Phases 0–5 development checks complete. Current phase: Phase 6 — Release Pre
 
 ## Next action
 
-Finish installation/update/troubleshooting/privacy documentation and the candidate package, then request minimal physical-iPhone verification. Intl.DateTimeFormat.formatToParts and all native APIs must be exercised on the target Scriptable version. Do not mark the final product accepted before that evidence exists.
+Owner: import dist/TURIBA NEXT.js, perform the initial smoke checks in docs/IPHONE_CHECKLIST.md and report iPhone/iOS/Scriptable versions plus actual results. Developer: reproduce/fix any failures, update acceptance evidence and package, then complete remaining native/reminder checks before final sign-off. No additional broad permissions or paid tools are needed. Do not mark final v1.0 accepted until device evidence exists.
 
 ## Phase 3 checkpoint
 
@@ -72,3 +72,11 @@ Finish installation/update/troubleshooting/privacy documentation and the candida
 - Confirmed that native notification rejection cannot break widget rendering and theme-only settings changes cause no timetable download.
 - Live SourceClient check succeeded with six HTTPS requests, 279 catalog groups and 14 TVL2D1 lessons for the expected week. This was Node on macOS, not native iOS.
 - Deterministic build/checksum and bounded package privacy/security checks passed. See docs/VALIDATION.md and docs/ARCHITECTURE.md for exact evidence, operational limits and remaining gates.
+
+## Phase 6 candidate checkpoint
+
+- Prepared dist/TURIBA NEXT.js and deterministic installation archive dist/TURIBA-NEXT-1.0.0-rc.1.zip, with script/archive checksums and a per-file release manifest.
+- Verified the archive CRC, exact nine-entry set and exact extracted bytes against source package inputs. No research HTML, developer test fixtures, credentials or external runtime dependencies are packaged.
+- Added installation/setup/update instructions in Russian (permitted user-documentation localization), English privacy/troubleshooting/readiness documents, changelog and a pending-only physical-iPhone checklist.
+- Native acceptance has not been performed. Scriptable permission/scheduling, native layout and optional automations remain pending and are not represented as passed.
+- All phase changes are being saved through the private GitHub connector; remote read-back and repository privacy are checked at handoff. The remote history is authoritative; no local cloned Git checkout is claimed.
