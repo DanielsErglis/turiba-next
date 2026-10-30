@@ -20,7 +20,7 @@
 - Store settings and cache with FileManager.local(), not iCloud by default. Do not describe local files as encrypted.
 - Notifications are OFF by default. OFF must neither request consent nor schedule notifications. Touch only project-owned notification identifiers; only the main group owns reminders.
 - Include Delete My Data and preserve unrelated Scriptable data.
-- No official university logos or commercial font files. Use system fonts and an independent student project notice.
+- No official university logos or commercial font files. Use system fonts. Per the owner's 2026-10-31 amendment, omit the independent-project notice from widgets; keep project provenance in About/Privacy documentation.
 
 ## Verification and delivery
 

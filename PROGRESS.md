@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0–6 complete for the owner-accepted v1.0 private delivery. On 2026-10-30 the owner confirmed that all requested iPhone checks worked after rc.4. Native verification is owner-reported; the developer did not operate the device. Final promotion changes no functional src modules. No public release is authorized.
+Owner-requested visual update 1.1.0-rc.1 implemented. v1.0 remains the previously owner-accepted release. The new appearance follows the 2026-10-31 reference and needs a short native visual check. Timetable, cache, settings schema and reminder behavior are unchanged. The repository stays private.
 
 ## Completed
 
@@ -47,7 +47,7 @@ None under the owner-accepted v1.0 scope. Optional automation configuration and 
 
 ## Next action
 
-Deliver the final v1.0 package and retain the private repository. No required development work remains under the accepted scope. Handle future defects from actual reports; do not create public releases, paid services or optional automations without authorization. The following phase notes retain their historical next-action and pending-retest statements.
+Deliver the 1.1 visual-update script and preview. Owner should replace script code without resetting data and inspect Small/Medium, long subject/room fit and system/manual themes on the iPhone. No new permissions are required. Earlier phase notes below are historical.
 
 ## Phase 3 checkpoint
 
@@ -125,3 +125,11 @@ Deliver the final v1.0 package and retain the private repository. No required de
 - Final version 1.0.0: 89 automated tests passed, 0 failed, 0 skipped.
 - SHA-256 hashes of every src module matched the accepted rc.4 source snapshot. Normalized generated scripts matched exactly after accounting only for the release header and version metadata. No functional runtime change was introduced after owner acceptance.
 - Final package checksum/CRC/exact-byte verification is performed by tools/package-release.py. The final archive and script are read back from the private repository before handoff.
+
+## Owner-requested visual revision — 2026-10-31
+
+- Implemented the owner reference with substantially larger subject/room typography, a separate Medium room card and a next-lesson footer separating subject/date from the right-aligned time. Dark palette now follows the reference; light/dynamic modes remain supported.
+- Removed the independent-project widget label under the owner amendment; retained provenance in settings/privacy. No warning about offline/stale data or unresolved choices was removed.
+- Visually inspected actual renderer-tree browser approximations, corrected narrow-layout and long-room clipping, and measured 26 samples with no element bounds outside their widget containers. Native visual confirmation is pending.
+- Full suite: 91 passed, 0 failed. Tests exercise all supported state/language/theme/size paths; existing schedule/storage/notification tests remain passing.
+- Updated source rules/specification with the owner amendment and prepared versioned script/archive delivery without changing user data or unrelated services.

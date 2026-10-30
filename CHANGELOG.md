@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0-rc.1 — 2026-10-31
+
+- Rebuilt widget presentation around the owner's visual reference: deep blue surfaces, larger subjects and rooms, a separate Medium room panel and a next-subject row with a prominent right-aligned time.
+- Removed the unofficial-project widget footer at the owner's explicit request; About/Privacy provenance remains. Offline/staleness/selection warnings remain visible.
+- Preserved date distinctions for future lessons and handled narrow devices, long room locations and missing rooms. Added Size to the bundled renderer API using documented Scriptable APIs.
+- No timetable-engine, settings-schema, cache or reminder behavior changed. 91 tests passed; 26 browser-preview samples passed bounds checks after visual iteration. Native review of this appearance update is pending.
+
 ## 1.0.0 — 2026-10-30
 
 - Owner confirmed all requested iPhone checks worked after rc.4; acceptance provenance and scope are recorded in IPHONE_CHECKLIST.md. Device/version details and individual observations were not supplied.

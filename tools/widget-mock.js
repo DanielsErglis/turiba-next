@@ -7,6 +7,8 @@ class Node {
   addSpacer(value) { const node = new Node("spacer", value); this.children.push(node); return node; }
   setPadding(...value) { this.padding = value; }
   centerAlignContent() { this.centered = true; }
+  bottomAlignContent() { this.bottomAligned = true; }
+  centerAlignText() { this.textAlignment = "center"; }
   layoutVertically() { this.vertical = true; }
 }
 class Color {
@@ -15,6 +17,7 @@ class Color {
 }
 function api() {
   return { ListWidget: class extends Node { constructor() { super("widget"); } }, Color,
+    Size: class { constructor(width, height) { this.width = width; this.height = height; } },
     Font: { boldSystemFont: size => ({ size, weight: 700 }), mediumSystemFont: size => ({ size, weight: 500 }) },
     runUrl: "scriptable:///run?scriptName=TURIBA%20NEXT" };
 }

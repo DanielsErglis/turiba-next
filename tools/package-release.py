@@ -23,7 +23,7 @@ FILES = {
         "No public distribution is authorized.\n"
     ).encode("utf-8"),
 }
-for name in ["INSTALL_RU.md", "PRIVACY.md", "TROUBLESHOOTING.md", "IPHONE_CHECKLIST.md", "VALIDATION.md"]:
+for name in ["INSTALL_RU.md", "PRIVACY.md", "TROUBLESHOOTING.md", "IPHONE_CHECKLIST.md", "VALIDATION.md", "DESIGN_UPDATE.md"]:
     FILES["docs/" + name] = (ROOT / "docs" / name).read_bytes()
 manifest = {"version": VERSION, "acceptance": ACCEPTANCE,
             "files": {name: hashlib.sha256(data).hexdigest() for name, data in sorted(FILES.items())}}

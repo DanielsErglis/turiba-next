@@ -1,3 +1,7 @@
+# Visual update acceptance — 1.1.0-rc.1
+
+The accepted v1.0 behavior is preserved below as historical evidence. The 2026-10-31 layout update has not yet been confirmed on a physical iPhone. Check Small/Medium readability, room-card fit, next-subject/time placement and Light/Dark/System appearance after updating the script without deleting data. Do not transfer v1.0 visual acceptance automatically to the new layout.
+
 # Physical iPhone Acceptance — Owner Confirmed
 
 Accepted for v1.0 on 2026-10-30 (Europe/Riga). Tested candidate: 1.0.0-rc.4. Evidence: after the developer listed the native acceptance areas, the owner replied that everything had been checked and worked (English translation of the owner's Russian confirmation). The developer did not operate the device and does not claim independent native verification.

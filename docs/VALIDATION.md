@@ -1,10 +1,10 @@
-# Validation Report — 1.0.0
+# Validation Report — 1.1.0-rc.1
 
 Date: 2026-10-30. Environment: macOS with bundled Node.js v24.22.1. These are actual completed development checks, not claims of physical-iPhone verification.
 
 ## Automated results
 
-- Full suite after rebuilding the single-file package: **89 passed, 0 failed, 0 skipped**.
+- Full suite after rebuilding the single-file package: **91 passed, 0 failed, 0 skipped**.
 - Core suite repeated with `TZ=America/Los_Angeles`: **14 passed, 0 failed, 0 skipped**. Riga results are independent of the host zone.
 - Coverage includes real fixture integrity, multiple groups/weeks/branches, Saturdays, elective/subgroup continuation rows, exams, missing rooms, source changes, publication ambiguity, network/HTTP/timeout errors, DST gaps/overlaps, exact lesson-state boundaries, corrupted cache/settings, write errors, offline preservation, default OFF/ON reminder behavior, reconciliation, denial handling, secondary groups, setup, settings, deletion scope and generated-bundle execution with native API mocks.
 - Renderer combinations: three languages × three theme modes × two widget sizes × seven primary temporal/setup/error states. Saved-data and coverage warnings have additional checks. This verifies code paths and content, not native typography/layout.
@@ -51,3 +51,9 @@ Owner IMG_9304.PNG shows a non-string native text result during group validation
 ## Final promotion verification
 
 The final 1.0.0 build passed all 89 automated tests. SHA-256 hashes of every src module matched the accepted rc.4 snapshot. The complete generated scripts matched after normalizing only the release header and version metadata. There were no functional runtime changes after owner acceptance. The final archive is checked by CRC, exact entries and byte equality, and script/archive read-back is checked against the private repository.
+
+## 2026-10-31 visual update validation
+
+The full built-package suite passes 91 tests. All existing runtime/source/storage/reminder tests remain green. New renderer checks cover enlarged room/next typography, independent next-time fields, cross-day dates and absence of the removed footer in every state/language/theme/size combination.
+
+Generated browser previews from the renderer tree were visually inspected for all three languages, light/dark themes, long titles, missing/long rooms, future dates, offline warnings and a narrow iPhone bucket. Initial narrow clipping was corrected. The final 26 sample widgets had no renderer-element bounds outside their widget containers in the browser geometry check. Deliberate text truncation remains possible for long official names; no subject text is altered in the model. This is not a native iPhone layout check.

@@ -1,10 +1,10 @@
-# TURĪBA NEXT — 1.0.0
+# TURĪBA NEXT — 1.1.0-rc.1
 
-Independent student timetable widgets for iPhone using Scriptable. **Final v1.0: iPhone acceptance confirmed by the owner on 2026-10-30.** This is not an official Turība product and must remain in the private project repository until the owner authorizes public distribution.
+Independent student timetable widgets for iPhone using Scriptable. **Visual update candidate: the new layout needs iPhone confirmation.** The earlier v1.0 functionality was accepted by the owner on 2026-10-30. This is not an official Turība product and must remain in the private project repository until the owner authorizes public distribution.
 
 ## Installation package
 
-The ready-to-import script is `dist/TURIBA NEXT.js`. The install archive is `dist/TURIBA-NEXT-1.0.0.zip`. No Node.js, university password, account or additional runtime module is required on the iPhone.
+The ready-to-import script is `dist/TURIBA NEXT.js`. The install archive is `dist/TURIBA-NEXT-1.1.0-rc.1.zip`. No Node.js, university password, account or additional runtime module is required on the iPhone.
 
 Follow [Russian installation/setup/update instructions](docs/INSTALL_RU.md), [troubleshooting](docs/TROUBLESHOOTING.md), [privacy policy](docs/PRIVACY.md), and the [iPhone acceptance checklist](docs/IPHONE_CHECKLIST.md).
 
@@ -28,8 +28,12 @@ Offline tests use captured fixtures and labeled synthetic cases; they do not que
 
 ## Evidence and limitations
 
-89 full-suite tests and 14 alternate-host-zone core tests passed. The native API mocks and browser renderer preview do not establish iPhone behavior. See [validation](docs/VALIDATION.md), [source research](docs/SOURCE_RESEARCH.md), [architecture](docs/ARCHITECTURE.md), PROJECT_SPEC.md and PROGRESS.md for exact results and remaining work.
+91 full-suite tests and 14 alternate-host-zone core tests passed. The native API mocks and browser renderer preview do not establish iPhone behavior. See [validation](docs/VALIDATION.md), [source research](docs/SOURCE_RESEARCH.md), [architecture](docs/ARCHITECTURE.md), PROJECT_SPEC.md and PROGRESS.md for exact results and remaining work.
 
 The source returns the same unpublished message for unknown groups, so catalog verification is independent. Empty/unpublished weeks never prove a day off or replace valid cache. Observed negative week links returned the next week; every requested week is checked against returned dates. Sunday is treated specially by the source. Missing rooms and unpublished personal BATIS information remain unknown. No exact refresh, reminder-delivery or Shortcuts automation timing is guaranteed.
 
 The package contains no official university logo or commercial font files. No public release, hosting, App Store publication or paid service has been enabled.
+
+## Visual update
+
+The 2026-10-31 owner reference is implemented with larger subject/room text, a separate Medium room card, and a next-subject row with a large right-aligned time. The unofficial-project widget footer is removed by owner request. About/Privacy provenance remains. See docs/DESIGN_UPDATE.md for layout decisions and actual preview checks. No schedule, settings schema or reminder logic was changed.

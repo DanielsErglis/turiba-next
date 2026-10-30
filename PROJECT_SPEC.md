@@ -145,3 +145,7 @@ Deliver the complete project and source; working Scriptable package; two widget 
 ## 21. Initial action and continuation
 
 The first action is Phase 0, with no source implementation: analyze requirements, determine tools/permissions, audit environment, request missing access, explain connection steps, verify actual access, and record results. Only then begin implementation. The objective is a complete, stable, secure and convenient product with minimal owner involvement and no compromise in schedule correctness or privacy.
+
+## Owner amendment — 2026-10-31 visual revision
+
+The owner requested the supplied reference composition: larger subject/room typography, a separate room panel in Medium, and a readable next-subject row with the start time aligned right. Remove the unofficial-student-project label from widgets; provenance remains in About/Privacy. This explicit owner amendment supersedes any requirement to place the independent-project notice on the widget itself. Preserve timetable semantics, uncertainty indicators, settings and privacy.

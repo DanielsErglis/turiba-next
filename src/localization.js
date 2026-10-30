@@ -2,7 +2,7 @@
 
 const STRINGS = {
   en: {
-    upcoming: "Next class", soon: "Starting soon", ongoing: "In progress", next: "Next", finished: "Done for today", noSchedule: "No selected classes today",
+    upcoming: "Next class", soon: "Starting soon", ongoing: "In progress", next: "Next", upNext: "Up next", finished: "Done for today", noSchedule: "No selected classes today",
     offline: "Offline · saved data", error: "Schedule unavailable", setupRequired: "Choose your group", stale: "Check latest timetable", room: "Room", noRoom: "Room not provided",
     settings: "Settings", group: "Study group", groupPrompt: "Enter your group code from the public timetable.", language: "Language", theme: "Appearance", system: "System", light: "Light", dark: "Dark",
     choices: "Electives & subgroups", choicesHint: "Select only your own courses and subgroups. BATIS may contain additional personal information.", noChoices: "No choices found in the loaded weeks.",
@@ -13,7 +13,7 @@ const STRINGS = {
     sourceUnavailable: "This week is not published or could not be verified. This does not confirm a day off.", resetCorrupt: "Local settings could not be read. Use Delete My Data to reset; existing files have been preserved.", unsupported: "Choose a Small or Medium widget.", nextDay: "Next known class", noGroup: "Not configured"
   },
   lv: {
-    upcoming: "Nākamā nodarbība", soon: "Drīz sāksies", ongoing: "Notiek", next: "Tālāk", finished: "Šodien pabeigts", noSchedule: "Šodien nav izvēlētu nodarbību",
+    upcoming: "Nākamā nodarbība", soon: "Drīz sāksies", ongoing: "Notiek", next: "Tālāk", upNext: "Tālāk", finished: "Šodien pabeigts", noSchedule: "Šodien nav izvēlētu nodarbību",
     offline: "Bezsaistē · saglabātie dati", error: "Saraksts nav pieejams", setupRequired: "Izvēlies savu grupu", stale: "Pārbaudi jaunāko sarakstu", room: "Auditorija", noRoom: "Auditorija nav norādīta",
     settings: "Iestatījumi", group: "Studiju grupa", groupPrompt: "Ievadi grupas kodu no publiskā nodarbību saraksta.", language: "Valoda", theme: "Izskats", system: "Sistēmas", light: "Gaišs", dark: "Tumšs",
     choices: "Izvēles kursi un apakšgrupas", choicesHint: "Izvēlies tikai savus kursus un apakšgrupas. BATIS var būt papildu individuāla informācija.", noChoices: "Ielādētajās nedēļās izvēļu nav.",
@@ -24,7 +24,7 @@ const STRINGS = {
     sourceUnavailable: "Nedēļas saraksts nav publicēts vai nav pārbaudāms. Tas nenozīmē, ka nodarbību nav.", resetCorrupt: "Vietējie iestatījumi nav nolasāmi. Atiestatīšanai izmanto datu dzēšanu; esošie faili ir saglabāti.", unsupported: "Izvēlies mazo vai vidējo logrīku.", nextDay: "Nākamā zināmā nodarbība", noGroup: "Nav iestatīts"
   },
   ru: {
-    upcoming: "Следующее занятие", soon: "Скоро начнётся", ongoing: "Идёт занятие", next: "Далее", finished: "На сегодня всё", noSchedule: "Сегодня нет выбранных занятий",
+    upcoming: "Следующее занятие", soon: "Скоро начнётся", ongoing: "Идёт занятие", next: "Далее", upNext: "Далее", finished: "На сегодня всё", noSchedule: "Сегодня нет выбранных занятий",
     offline: "Нет сети · сохранённые данные", error: "Расписание недоступно", setupRequired: "Выберите свою группу", stale: "Проверьте актуальное расписание", room: "Аудитория", noRoom: "Аудитория не указана",
     settings: "Настройки", group: "Учебная группа", groupPrompt: "Введите код группы из публичного расписания.", language: "Язык", theme: "Оформление", system: "Системное", light: "Светлое", dark: "Тёмное",
     choices: "Факультативы и подгруппы", choicesHint: "Выберите только свои курсы и подгруппы. Дополнительные индивидуальные сведения могут быть в BATIS.", noChoices: "В загруженных неделях вариантов нет.",

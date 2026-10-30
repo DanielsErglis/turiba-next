@@ -1,8 +1,8 @@
 "use strict";
 
 const PALETTES = {
-  light: { background: "F2F8FB", card: "FFFFFF", text: "092C3D", muted: "4C6877", accent: "00587E", line: "D9E9F0" },
-  dark: { background: "081923", card: "102C3B", text: "F3FAFD", muted: "A4BCC8", accent: "00AAE7", line: "244453" }
+  light: { background: "F1F8FC", card: "DDEFF7", text: "073044", muted: "4F6C7B", accent: "006486", roomText: "00587E", line: "B8DEEE" },
+  dark: { background: "062D3E", card: "0E4D67", text: "F7FCFF", muted: "ADC9D6", accent: "42CFF5", roomText: "FFFFFF", line: "00AAE7" }
 };
 
 function themeColors(mode, Color) {
