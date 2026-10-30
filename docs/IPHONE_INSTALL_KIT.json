@@ -1,0 +1,38 @@
+{
+  "version": "1.1.0-rc.2",
+  "date": "2026-10-31",
+  "scope": "phone-only kit for owner and friends' private testing",
+  "runtimeChanged": false,
+  "files": {
+    "TURIBA NEXT.js": {
+      "bytes": 78667,
+      "sha256": "2c5fe767036690d169ca3f27724becf8fd906216fb45415fab8590c032cf9b59"
+    },
+    "INSTALL.html": {
+      "bytes": 181112,
+      "sha256": "88e278dab10c7b549eb7c2efabf5ad3ff3ce86c92c237fe3ca2b60e4de3bfb01"
+    },
+    "README.md": {
+      "bytes": 2561,
+      "sha256": "728804000da8866d974206359c6b9ac361331806e7d6af9db1e434d5197d4a09"
+    },
+    "INSTALL_RU.md": {
+      "bytes": 40115,
+      "sha256": "95db0575c02cf0184165cc969d268ae7ccb0eea9603b4a092b8fb15a09c89c19"
+    },
+    "INSTALL_LV.md": {
+      "bytes": 22911,
+      "sha256": "00a5e14da6ba85e5d2aad8a58a2ad50975c265e50f9488c1e1aed1f6408d5c59"
+    },
+    "INSTALL_EN.md": {
+      "bytes": 20317,
+      "sha256": "6a3c78c77ccc2aa8e57f9ea6f8a4e7f68af282198a55f3e66889aaca3970292d"
+    }
+  },
+  "archive": {
+    "path": "install/TURIBA-NEXT-iPhone.zip",
+    "bytes": 105140,
+    "sha256": "dac52e066f7113b6b71bdc6defd47aaa40c6dc8f47ca6ca92228aa1a9d986364"
+  },
+  "verification": "exact six-entry set, ZIP CRC and byte equality; script copied unchanged from dist"
+}

@@ -140,3 +140,12 @@ Deliver the 1.1 visual-update script and preview. Owner should replace script co
 - Removed horizontal flexible spacers competing with room text, explicitly sized text rows to the card content width and retained large preferred typography with a lower fitting limit for compact codes. Small layout and schedule/data behavior are unchanged.
 - Added a regression for room-width allocation across four iPhone buckets. Full suite: 92 passed, 0 failed. Visually inspected the corrected reference preview; all 26 browser samples passed element-bounds checks. Native retest remains required.
 - Deliver rc.2 as a code replacement; no data reset or new permissions are needed.
+
+## Private iPhone testing kit — 2026-10-31
+
+- Owner confirmed satisfaction with the current design and authorized private testing with friends. This closes the pending owner visual-feedback gate; no new developer-operated native-device checks are claimed. Public distribution remains unauthorized and repository visibility remains private.
+- Created install/ with the unchanged 1.1.0-rc.2 script, full beginner instructions in Russian/Latvian/English, a language landing page and an offline mobile HTML guide. The manual-copy fallback embeds the exact program in a readonly textarea; the HTML executes no JavaScript.
+- Added a deterministic six-file phone ZIP and reproducible standard-library packager. The kit includes no personal preferences/cache, fixtures, development sources or credentials. Recipients can read the installed JavaScript. Friends without repository access should receive the actual ZIP file by messaging/AirDrop.
+- Verified ZIP CRC, exact entry set and equality of every archived file; copied script and HTML textarea match dist byte-for-byte. Browser checks passed at 320px/390px: no horizontal page overflow, unique heading IDs, zero broken internal anchors and zero executable script tags. Visually inspected the mobile landing page and Latvian/English reading views.
+- Runtime/version unchanged; no fresh runtime suite was needed for this packaging/documentation change. The last runtime result remains 92 passing tests. Native Share/import availability and local HTML preview vary by iOS/Scriptable version; guides include alternatives rather than claiming all routes were tested on physical devices.
+- Added prominent installation links to the root README. Updated remote artifacts are verified after the scoped GitHub commit; docs/IPHONE_INSTALL_KIT.json records exact kit checksums.

@@ -1,12 +1,18 @@
 # TURĪBA NEXT — 1.1.0-rc.2
 
-Independent student timetable widgets for iPhone using Scriptable. **Visual update candidate: the new layout needs iPhone confirmation.** The earlier v1.0 functionality was accepted by the owner on 2026-10-30. This is not an official Turība product and must remain in the private project repository until the owner authorizes public distribution.
+Independent student timetable widgets for iPhone using Scriptable. **The owner accepted the current design on 2026-10-31; private testing with friends is starting.** The earlier v1.0 functionality was accepted by the owner on 2026-10-30. This is not an official Turība product and the repository remains private. The owner authorized sharing the installation kit privately with friends; public distribution has not been authorized.
 
 ## Installation package
 
-The ready-to-import script is `dist/TURIBA NEXT.js`. The install archive is `dist/TURIBA-NEXT-1.1.0-rc.2.zip`. No Node.js, university password, account or additional runtime module is required on the iPhone.
+**[Open the iPhone installation folder — RU / LV / EN](install/README.md)**
 
-Follow [Russian installation/setup/update instructions](docs/INSTALL_RU.md), [troubleshooting](docs/TROUBLESHOOTING.md), [privacy policy](docs/PRIVACY.md), and the [iPhone acceptance checklist](docs/IPHONE_CHECKLIST.md).
+**[Download the phone-only ZIP](https://github.com/DanielsErglis/turiba-next/blob/main/install/TURIBA-NEXT-iPhone.zip?raw=true)**. It contains the ready-made script and complete beginner instructions in Russian, Latvian and English. Extract it in Files and open INSTALL.html to choose a language. No computer, Node.js, university password or additional runtime module is required.
+
+GitHub links require access to this private repository. For friends without access, send the ZIP file itself by messaging or AirDrop. The archive works without repository access and contains no personal settings/cache or development files. The JavaScript remains readable by recipients.
+
+Detailed guides: [Русский](install/INSTALL_RU.md), [Latviešu](install/INSTALL_LV.md), [English](install/INSTALL_EN.md). See also [troubleshooting](docs/TROUBLESHOOTING.md), [privacy](docs/PRIVACY.md), and the [testing checklist](docs/IPHONE_CHECKLIST.md).
+
+The original developer-oriented versioned artifacts remain under dist/. Rebuild the phone kit with `python3 tools/package-iphone.py` after updating the bundled script or guides.
 
 Features: Small/Medium widgets; group entry without code edits; per-widget group parameters; LV/EN/RU UI; system/light/dark themes; current/next lessons; explicit elective/subgroup selection; local cache; manual/best-effort widget refresh; optional main-group local reminders (OFF by default); and Delete My Data.
 
