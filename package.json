@@ -1,0 +1,10 @@
+{
+  "name": "turiba-next",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Independent Turiba timetable widget for Scriptable",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": { "node": ">=20" }
+}
