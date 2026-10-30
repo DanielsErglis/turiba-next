@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0–3 complete. Next phase: Phase 4 — Settings & Automation. This is a development checkpoint, not a v1.0 release.
+Phases 0–4 complete. Current phase: Phase 5 — Testing & Optimization. This is a development checkpoint, not a v1.0 release.
 
 ## Completed
 
@@ -58,3 +58,12 @@ Build Small/Medium widgets, shared localization and themes in Phase 3. Phase 2 n
 - 53 tests passed before final layout adjustment; all supported state/language/theme/size combinations were exercised by renderer mocks.
 - Generated and visually inspected a browser approximation of the actual renderer tree; corrected a Medium room clipping issue and inspected the revised screenshot at .tmp/widgets.png. This is not native iOS validation.
 - Next action: Scriptable adapters, settings, opt-in reminders, safe group changes and data deletion.
+
+## Phase 4 checkpoint
+
+- Added FileManager.local storage with temporary-file replacement, HTTPS Request adapter with redirect rejection and timeouts, interactive localized setup/settings, explicit choices, group changes, deletion and a noninteractive Shortcuts sync entry point.
+- Added opt-in primary-group reminder planning/reconciliation; OFF performs no notification calls in widget runs. Disabling, changing groups and deleting data clean only verified project-owned identifiers. New plans require fresh complete current-week coverage.
+- Built dist/TURIBA NEXT.js as a single self-contained JavaScript file; no Node imports, external dependencies or raw research HTML are included.
+- Full suite: 67 passed, 0 failed, 0 skipped, including application setup, group switching, deletion scope, notification OFF, secondary groups and generated-bundle execution with Scriptable mocks.
+- Native iOS consent, scheduling, file replacement behavior and Shortcuts automation remain unverified until physical-device acceptance. Scriptable exposes scheduling but no separate documented notification authorization-request API; consent is expected on the first actual schedule attempt after opt-in, not via a fake reminder.
+- Next action: edge-case review, deterministic packaging, privacy/security verification, user documentation and device acceptance checklist.
