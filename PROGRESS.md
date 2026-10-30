@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0–2 complete. Next phase: Phase 3 — UI & Design. This is a development checkpoint, not a v1.0 release.
+Phases 0–3 complete. Next phase: Phase 4 — Settings & Automation. This is a development checkpoint, not a v1.0 release.
 
 ## Completed
 
@@ -51,3 +51,10 @@ Phases 0–2 complete. Next phase: Phase 3 — UI & Design. This is a developmen
 ## Next action
 
 Build Small/Medium widgets, shared localization and themes in Phase 3. Phase 2 now includes IANA Europe/Riga conversion, lesson/overlap states, per-group explicit choices, validated storage and a conservative synchronization service. Intl.DateTimeFormat.formatToParts support must be verified on the target Scriptable device; unsupported platforms fail explicitly instead of falling back to host time. Runtime storage and networking adapters follow in Phase 4.
+
+## Phase 3 checkpoint
+
+- Added shared LV/EN/RU translations, system language resolution, explicit and dynamic themes, and native Small/Medium renderer code.
+- 53 tests passed before final layout adjustment; all supported state/language/theme/size combinations were exercised by renderer mocks.
+- Generated and visually inspected a browser approximation of the actual renderer tree; corrected a Medium room clipping issue and inspected the revised screenshot at .tmp/widgets.png. This is not native iOS validation.
+- Next action: Scriptable adapters, settings, opt-in reminders, safe group changes and data deletion.
