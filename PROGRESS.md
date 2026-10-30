@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0–5 development checks complete. Phase 6 installation candidate and documentation prepared. **rc.2 iPhone diagnostics identified move-to-existing-file failure. rc.3 fixes replacement and recovery; awaiting native retest** before v1.0 can be accepted. No public release has been performed.
+Phases 0–5 development checks complete. Phase 6 installation candidate and documentation prepared. **rc.3 reaches group entry, but its native text read produced non-string input. rc.4 captures text before dismissal and resolves asynchronous results; awaiting native retest** before v1.0 can be accepted. No public release has been performed.
 
 ## Completed
 
@@ -106,3 +106,10 @@ Owner: import dist/TURIBA NEXT.js, perform the initial smoke checks in docs/IPHO
 - Implemented verified temporary writes, moving the current file to an absent backup path, installing to an absent target, verifying installed bytes, rollback on failure, and recovery from a retained backup before reads/cache enumeration. All paths remain confined to the local project directory.
 - Added six regressions covering repeated language/group saves, install failure rollback, retained backup after recovery failure, interrupted week recovery, truncated temporary data and installed-byte verification failure. Full suite: 84 passed, 0 failed.
 - rc.3 code fixes the demonstrated operation under the strict mock; actual native success has not yet been confirmed. Next owner action: replace the script code with rc.3, keep existing data, and retry language/group setup.
+
+## Group input follow-up — 1.0.0-rc.4
+
+- Owner reports entering TVL2D1 and supplied IMG_9304.PNG: Build rc.3, setup.group.validate, INVALID_GROUP, message A study group code is required. normalizeGroup emits this exact message for a non-string, not for a malformed/empty string. The provided code TVL2D1 is valid; no source/network request is reached at this failure point.
+- rc.3 read text after the 350 ms dismissal grace period. rc.4 captures text immediately after alert completion, before that timer, awaits native text results, and supports the documented TextField.text fallback. Non-string native failures now have their own code/stage instead of blaming the entered group.
+- Added five regressions: text state released by dismissal, asynchronous native return, direct field fallback, empty text preservation and typed unavailable input; two run the full setup flow. Full suite: 89 passed, 0 failed. The precise native mechanism is not yet proven; successful iPhone retry remains pending.
+- Next owner action: replace code with rc.4, keep data and enter TVL2D1 normally. Retain local diagnostics if another failure appears.

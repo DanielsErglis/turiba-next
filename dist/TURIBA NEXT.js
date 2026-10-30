@@ -1,6 +1,6 @@
 // Variables used by Scriptable.
 // icon-color: cyan; icon-glyph: graduation-cap;
-// TURIBA NEXT 1.0.0-rc.3 — independent student project. Native device acceptance pending.
+// TURIBA NEXT 1.0.0-rc.4 — independent student project. Native device acceptance pending.
 const __factories = {
 "app": function(module, exports) {
 "use strict";
@@ -15,7 +15,7 @@ const { renderWidget } = __load("widget");
 const { scheduleState } = __load("engine");
 const { localAdapter, transport, notificationAdapter } = __load("scriptable-adapters");
 const { clearReminders, reconcileReminders } = __load("notifications");
-const { errorReport, presentDialog } = __load("diagnostics");
+const { errorReport, presentDialog, captureTextInput } = __load("diagnostics");
 
 async function run(api) {
   api.runUrl = "scriptable:///run?scriptName=" + encodeURIComponent(api.Script.name());
@@ -62,10 +62,15 @@ async function run(api) {
   async function changeGroup() {
     api.stage = "setup.group.configure";
     const dialog = new api.Alert(); dialog.title = t("group"); dialog.message = t("groupPrompt");
-    dialog.addTextField(t("group"), settings.group || ""); dialog.addAction(t("save")); dialog.addCancelAction(t("cancel"));
-    if (await presentDialog(api, dialog, "setup.group.present") < 0) return;
+    const field = dialog.addTextField(t("group"), settings.group || ""); dialog.addAction(t("save")); dialog.addCancelAction(t("cancel"));
+    const response = await presentDialog(api, dialog, "setup.group.present", async action => {
+      if (action < 0) return { action, text: null };
+      api.stage = "setup.group.read";
+      return { action, text: await captureTextInput(dialog, field, 0) };
+    });
+    if (response.action < 0) return;
     api.stage = "setup.group.validate";
-    const group = normalizeGroup(dialog.textFieldValue(0));
+    const group = normalizeGroup(response.text);
     const candidate = await load(group, true);
     if (!candidate.weeks.length && !["SOURCE_UNPUBLISHED", "SOURCE_EMPTYUNCONFIRMED"].includes(candidate.issue)) {
       await tellFailure(candidate.failure || { code: candidate.issue, message: "The group schedule could not be verified." }, "setup.group.load"); return;
@@ -181,6 +186,8 @@ module.exports = { run };
 "diagnostics": function(module, exports) {
 "use strict";
 
+const { ensure } = __load("errors");
+
 // Diagnostics stay on the device. They are never uploaded or sent to another service.
 function errorReport(error, stage, version) {
   const clean = value => String(value || "Unknown error").replace(/\/(?:private|var|Users)\/[^\s]+/g, "[local path]").slice(0, 240);
@@ -191,17 +198,34 @@ function errorReport(error, stage, version) {
   return lines.join("\n");
 }
 
-async function presentDialog(api, dialog, stage) {
+async function presentDialog(api, dialog, stage, capture) {
   api.stage = stage;
   const result = await dialog.presentAlert();
-  // Allow the native dismissal transition to settle before presenting another controller.
-  if (api.Timer && typeof api.Timer.schedule === "function") {
-    await new Promise(resolve => { api.Timer.schedule(350, false, resolve); });
+  // Snapshot native input before yielding to a dismissal timer or another controller.
+  let captured;
+  try { captured = capture ? await capture(result) : result; }
+  finally {
+    // Also settle dismissal when input capture fails before showing the error controller.
+    if (api.Timer && typeof api.Timer.schedule === "function") {
+      await new Promise(resolve => { api.Timer.schedule(350, false, resolve); });
+    }
   }
-  return result;
+  return captured;
 }
 
-module.exports = { errorReport, presentDialog };
+async function captureTextInput(dialog, field, index) {
+  let value, failure;
+  try { value = await dialog.textFieldValue(index); }
+  catch (error) { failure = error; }
+  if (typeof value === "string") return value;
+  const reference = await field;
+  const direct = reference ? await reference.text : undefined;
+  ensure(typeof direct === "string", "GROUP_INPUT_UNAVAILABLE", "The native dialog did not return text.",
+    { cause: failure ? failure.message : "textFieldValue type: " + typeof value + "; TextField.text type: " + typeof direct });
+  return direct;
+}
+
+module.exports = { errorReport, presentDialog, captureTextInput };
 
 },
 "engine": function(module, exports) {
@@ -1293,6 +1317,6 @@ module.exports = { widgetModel, renderWidget, dateLabel };
 };
 const __cache = {};
 function __load(name) { if (__cache[name]) return __cache[name].exports; const module = {exports:{}}; __cache[name] = module; __factories[name](module, module.exports); return module.exports; }
-const __api = {FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color, Timer: typeof Timer === "undefined" ? null : Timer, version: "1.0.0-rc.3", stage: "bootstrap"};
+const __api = {FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color, Timer: typeof Timer === "undefined" ? null : Timer, version: "1.0.0-rc.4", stage: "bootstrap"};
 try { await __load("app").run(__api); }
 catch (error) { const lang = __load("localization").resolveLanguage(__api.language || "system", Device.preferredLanguages()); const t = __load("localization").translator(lang); const details = __load("diagnostics").errorReport(error, __api.stage, __api.version); if (config.runsInWidget) { const widget = new ListWidget(); widget.addText("TURĪBA NEXT"); widget.addText(t("error")); widget.addText(String(error.code || error.name || "UNEXPECTED_ERROR")); widget.refreshAfterDate = new Date(Date.now() + 900000); Script.setWidget(widget); } else { const alert = new Alert(); alert.title = "TURĪBA NEXT"; alert.message = t("failure") + "\n\n" + details; alert.addAction(t("done")); await alert.presentAlert(); } Script.complete(); }

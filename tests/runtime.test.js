@@ -119,6 +119,23 @@ test("a native group-field failure after language selection reports its actual s
   assert.equal(JSON.parse(env.files.get(ROOT + "settings.json")).group, null);
 });
 
+test("setup preserves the entered group when native text is released during the dismissal delay", async () => {
+  const env = environment(null, { config: { runsInWidget: false } });
+  env.api.Timer = { schedule: (ms, repeats, callback) => { for (const dialog of env.dialogs) dialog.field = undefined; callback(); } };
+  env.queue.push(1, { index: 0, text: "TVL2D1" }, -1);
+  await fixedRun(env);
+  assert.equal(JSON.parse(env.files.get(ROOT + "settings.json")).group, "TVL2D1");
+  assert.equal(env.queue.length, 0);
+});
+
+test("setup resolves asynchronously returned native text before validating the group", async () => {
+  const env = environment(null, { config: { runsInWidget: false } });
+  env.api.Alert.prototype.textFieldValue = function () { return Promise.resolve(this.field); };
+  env.queue.push(1, { index: 0, text: "TVL2D1" }, -1);
+  await fixedRun(env);
+  assert.equal(JSON.parse(env.files.get(ROOT + "settings.json")).group, "TVL2D1");
+});
+
 test("group changes cancel only owned reminders before saving the new primary group", async () => {
   const settings = defaults(); settings.group = "TVL2D1"; settings.notifications.enabled = true;
   const env = environment(settings, { config: { runsInWidget: false } });

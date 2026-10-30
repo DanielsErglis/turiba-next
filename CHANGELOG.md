@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0-rc.4 — 2026-10-30
+
+- Owner reports entering TVL2D1; rc.3 screenshot shows setup.group.validate / INVALID_GROUP / non-string input. The group code itself is valid; the native read result was not a string.
+- Snapshot text before the dismissal delay, resolve asynchronous text results, and retain the documented TextField.text reference as a fallback. Never stringify an arbitrary native object into a group code.
+- Report unavailable native input as GROUP_INPUT_UNAVAILABLE at setup.group.read, separately from invalid user input.
+- Added five regressions, including full setup with text released during dismissal and asynchronous text extraction. Full suite: 89 passed, 0 failed. Native retest remains required; the exact native mechanism behind the non-string result is not confirmed.
+
 ## 1.0.0-rc.3 — 2026-10-30
 
 - Owner screenshot of rc.2 identified settings.save / STORAGE_WRITE_ERROR: native move refuses an existing destination. The previous overwrite assumption and permissive filesystem mock were incorrect.

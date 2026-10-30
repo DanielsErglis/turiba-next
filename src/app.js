@@ -10,7 +10,7 @@ const { renderWidget } = require("./widget");
 const { scheduleState } = require("./engine");
 const { localAdapter, transport, notificationAdapter } = require("./scriptable-adapters");
 const { clearReminders, reconcileReminders } = require("./notifications");
-const { errorReport, presentDialog } = require("./diagnostics");
+const { errorReport, presentDialog, captureTextInput } = require("./diagnostics");
 
 async function run(api) {
   api.runUrl = "scriptable:///run?scriptName=" + encodeURIComponent(api.Script.name());
@@ -57,10 +57,15 @@ async function run(api) {
   async function changeGroup() {
     api.stage = "setup.group.configure";
     const dialog = new api.Alert(); dialog.title = t("group"); dialog.message = t("groupPrompt");
-    dialog.addTextField(t("group"), settings.group || ""); dialog.addAction(t("save")); dialog.addCancelAction(t("cancel"));
-    if (await presentDialog(api, dialog, "setup.group.present") < 0) return;
+    const field = dialog.addTextField(t("group"), settings.group || ""); dialog.addAction(t("save")); dialog.addCancelAction(t("cancel"));
+    const response = await presentDialog(api, dialog, "setup.group.present", async action => {
+      if (action < 0) return { action, text: null };
+      api.stage = "setup.group.read";
+      return { action, text: await captureTextInput(dialog, field, 0) };
+    });
+    if (response.action < 0) return;
     api.stage = "setup.group.validate";
-    const group = normalizeGroup(dialog.textFieldValue(0));
+    const group = normalizeGroup(response.text);
     const candidate = await load(group, true);
     if (!candidate.weeks.length && !["SOURCE_UNPUBLISHED", "SOURCE_EMPTYUNCONFIRMED"].includes(candidate.issue)) {
       await tellFailure(candidate.failure || { code: candidate.issue, message: "The group schedule could not be verified." }, "setup.group.load"); return;

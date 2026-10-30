@@ -34,6 +34,6 @@ Scriptable documents scheduling and pending/removal APIs but no separate notific
 
 ## Privacy and acceptance
 
-No developer backend, tracking, registration, secrets or university login. Runtime HTTPS is restricted to the public source; redirects are rejected and normal certificate checks stay enabled. Raw page scripts are data, never execution. Native UI and Shortcuts tests use mocks until owner-assisted iPhone acceptance. A browser screenshot is a layout approximation only. Version 1.0.0-rc.3 is a release candidate, not an accepted production release.
+No developer backend, tracking, registration, secrets or university login. Runtime HTTPS is restricted to the public source; redirects are rejected and normal certificate checks stay enabled. Raw page scripts are data, never execution. Native UI and Shortcuts tests use mocks until owner-assisted iPhone acceptance. A browser screenshot is a layout approximation only. Version 1.0.0-rc.4 is a release candidate, not an accepted production release.
 
 Official API references consulted: [Request](https://docs.scriptable.app/request/), [FileManager](https://docs.scriptable.app/filemanager/), [ListWidget](https://docs.scriptable.app/listwidget/), [Color](https://docs.scriptable.app/color/), [Device](https://docs.scriptable.app/device/), [Notification](https://docs.scriptable.app/notification/), [Alert](https://docs.scriptable.app/alert/).

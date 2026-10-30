@@ -1,4 +1,4 @@
-# Release Readiness — 1.0.0-rc.3
+# Release Readiness — 1.0.0-rc.4
 
 Date: 2026-10-30. Decision: **CANDIDATE PACKAGE PREPARED; NATIVE ACCEPTANCE PENDING**.
 
@@ -32,3 +32,7 @@ The owner reported rc.1 failing immediately after language selection. rc.2 adds 
 ## rc.3 confirmed storage fix
 
 Owner screenshot IMG_9303.PNG of rc.2 establishes a settings.save STORAGE_WRITE_ERROR caused by move refusing an existing destination. rc.3 removes that assumption and adds verified backup/install/rollback/recovery. The stricter native filesystem mock and six new regressions pass; the full suite has 84 passes and zero failures. Earlier statements that the cause was unknown describe the earlier rc.1/rc.2 investigation only. Native rc.3 setup success is still pending.
+
+## rc.4 input capture retest
+
+Owner IMG_9304.PNG shows a non-string native text result during group validation despite entering valid TVL2D1. rc.4 captures before the dismissal timer, awaits asynchronous results and can read the retained TextField.text reference. Five regressions pass; the suite has 89 passes and zero failures. Which native mechanism caused the non-string result is not established. Real-device group setup remains unaccepted until retested.
