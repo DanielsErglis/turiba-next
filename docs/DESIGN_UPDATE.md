@@ -1,6 +1,6 @@
 # Widget Design Update — 2026-10-31
 
-Version: 1.1.0-rc.1. Authority: the owner's supplied visual reference and explicit request to remove the unofficial-project widget label and improve readability. This supersedes the original on-widget provenance requirement; About/Privacy still identify the independent project.
+Version: 1.1.0-rc.2. Authority: the owner's supplied visual reference and explicit request to remove the unofficial-project widget label and improve readability. This supersedes the original on-widget provenance requirement; About/Privacy still identify the independent project.
 
 ## Layout
 
@@ -16,6 +16,10 @@ Use only documented WidgetStack.size/cornerRadius/layout APIs and Size. Conserva
 
 The developer generated previews directly from the actual native renderer tree, inspected the reference pair plus language/theme/edge cases, corrected room clipping and narrow-height overflow, and checked element bounds in all 26 final samples. Browser previews do not reproduce native WidgetKit typography or layout exactly. The owner should inspect both sizes on the target iPhone.
 
-91 automated tests passed, including the existing full runtime suite and additional presentation assertions. There were no functional changes to source retrieval, normalization, time calculations, storage, user settings schema or reminder planning. The build now supplies the documented Size API to the renderer.
+92 automated tests passed, including the existing full runtime suite and additional presentation assertions. There were no functional changes to source retrieval, normalization, time calculations, storage, user settings schema or reminder planning. The build now supplies the documented Size API to the renderer.
 
 Official references: [WidgetStack](https://docs.scriptable.app/widgetstack/), [WidgetText](https://docs.scriptable.app/widgettext/). Preview data is synthetic and is not live university timetable evidence. Development preview artifacts: `.tmp/widgets-redesign.png` and `.tmp/widgets-design-matrix.png`; regenerate HTML with `node tools/preview-widgets.js`.
+
+## rc.2 native room-fit follow-up
+
+The owner reported Medium truncating C216 to C2… in rc.1 while Small showed it completely. rc.2 removes competing side spacers, gives the text the full room-card content width and permits additional fitting for short codes. The preferred large font is retained. 92 tests passed, including a four-width allocation regression; 26 browser samples had no out-of-bounds elements and the reference preview was inspected. This is not yet confirmation of native rc.2 room fit.

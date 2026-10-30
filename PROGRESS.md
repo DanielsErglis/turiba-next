@@ -2,7 +2,7 @@
 
 ## Current state
 
-Owner-requested visual update 1.1.0-rc.1 implemented. v1.0 remains the previously owner-accepted release. The new appearance follows the 2026-10-31 reference and needs a short native visual check. Timetable, cache, settings schema and reminder behavior are unchanged. The repository stays private.
+Visual update 1.1.0-rc.2 prepared after the owner reported native Medium room truncation in rc.1. v1.0 remains the previously owner-accepted release. The new appearance follows the 2026-10-31 reference and needs a short native visual check. Timetable, cache, settings schema and reminder behavior are unchanged. The repository stays private.
 
 ## Completed
 
@@ -133,3 +133,10 @@ Deliver the 1.1 visual-update script and preview. Owner should replace script co
 - Visually inspected actual renderer-tree browser approximations, corrected narrow-layout and long-room clipping, and measured 26 samples with no element bounds outside their widget containers. Native visual confirmation is pending.
 - Full suite: 91 passed, 0 failed. Tests exercise all supported state/language/theme/size paths; existing schedule/storage/notification tests remain passing.
 - Updated source rules/specification with the owner amendment and prepared versioned script/archive delivery without changing user data or unrelated services.
+
+## Medium room-card correction — 2026-10-31
+
+- Owner screenshot shows Medium rendering C2… instead of C216, with Small showing the full room code. Browser preview bounds were not sufficient to establish native text-fit behavior.
+- Removed horizontal flexible spacers competing with room text, explicitly sized text rows to the card content width and retained large preferred typography with a lower fitting limit for compact codes. Small layout and schedule/data behavior are unchanged.
+- Added a regression for room-width allocation across four iPhone buckets. Full suite: 92 passed, 0 failed. Visually inspected the corrected reference preview; all 26 browser samples passed element-bounds checks. Native retest remains required.
+- Deliver rc.2 as a code replacement; no data reset or new permissions are needed.

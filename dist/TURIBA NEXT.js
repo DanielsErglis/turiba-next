@@ -1,6 +1,6 @@
 // Variables used by Scriptable.
 // icon-color: cyan; icon-glyph: graduation-cap;
-// TURIBA NEXT 1.1.0-rc.1 — independent student project. Native device acceptance pending.
+// TURIBA NEXT 1.1.0-rc.2 — independent student project. Native device acceptance pending.
 const __factories = {
 "app": function(module, exports) {
 "use strict";
@@ -1310,9 +1310,12 @@ function renderWidget(state, settings, language, family, api) {
     const line = widget.addStack(); line.backgroundColor = colors.accent;
     line.size = new api.Size(0, 3); line.cornerRadius = 1.5; line.addSpacer();
   }
-  function centered(container, value, size, color, weight, lines) {
-    const row = container.addStack(); row.addSpacer();
-    label(row, value, size, color, weight, lines).centerAlignText(); row.addSpacer();
+  function centered(container, value, size, color, weight, lines, width, scale) {
+    // A native flexible spacer on each side can take width away from the room text.
+    // Give text the card's entire content width and center the text itself instead.
+    const row = container.addStack(); row.layoutVertically();
+    row.size = new api.Size(width, 0); row.setPadding(0, 0, 0, 0);
+    label(row, value, size, color, weight, lines, scale).centerAlignText();
   }
   const header = widget.addStack(); header.centerAlignContent();
   if (!medium) {
@@ -1341,9 +1344,10 @@ function renderWidget(state, settings, language, family, api) {
       body.addSpacer(12);
       const room = body.addStack(); room.layoutVertically(); room.size = new api.Size(roomWidth, bodyHeight);
       room.backgroundColor = colors.card; room.cornerRadius = 12; room.setPadding(6, 7, 6, 7); room.addSpacer();
-      centered(room, t("room"), 9, colors.muted); room.addSpacer(3);
+      centered(room, t("room"), 9, colors.muted, null, 1, roomWidth - 14); room.addSpacer(3);
       const roomSize = !model.roomProvided ? 12 : model.room.length <= 5 ? Math.min(38, Math.floor((roomWidth - 14) / (model.room.length * 0.63)), Math.floor((bodyHeight - 25) / 1.1)) : model.room.length <= 9 ? (narrow ? 15 : notice ? 18 : 22) : 15;
-      centered(room, model.room, roomSize, colors.roomText, "bold", model.roomProvided && model.room.length <= 5 ? 1 : 2);
+      centered(room, model.room, roomSize, colors.roomText, "bold", model.roomProvided && model.room.length <= 5 ? 1 : 2,
+        roomWidth - 14, model.roomProvided && model.room.length <= 5 ? 0.65 : 0.85);
       room.addSpacer();
     }
     widget.addSpacer();
@@ -1389,6 +1393,6 @@ module.exports = { widgetModel, widgetMetrics, renderWidget, dateLabel };
 };
 const __cache = {};
 function __load(name) { if (__cache[name]) return __cache[name].exports; const module = {exports:{}}; __cache[name] = module; __factories[name](module, module.exports); return module.exports; }
-const __api = {FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color, Size, Timer: typeof Timer === "undefined" ? null : Timer, version: "1.1.0-rc.1", stage: "bootstrap"};
+const __api = {FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color, Size, Timer: typeof Timer === "undefined" ? null : Timer, version: "1.1.0-rc.2", stage: "bootstrap"};
 try { await __load("app").run(__api); }
 catch (error) { const lang = __load("localization").resolveLanguage(__api.language || "system", Device.preferredLanguages()); const t = __load("localization").translator(lang); const details = __load("diagnostics").errorReport(error, __api.stage, __api.version); if (config.runsInWidget) { const widget = new ListWidget(); widget.addText("TURĪBA NEXT"); widget.addText(t("error")); widget.addText(String(error.code || error.name || "UNEXPECTED_ERROR")); widget.refreshAfterDate = new Date(Date.now() + 900000); Script.setWidget(widget); } else { const alert = new Alert(); alert.title = "TURĪBA NEXT"; alert.message = t("failure") + "\n\n" + details; alert.addAction(t("done")); await alert.presentAlert(); } Script.complete(); }

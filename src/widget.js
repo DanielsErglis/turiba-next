@@ -54,9 +54,12 @@ function renderWidget(state, settings, language, family, api) {
     const line = widget.addStack(); line.backgroundColor = colors.accent;
     line.size = new api.Size(0, 3); line.cornerRadius = 1.5; line.addSpacer();
   }
-  function centered(container, value, size, color, weight, lines) {
-    const row = container.addStack(); row.addSpacer();
-    label(row, value, size, color, weight, lines).centerAlignText(); row.addSpacer();
+  function centered(container, value, size, color, weight, lines, width, scale) {
+    // A native flexible spacer on each side can take width away from the room text.
+    // Give text the card's entire content width and center the text itself instead.
+    const row = container.addStack(); row.layoutVertically();
+    row.size = new api.Size(width, 0); row.setPadding(0, 0, 0, 0);
+    label(row, value, size, color, weight, lines, scale).centerAlignText();
   }
   const header = widget.addStack(); header.centerAlignContent();
   if (!medium) {
@@ -85,9 +88,10 @@ function renderWidget(state, settings, language, family, api) {
       body.addSpacer(12);
       const room = body.addStack(); room.layoutVertically(); room.size = new api.Size(roomWidth, bodyHeight);
       room.backgroundColor = colors.card; room.cornerRadius = 12; room.setPadding(6, 7, 6, 7); room.addSpacer();
-      centered(room, t("room"), 9, colors.muted); room.addSpacer(3);
+      centered(room, t("room"), 9, colors.muted, null, 1, roomWidth - 14); room.addSpacer(3);
       const roomSize = !model.roomProvided ? 12 : model.room.length <= 5 ? Math.min(38, Math.floor((roomWidth - 14) / (model.room.length * 0.63)), Math.floor((bodyHeight - 25) / 1.1)) : model.room.length <= 9 ? (narrow ? 15 : notice ? 18 : 22) : 15;
-      centered(room, model.room, roomSize, colors.roomText, "bold", model.roomProvided && model.room.length <= 5 ? 1 : 2);
+      centered(room, model.room, roomSize, colors.roomText, "bold", model.roomProvided && model.room.length <= 5 ? 1 : 2,
+        roomWidth - 14, model.roomProvided && model.room.length <= 5 ? 0.65 : 0.85);
       room.addSpacer();
     }
     widget.addSpacer();

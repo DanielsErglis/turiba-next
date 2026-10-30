@@ -1,4 +1,4 @@
-# Privacy Policy — TURĪBA NEXT 1.1.0-rc.1
+# Privacy Policy — TURĪBA NEXT 1.1.0-rc.2
 
 Effective date: 2026-10-30. This is an independent student project, not an official service of Biznesa augstskola Turība.
 

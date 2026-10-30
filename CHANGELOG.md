@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0-rc.2 — 2026-10-31
+
+- Owner screenshot showed the Medium room truncated to C2… while Small displayed C216 correctly.
+- Removed competing horizontal flexible spacers from the room-card text rows and assigned the complete card content width explicitly. Preserved the large preferred font and allowed additional fitting for short codes before truncation.
+- Added a regression for full-width room allocation at four iPhone width buckets. 92 automated tests passed; 26 browser preview samples stayed within widget bounds. Native iPhone retest of the corrected card is pending.
+
 ## 1.1.0-rc.1 — 2026-10-31
 
 - Rebuilt widget presentation around the owner's visual reference: deep blue surfaces, larger subjects and rooms, a separate Medium room panel and a next-subject row with a prominent right-aligned time.

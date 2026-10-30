@@ -1,4 +1,4 @@
-# Visual update acceptance — 1.1.0-rc.1
+# Visual update acceptance — 1.1.0-rc.2
 
 The accepted v1.0 behavior is preserved below as historical evidence. The 2026-10-31 layout update has not yet been confirmed on a physical iPhone. Check Small/Medium readability, room-card fit, next-subject/time placement and Light/Dark/System appearance after updating the script without deleting data. Do not transfer v1.0 visual acceptance automatically to the new layout.
 
@@ -37,3 +37,7 @@ Owner screenshot IMG_9303.PNG of rc.2 establishes a settings.save STORAGE_WRITE_
 ## rc.4 input capture retest
 
 Owner IMG_9304.PNG shows a non-string native text result during group validation despite entering valid TVL2D1. rc.4 captures before the dismissal timer, awaits asynchronous results and can read the retained TextField.text reference. Five regressions pass; the suite has 89 passes and zero failures. Which native mechanism caused the non-string result is not established. Real-device group setup remains unaccepted until retested.
+
+## rc.2 native room-fit follow-up
+
+The owner reported Medium truncating C216 to C2… in rc.1 while Small showed it completely. rc.2 removes competing side spacers, gives the text the full room-card content width and permits additional fitting for short codes. The preferred large font is retained. 92 tests passed, including a four-width allocation regression; 26 browser samples had no out-of-bounds elements and the reference preview was inspected. This is not yet confirmation of native rc.2 room fit.

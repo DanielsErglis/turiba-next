@@ -61,6 +61,22 @@ test("layout buckets reserve room-card width even on a narrow iPhone", () => {
   assert.equal(model.note, null); assert.ok(model.next.includes("04.11"));
 });
 
+test("Medium room text receives the full card content width without competing flexible spacers", () => {
+  for (const screen of [320, 375, 390, 430]) {
+    const renderer = api(); renderer.Device = { screenSize: () => ({ width: screen, height: 844 }) };
+    const state = { status: "upcoming", today: "2026-10-31", group: "TVL2D1", refreshAt: Date.now() + 60000,
+      current: { date: "2026-11-03", startTime: "09:00", endTime: "10:30", subject: "E-komercija", room: "C216" } };
+    const widget = renderWidget(state, defaults(), "en", "medium", renderer);
+    const all = node => [node].concat(node.children.flatMap(all));
+    const nodes = all(widget), card = nodes.find(node => node.cornerRadius === 12);
+    const row = nodes.find(node => node.children.some(child => child.kind === "text" && child.value === "C216"));
+    assert.equal(row.size.width, card.size.width - card.padding[1] - card.padding[3]);
+    assert.deepEqual(row.children.map(node => node.kind), ["text"]);
+    assert.equal(row.children[0].textAlignment, "center");
+    assert.ok(row.children[0].minimumScaleFactor <= 0.7);
+  }
+});
+
 test("saved-data warnings, missing rooms and next-lesson dates cannot be hidden in the view model", () => {
   const state = { status: "ongoing", offline: true, current: { date: "2026-10-30", startTime: "12:55", endTime: "14:25", subject: "Course", room: null },
     next: { date: "2026-11-03", startTime: "09:00", subject: "Another course" } };
