@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "acceptedCandidate": "1.0.0-rc.4",
+  "date": "2026-10-30",
+  "nativeAcceptance": "owner confirmed all requested checks worked; developer did not operate the device",
+  "deviceMetadata": "not supplied",
+  "srcSha256": {
+    "src/app.js": "27ad74d30b9b5c098804bc2f361ed4137b22bead716371f8f39cf86e68f37834",
+    "src/diagnostics.js": "c9298a35e571c8133f97c0feea808b954ffa515485626ad7e53c93deb534f13c",
+    "src/engine.js": "dd632738cba1342bc68a3c938b42a4a745d17bc5b9dece2398dc88276745f012",
+    "src/errors.js": "cbff193dcd7dc7acab3dee2e863464cf72450d47b46376d0eedaa1b727b91588",
+    "src/html.js": "fb3ff167541862551ff243ccb741290f50f169ce2cb4dcdeafc0c9c871871a9f",
+    "src/localization.js": "46e9620090114758c2de3509191af5807657ad7e2a7b9607d66a5bc6e890a1a2",
+    "src/notifications.js": "906355834e70f162dbca6a847b166fd1a1474c10986dcb09db6e40aadcd5b635",
+    "src/parser.js": "78c991e5b5c9bf5ea15d768505624f7b7626607b1cb363d3711291ae99d0a926",
+    "src/schedule-service.js": "2aec9c14a00fe7a18012bafb486b2d30d77122a7ba2e75cf55f94a5f8074a0a2",
+    "src/scriptable-adapters.js": "273fc7418730f2e61d00b2606746b2a51c8441bfff5908b1c655f2dff83ce32a",
+    "src/settings.js": "2a0d015b6a1e0d2782b7940fdb9e7a61ac9d55974f4a3650dd2382024c22ca31",
+    "src/source-client.js": "547dcf117269a6f71c3583b2464903395223d3de9e14d40ebd7399d52275ae17",
+    "src/storage.js": "76e358384a31a336f063beb0e86c3dcad8bba0788009155062353dbc5a0a73f7",
+    "src/theme.js": "81cde3dba6cb09ff68011c4417be893e9ded28054e1da2783fb9dd7fc978569c",
+    "src/time.js": "e9638378e4c87ffa6548efa5e6627ab909fd3c8238c1bd70cb560209ab57ccf7",
+    "src/widget.js": "28bab6b4a703f344963956b0e958b526df4cead91f8e3ac972c5d98952db7bdf"
+  },
+  "promotion": "no functional src changes; generated bundle differs only in version and acceptance metadata"
+}

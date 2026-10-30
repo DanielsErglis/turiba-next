@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0 — 2026-10-30
+
+- Owner confirmed all requested iPhone checks worked after rc.4; acceptance provenance and scope are recorded in IPHONE_CHECKLIST.md. Device/version details and individual observations were not supplied.
+- Promoted the accepted rc.4 functional runtime unchanged. Updated version/acceptance metadata, final documentation and installation packaging.
+- Repository and release package remain private; no public publication is authorized or performed.
+
 ## 1.0.0-rc.4 — 2026-10-30
 
 - Owner reports entering TVL2D1; rc.3 screenshot shows setup.group.validate / INVALID_GROUP / non-string input. The group code itself is valid; the native read result was not a string.

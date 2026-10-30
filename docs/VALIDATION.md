@@ -1,4 +1,4 @@
-# Validation Report — 1.0.0-rc.4
+# Validation Report — 1.0.0
 
 Date: 2026-10-30. Environment: macOS with bundled Node.js v24.22.1. These are actual completed development checks, not claims of physical-iPhone verification.
 
@@ -26,16 +26,15 @@ The real SourceClient ran with a development Node HTTPS adapter against the appr
 
 ## Visual review
 
-A browser approximation generated from the renderer tree was captured in isolated headless Chrome and visually inspected. A Medium layout issue that clipped room text was corrected and the revised screenshot inspected. The final preview is `.tmp/widgets.png`; it is a development artifact outside the installation package. Real iPhone type scaling, sizes, native stack layout and light/dark transitions remain unverified.
+A browser approximation generated from the renderer tree was captured in isolated headless Chrome and visually inspected. A Medium layout issue that clipped room text was corrected and the revised screenshot inspected. The final preview is `.tmp/widgets.png`; it is a development artifact outside the installation package. Native appearance and theme behavior were subsequently covered by the owner's overall acceptance report; the developer did not observe them independently.
 
-## Remaining acceptance gates
+## Owner-confirmed native acceptance
 
-- Import and execute the script on the owner's actual iPhone/Scriptable version.
-- Confirm Intl support, native HTTPS behavior, local-file replacement, all principal widget functions and layout, system/manual themes and languages.
-- Confirm OFF does not prompt, explicit ON consent/denial behavior, exact scheduled-reminder content, disable cleanup, and coexistence with another Scriptable project's data/notifications.
-- Confirm widget parameter isolation, offline behavior and Delete My Data.
-- If using Shortcuts, test the sync shortcut and each configured automation on-device. No successful scheduled automation is claimed.
-- Native refresh timing and notification delivery remain controlled by iOS. No final v1.0 acceptance until device results are recorded in IPHONE_CHECKLIST.md.
+On 2026-10-30 the owner confirmed that all requested iPhone checks worked after rc.4, including the widget, configuration/offline and reminder areas listed in the prior response. This is the owner's overall acceptance report, not developer-operated native verification. Device/iOS/Scriptable versions, timing measurements and detailed per-item observations were not supplied. Optional Shortcuts automation times are not separately attested. See IPHONE_CHECKLIST.md for provenance and scope.
+
+The accepted runtime is promoted to v1.0 without functional src changes. Final build checks verify that runtime source hashes remain unchanged and the generated script differs from rc.4 only in version/acceptance metadata. The full automated suite and archive checks run on the final package.
+
+The following candidate investigation sections are historical; their pending-retest statements are superseded by the owner's confirmation above.
 
 ## rc.2 startup report follow-up
 
@@ -48,3 +47,7 @@ Owner screenshot IMG_9303.PNG of rc.2 establishes a settings.save STORAGE_WRITE_
 ## rc.4 input capture retest
 
 Owner IMG_9304.PNG shows a non-string native text result during group validation despite entering valid TVL2D1. rc.4 captures before the dismissal timer, awaits asynchronous results and can read the retained TextField.text reference. Five regressions pass; the suite has 89 passes and zero failures. Which native mechanism caused the non-string result is not established. Real-device group setup remains unaccepted until retested.
+
+## Final promotion verification
+
+The final 1.0.0 build passed all 89 automated tests. SHA-256 hashes of every src module matched the accepted rc.4 snapshot. The complete generated scripts matched after normalizing only the release header and version metadata. There were no functional runtime changes after owner acceptance. The final archive is checked by CRC, exact entries and byte equality, and script/archive read-back is checked against the private repository.

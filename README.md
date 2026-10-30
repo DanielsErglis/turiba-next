@@ -1,10 +1,10 @@
-# TURĪBA NEXT — 1.0.0-rc.4
+# TURĪBA NEXT — 1.0.0
 
-Independent student timetable widgets for iPhone using Scriptable. **Release candidate: physical-iPhone acceptance is still pending.** This is not an official Turība product and must remain in the private project repository until the owner authorizes public distribution.
+Independent student timetable widgets for iPhone using Scriptable. **Final v1.0: iPhone acceptance confirmed by the owner on 2026-10-30.** This is not an official Turība product and must remain in the private project repository until the owner authorizes public distribution.
 
 ## Installation package
 
-The ready-to-import script is `dist/TURIBA NEXT.js`. The install archive is `dist/TURIBA-NEXT-1.0.0-rc.4.zip`. No Node.js, university password, account or additional runtime module is required on the iPhone.
+The ready-to-import script is `dist/TURIBA NEXT.js`. The install archive is `dist/TURIBA-NEXT-1.0.0.zip`. No Node.js, university password, account or additional runtime module is required on the iPhone.
 
 Follow [Russian installation/setup/update instructions](docs/INSTALL_RU.md), [troubleshooting](docs/TROUBLESHOOTING.md), [privacy policy](docs/PRIVACY.md), and the [iPhone acceptance checklist](docs/IPHONE_CHECKLIST.md).
 

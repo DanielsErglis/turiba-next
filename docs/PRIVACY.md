@@ -1,4 +1,4 @@
-# Privacy Policy — TURĪBA NEXT 1.0.0-rc.4
+# Privacy Policy — TURĪBA NEXT 1.0.0
 
 Effective date: 2026-10-30. This is an independent student project, not an official service of Biznesa augstskola Turība.
 
@@ -22,4 +22,4 @@ Delete My Data removes the project's local files and pending project-owned remin
 
 The distributed JavaScript is readable by recipients. No embedded secret or obfuscation-based security is used. Development history is held in the owner's private repository. This package has not been publicly published and includes no official university logo or commercial font file.
 
-For project questions, contact the owner who supplied your installation package. Native-device behavior remains subject to the acceptance checklist and documented iOS limitations.
+For project questions, contact the owner who supplied your installation package. The owner confirmed native acceptance on 2026-10-30; the documented iOS limitations still apply.

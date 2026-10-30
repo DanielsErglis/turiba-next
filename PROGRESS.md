@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0–5 development checks complete. Phase 6 installation candidate and documentation prepared. **rc.3 reaches group entry, but its native text read produced non-string input. rc.4 captures text before dismissal and resolves asynchronous results; awaiting native retest** before v1.0 can be accepted. No public release has been performed.
+Phases 0–6 complete for the owner-accepted v1.0 private delivery. On 2026-10-30 the owner confirmed that all requested iPhone checks worked after rc.4. Native verification is owner-reported; the developer did not operate the device. Final promotion changes no functional src modules. No public release is authorized.
 
 ## Completed
 
@@ -43,11 +43,11 @@ Phases 0–5 development checks complete. Phase 6 installation candidate and doc
 
 ## Remaining phases
 
-6. Build, release/user documentation and owner-assisted iPhone acceptance.
+None under the owner-accepted v1.0 scope. Optional automation configuration and future maintenance are separate follow-up work.
 
 ## Next action
 
-Owner: import dist/TURIBA NEXT.js, perform the initial smoke checks in docs/IPHONE_CHECKLIST.md and report iPhone/iOS/Scriptable versions plus actual results. Developer: reproduce/fix any failures, update acceptance evidence and package, then complete remaining native/reminder checks before final sign-off. No additional broad permissions or paid tools are needed. Do not mark final v1.0 accepted until device evidence exists.
+Deliver the final v1.0 package and retain the private repository. No required development work remains under the accepted scope. Handle future defects from actual reports; do not create public releases, paid services or optional automations without authorization. The following phase notes retain their historical next-action and pending-retest statements.
 
 ## Phase 3 checkpoint
 
@@ -113,3 +113,15 @@ Owner: import dist/TURIBA NEXT.js, perform the initial smoke checks in docs/IPHO
 - rc.3 read text after the 350 ms dismissal grace period. rc.4 captures text immediately after alert completion, before that timer, awaits native text results, and supports the documented TextField.text fallback. Non-string native failures now have their own code/stage instead of blaming the entered group.
 - Added five regressions: text state released by dismissal, asynchronous native return, direct field fallback, empty text preservation and typed unavailable input; two run the full setup flow. Full suite: 89 passed, 0 failed. The precise native mechanism is not yet proven; successful iPhone retry remains pending.
 - Next owner action: replace code with rc.4, keep data and enter TVL2D1 normally. Retain local diagnostics if another failure appears.
+
+## Final owner acceptance — v1.0
+
+- Following the native checklist summary, the owner stated that everything had been checked and worked. Record this as overall owner acceptance of rc.4, not as individually measured developer-operated checks. Device/iOS/Scriptable metadata was not supplied and remains unspecified. Optional Shortcuts automation times were not separately reported.
+- Closed the required iPhone acceptance gate based on the owner's confirmation. Preserve all previously documented source/iOS limits and privacy constraints.
+- Promoted to 1.0.0 with no functional src changes; version/acceptance metadata and user/release documentation were updated. Final generated-package regression tests and checksum/archive verification are recorded below after execution.
+
+## Final build verification
+
+- Final version 1.0.0: 89 automated tests passed, 0 failed, 0 skipped.
+- SHA-256 hashes of every src module matched the accepted rc.4 source snapshot. Normalized generated scripts matched exactly after accounting only for the release header and version metadata. No functional runtime change was introduced after owner acceptance.
+- Final package checksum/CRC/exact-byte verification is performed by tools/package-release.py. The final archive and script are read back from the private repository before handoff.

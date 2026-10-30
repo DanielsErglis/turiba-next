@@ -1,52 +1,26 @@
-# Physical iPhone Acceptance — Pending
+# Physical iPhone Acceptance — Owner Confirmed
 
-Version: 1.0.0-rc.4. **The developer has not operated a real iPhone. The owner reported an rc.1 startup failure after language selection; rc.2 requires a fresh retest.** Fill Actual result and Pass/Fail only after observing the device. Do not infer success from automated mocks or browser previews.
+Accepted for v1.0 on 2026-10-30 (Europe/Riga). Tested candidate: 1.0.0-rc.4. Evidence: after the developer listed the native acceptance areas, the owner replied that everything had been checked and worked (English translation of the owner's Russian confirmation). The developer did not operate the device and does not claim independent native verification.
 
-Device: pending. iOS version: pending. Scriptable version: pending. Test date/time (Europe/Riga): pending. Group: pending.
+Device model, iOS version, Scriptable version and item-by-item measurements were not supplied. The previously entered group was TVL2D1; the owner did not separately enumerate all groups used during acceptance. Do not invent device metadata or individual test outcomes.
 
-## Initial smoke check
+## Acceptance scope
 
-| Check | Expected | Actual result / Pass-Fail |
-| --- | --- | --- |
-| Import and run | One script installs and runs without Node or extra modules. | Pending |
-| First setup | Language selection and real group validation work; group needs no code edit. | Pending |
-| Default OFF | No notification permission prompt or reminders; normal widget still works. | Pending |
-| Source comparison | Compare date, period start/end, subject and room with the public source for the same group/week. | Pending |
-| Small and Medium | Both display readable current/next information; long names and room fit. | Pending |
-| Basic runtime | Riga date/time conversion, native HTTPS and local settings/cache work on this Scriptable version. | Pending |
+The immediately preceding checklist covered:
 
-## Presentation and timetable checks
+1. Small and Medium widgets: subject, room and time.
+2. Languages, themes, electives and additional groups.
+3. Offline use and settings persistence.
+4. Enabling, delivery and disabling of reminders.
+5. Data deletion; Shortcuts if needed.
 
-| Check | Expected | Actual result / Pass-Fail |
-| --- | --- | --- |
-| Language matrix | LV/EN/RU labels, setup, errors and settings display correctly; official subjects stay unchanged. | Pending |
-| Theme matrix | System mode follows iPhone light/dark; explicit Light/Dark override it in both sizes. | Pending |
-| Long/missing text | Long official names and missing-room message are readable with Latvian/Russian characters. | Pending |
-| Active/break/finished | Current lesson remains through its end; break/next and finished states match actual Riga time. Status refresh timing is best effort. | Pending |
-| Electives/subgroups | Only selected alternatives appear and can be changed in settings. | Pending |
-| Additional widget group | Widget parameter isolates another group without changing the primary group or its reminders. | Pending |
-| Offline/relaunch | After a successful sync, Airplane Mode retains relevant last valid data with a warning; settings survive reopening. | Pending |
-| Unsupported/unknown group | Clear localized failure; no invented lessons or silent cache replacement. | Pending |
+These areas are recorded as accepted through the owner's overall confirmation, not as independently observed per-case passes. Specific denied-permission, other-script coexistence, edge-date and native timing observations were not itemized. Automated regression tests provide separate code-level evidence for those paths. Optional Shortcuts runs and the exact 07:00/12:00/20:00 automation times are not individually attested and are not claimed as independently verified.
 
-## Reminders, deletion and optional automation
+## Decision and final promotion
 
-Use a real future selected lesson with enough time before its trigger. Do not invent timetable entries for delivery testing. Scheduling/actual delivery may need separate observations.
+**ACCEPTED BY OWNER for v1.0.** Promote rc.4 without functional runtime changes. Only version/acceptance metadata, documentation and packaging change. The source's publication ambiguity and iOS refresh/delivery limitations remain documented. No public distribution, repository visibility change or paid service is authorized by this acceptance.
 
-| Check | Expected | Actual result / Pass-Fail |
-| --- | --- | --- |
-| Enable reminders | Explicit opt-in and lead selection; iOS consent when actual scheduling requires it. No permission prompt when OFF. | Pending |
-| Deny permission | Localized interactive feedback; widget continues to work. | Pending |
-| Reminder content/delivery | Real selected lesson, correct Riga-based trigger, subject, room and selected UI language. Verify delivery separately. | Pending |
-| Change lead/room/source | Next successful verified refresh updates relevant pending reminders without duplicates. | Pending |
-| Disable/change group | Old main-group pending project reminders removed; widget remains usable. | Pending |
-| Other scripts | Unrelated pending notifications and files survive cleanup. | Pending |
-| Delete My Data | Settings/cache/primary group and pending project reminders removed; returns to setup. | Pending |
-| Manual sync shortcut (optional) | Parameter sync refreshes without menu and reports result. | Pending |
-| 07:00/12:00/20:00 automations (optional) | Each configured automation tested independently; no exact background guarantee claimed. | Pending |
-
-## Acceptance decision
-
-Current decision: **PENDING**. Owner-confirmed basic device evidence is needed first; remaining failures must be fixed and retested before final v1.0 acceptance. Record any skipped optional automation separately. No public release is authorized by completing this checklist alone.
+The following sections preserve the earlier troubleshooting record. Statements about pending retests describe their historical candidate state and are superseded by the owner confirmation above.
 
 ## Owner report — rc.1
 

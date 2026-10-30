@@ -7,13 +7,15 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = json.loads((ROOT / "package.json").read_text())["version"]
+ACCEPTANCE = ("physical-iPhone verification pending" if "-" in VERSION else
+              "owner-confirmed iPhone acceptance on 2026-10-30; detailed device metadata not supplied")
 OUTPUT = ROOT / "dist"
 FILES = {
     "TURIBA NEXT.js": (OUTPUT / "TURIBA NEXT.js").read_bytes(),
     "SHA256SUMS": (OUTPUT / "SHA256SUMS").read_bytes(),
     "README.md": (
         "# TURIBA NEXT " + VERSION + "\n\n"
-        "Independent student project. Physical-iPhone acceptance pending.\n\n"
+        "Independent student project. Acceptance: " + ACCEPTANCE + ".\n\n"
         "Import TURIBA NEXT.js into Scriptable. No Node.js or extra modules are needed on the phone. "
         "Read docs/INSTALL_RU.md for setup and updates, docs/PRIVACY.md for privacy, "
         "docs/TROUBLESHOOTING.md for help, and docs/IPHONE_CHECKLIST.md for required native checks.\n\n"
@@ -23,7 +25,7 @@ FILES = {
 }
 for name in ["INSTALL_RU.md", "PRIVACY.md", "TROUBLESHOOTING.md", "IPHONE_CHECKLIST.md", "VALIDATION.md"]:
     FILES["docs/" + name] = (ROOT / "docs" / name).read_bytes()
-manifest = {"version": VERSION, "acceptance": "physical-iPhone verification pending",
+manifest = {"version": VERSION, "acceptance": ACCEPTANCE,
             "files": {name: hashlib.sha256(data).hexdigest() for name, data in sorted(FILES.items())}}
 manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
 FILES["RELEASE_MANIFEST.json"] = manifest_bytes

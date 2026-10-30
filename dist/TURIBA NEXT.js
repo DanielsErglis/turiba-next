@@ -1,6 +1,6 @@
 // Variables used by Scriptable.
 // icon-color: cyan; icon-glyph: graduation-cap;
-// TURIBA NEXT 1.0.0-rc.4 — independent student project. Native device acceptance pending.
+// TURIBA NEXT 1.0.0 — independent student project. Owner-confirmed device acceptance on 2026-10-30.
 const __factories = {
 "app": function(module, exports) {
 "use strict";
@@ -1317,6 +1317,6 @@ module.exports = { widgetModel, renderWidget, dateLabel };
 };
 const __cache = {};
 function __load(name) { if (__cache[name]) return __cache[name].exports; const module = {exports:{}}; __cache[name] = module; __factories[name](module, module.exports); return module.exports; }
-const __api = {FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color, Timer: typeof Timer === "undefined" ? null : Timer, version: "1.0.0-rc.4", stage: "bootstrap"};
+const __api = {FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color, Timer: typeof Timer === "undefined" ? null : Timer, version: "1.0.0", stage: "bootstrap"};
 try { await __load("app").run(__api); }
 catch (error) { const lang = __load("localization").resolveLanguage(__api.language || "system", Device.preferredLanguages()); const t = __load("localization").translator(lang); const details = __load("diagnostics").errorReport(error, __api.stage, __api.version); if (config.runsInWidget) { const widget = new ListWidget(); widget.addText("TURĪBA NEXT"); widget.addText(t("error")); widget.addText(String(error.code || error.name || "UNEXPECTED_ERROR")); widget.refreshAfterDate = new Date(Date.now() + 900000); Script.setWidget(widget); } else { const alert = new Alert(); alert.title = "TURĪBA NEXT"; alert.message = t("failure") + "\n\n" + details; alert.addAction(t("done")); await alert.presentAlert(); } Script.complete(); }
