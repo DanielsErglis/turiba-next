@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0 and 1 complete. Next phase: Phase 2 — Core Engine. This is a development checkpoint, not a v1.0 release.
+Phases 0–2 complete. Next phase: Phase 3 — UI & Design. This is a development checkpoint, not a v1.0 release.
 
 ## Completed
 
@@ -17,6 +17,8 @@ Phases 0 and 1 complete. Next phase: Phase 2 — Core Engine. This is a developm
 - Documented observations, unsupported evidence and safe publication semantics in docs/SOURCE_RESEARCH.md.
 
 ## Validation
+
+- Phase 2: 50 automated tests passed, including Riga DST gaps/overlaps, exact status boundaries, calendar/Sunday behavior, choices, cache corruption/write failures and offline/unpublished preservation. A final service change makes forced synchronization refresh the catalog as well; it is included in subsequent full-suite runs.
 
 - Phase 0 built-in Node runner probe: 1 passed, 0 failed.
 - Isolated browser smoke check passed; this is not native Scriptable validation.
@@ -41,7 +43,6 @@ Phases 0 and 1 complete. Next phase: Phase 2 — Core Engine. This is a developm
 
 ## Remaining phases
 
-2. Schedule engine, Riga time logic, storage/cache and group configuration.
 3. Small/Medium renderer, themes and localization.
 4. Setup/settings, electives, manual/optional automated synchronization, optional reminders and deletion.
 5. Full automated checks, privacy review and performance improvements.
@@ -49,4 +50,4 @@ Phases 0 and 1 complete. Next phase: Phase 2 — Core Engine. This is a developm
 
 ## Next action
 
-Start Phase 2 with Europe/Riga wall-time/instant conversion and DST tests, then lesson-state boundaries, group/elective selection and conservative local-cache policy. Reuse the tested parser and preserve explicit publication uncertainty. Keep notifications OFF by default when runtime settings are introduced. Obtain real iPhone acceptance only after independent checks and package preparation.
+Build Small/Medium widgets, shared localization and themes in Phase 3. Phase 2 now includes IANA Europe/Riga conversion, lesson/overlap states, per-group explicit choices, validated storage and a conservative synchronization service. Intl.DateTimeFormat.formatToParts support must be verified on the target Scriptable device; unsupported platforms fail explicitly instead of falling back to host time. Runtime storage and networking adapters follow in Phase 4.
