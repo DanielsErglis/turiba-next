@@ -1,14 +1,14 @@
 {
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "acceptance": "physical-iPhone verification pending",
   "files": {
-    "README.md": "fd7c8b3ee08f9fb04f119c9ef79f3968fd83882b409b34146ecb07bc3d598376",
-    "SHA256SUMS": "9d9fa24e20f0fdb690cd2c58705f5be91f6902d1af3c41d6abbc41aea35d4778",
-    "TURIBA NEXT.js": "c9297e390c0f87d201cb38590454aceea99be8624b4c820c6c5f9ae3f6d8e546",
-    "docs/INSTALL_RU.md": "f32c68902ad605fcf34c678f921f3aae1ece09a3ceb1abd312071484d7cbea56",
-    "docs/IPHONE_CHECKLIST.md": "3904369423683dfb3efa44f120e4c09cbf66d531c00a9ed7d7e83ec5fcf74f72",
-    "docs/PRIVACY.md": "f19897d89fa387ed13153fde40ea38487e3d1b896a4007ca9f37bba1a0a99ca9",
+    "README.md": "5fc8bf1721e3024a44db9b08a96cb8c3501c3c37222aa8151981bf28e21a34e6",
+    "SHA256SUMS": "ad8f58ceba17243e0221f997980e4a93a7966faeaa0adeafaf05482eb83f9616",
+    "TURIBA NEXT.js": "87af5f8974493131de5f0e9fd5b51986cb2b5ae147c132203897ff5cccb11964",
+    "docs/INSTALL_RU.md": "fadf90c257e5b552d0d573023b967fcb6027b9510e9995ad8cfee2644754de66",
+    "docs/IPHONE_CHECKLIST.md": "7b3cdf40f167e70fadb9db81e535fbcbf34f34a941babf3a63dcc89a65aecc35",
+    "docs/PRIVACY.md": "7324507d526777284917858076b8ce03801ac36c6876492c7972341c453fcd89",
     "docs/TROUBLESHOOTING.md": "89df19a5e4ddd92a163afeb78c478ce3689388519511e373defe6b3d4e1acb12",
-    "docs/VALIDATION.md": "2ecc72b2b939e6efb183448e5d52a4086b52060001d9521f2158386bd2f1e843"
+    "docs/VALIDATION.md": "bc2e7fe8468f5f2f7265ab263e2b8d46fde928bd050862566a08dca2c63993ac"
   }
 }

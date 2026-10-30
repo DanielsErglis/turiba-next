@@ -11,14 +11,50 @@ function localAdapter(api) {
       "UNSAFE_STORAGE_PATH", "Invalid project data filename.");
     return fm.joinPath(root, name);
   }
+  function recover(target) {
+    const backup = target + ".bak";
+    if (!fm.fileExists(target) && fm.fileExists(backup)) fm.move(backup, target);
+  }
+  function clean(file) {
+    // Cleanup failure must not turn a committed save into a reported write failure.
+    try { if (fm.fileExists(file)) fm.remove(file); } catch (error) { /* Retry during a later write or explicit deletion. */ }
+  }
   return {
-    read: name => fm.fileExists(path(name)) ? fm.readString(path(name)) : null,
-    writeAtomic: (name, content) => {
-      const target = path(name), temporary = target + ".tmp-" + api.UUID.string();
-      try { fm.writeString(temporary, content); fm.move(temporary, target); }
-      finally { if (fm.fileExists(temporary)) fm.remove(temporary); }
+    read: name => {
+      const target = path(name); recover(target);
+      return fm.fileExists(target) ? fm.readString(target) : null;
     },
-    list: () => fm.listContents(root), remove: name => { const target = path(name); if (fm.fileExists(target)) fm.remove(target); }
+    writeAtomic: (name, content) => {
+      const target = path(name), temporary = target + ".tmp-" + api.UUID.string(), backup = target + ".bak";
+      recover(target);
+      let backedUp = false, installed = false;
+      try {
+        fm.writeString(temporary, content);
+        ensure(fm.readString(temporary) === content, "STORAGE_VERIFY_ERROR", "The temporary write could not be verified.");
+        if (fm.fileExists(target)) {
+          // Native iPhone behavior rejects move() when the destination already exists.
+          if (fm.fileExists(backup)) fm.remove(backup);
+          fm.move(target, backup); backedUp = true;
+        }
+        fm.move(temporary, target); installed = true;
+        ensure(fm.readString(target) === content, "STORAGE_VERIFY_ERROR", "The installed write could not be verified.");
+      } catch (error) {
+        if (backedUp) {
+          try {
+            if (installed && fm.fileExists(target)) fm.remove(target);
+            recover(target);
+          } catch (recoveryError) { /* Keep the backup for the next read/recovery attempt. */ }
+        } else if (installed) clean(target);
+        throw error;
+      } finally { clean(temporary); }
+      clean(backup);
+    },
+    list: () => {
+      // Recover interrupted replacements before Storage enumerates week records.
+      for (const name of fm.listContents(root).filter(name => name.endsWith(".json.bak"))) recover(path(name.slice(0, -4)));
+      return fm.listContents(root);
+    },
+    remove: name => { const target = path(name); if (fm.fileExists(target)) fm.remove(target); }
   };
 }
 

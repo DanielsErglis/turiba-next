@@ -1,6 +1,6 @@
 # Physical iPhone Acceptance — Pending
 
-Version: 1.0.0-rc.2. **The developer has not operated a real iPhone. The owner reported an rc.1 startup failure after language selection; rc.2 requires a fresh retest.** Fill Actual result and Pass/Fail only after observing the device. Do not infer success from automated mocks or browser previews.
+Version: 1.0.0-rc.3. **The developer has not operated a real iPhone. The owner reported an rc.1 startup failure after language selection; rc.2 requires a fresh retest.** Fill Actual result and Pass/Fail only after observing the device. Do not infer success from automated mocks or browser previews.
 
 Device: pending. iOS version: pending. Scriptable version: pending. Test date/time (Europe/Riga): pending. Group: pending.
 
@@ -51,3 +51,7 @@ Current decision: **PENDING**. Owner-confirmed basic device evidence is needed f
 ## Owner report — rc.1
 
 On 2026-10-30 the owner supplied an iPhone screenshot of the generic error alert and confirmed it appears immediately after language selection. This confirms import/execution and reaching language selection, but setup did not complete. The exact underlying exception was hidden by rc.1. Device/iOS/Scriptable versions are not yet known. rc.2 exposes local diagnostic stage/code/cause and adds a native dismissal grace period; the cause and fix on the actual phone remain unconfirmed.
+
+## rc.3 confirmed storage fix
+
+Owner screenshot IMG_9303.PNG of rc.2 establishes a settings.save STORAGE_WRITE_ERROR caused by move refusing an existing destination. rc.3 removes that assumption and adds verified backup/install/rollback/recovery. The stricter native filesystem mock and six new regressions pass; the full suite has 84 passes and zero failures. Earlier statements that the cause was unknown describe the earlier rc.1/rc.2 investigation only. Native rc.3 setup success is still pending.

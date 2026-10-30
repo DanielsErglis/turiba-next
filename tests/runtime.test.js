@@ -15,7 +15,11 @@ function environment(settings, overrides) {
     documentsDirectory: () => "/documents", joinPath: (base, name) => base + "/" + name,
     fileExists: path => path === "/documents/TURIBA-NEXT" || files.has(path), createDirectory: () => {},
     readString: path => files.get(path), writeString: (path, value) => files.set(path, value),
-    move: (from, to) => { files.set(to, files.get(from)); files.delete(from); },
+    move: (from, to) => {
+      if (files.has(to)) throw new Error("An item with the same name already exists.");
+      if (!files.has(from)) throw new Error("Source does not exist.");
+      files.set(to, files.get(from)); files.delete(from);
+    },
     remove: path => files.delete(path), listContents: root => Array.from(files.keys()).filter(path => path.startsWith(root + "/")).map(path => path.slice(root.length + 1))
   };
   class Request {

@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0–5 development checks complete. Phase 6 installation candidate and documentation prepared. **Owner reported an rc.1 startup failure after language selection. rc.2 diagnostics/compatibility update prepared; awaiting real-device retest** before v1.0 can be accepted. No public release has been performed.
+Phases 0–5 development checks complete. Phase 6 installation candidate and documentation prepared. **rc.2 iPhone diagnostics identified move-to-existing-file failure. rc.3 fixes replacement and recovery; awaiting native retest** before v1.0 can be accepted. No public release has been performed.
 
 ## Completed
 
@@ -98,3 +98,11 @@ Owner: import dist/TURIBA NEXT.js, perform the initial smoke checks in docs/IPHO
 - Added regressions for a dismissing native controller, native group-form failure after language selection, and storage rejection during language persistence in the actual generated bundle. Full suite: 78 passed, 0 failed.
 - Ran a JavaScriptCore setup language-save/group-form probe on macOS using mocked native APIs: passed. This is an additional engine check, not an iPhone UI/storage test.
 - Next owner action: replace only the script code with rc.2 and retry setup. Do not delete local data. If it fails, report the displayed Build, Stage, Code, Message and Cause. Continue from that actual exception rather than guessing.
+
+## Confirmed native storage defect — 1.0.0-rc.3
+
+- Owner screenshot IMG_9303.PNG shows Build 1.0.0-rc.2, Stage settings.save, Code STORAGE_WRITE_ERROR, and a native cause stating the temporary settings file cannot be moved because an item with the same name already exists. This establishes the failed overwrite-by-move operation; no network diagnosis is involved.
+- Previous native FileManager documentation says move replaces existing destinations, but observed iPhone behavior contradicts it. The old test mock also permitted replacement and missed this behavior. It now rejects existing destinations.
+- Implemented verified temporary writes, moving the current file to an absent backup path, installing to an absent target, verifying installed bytes, rollback on failure, and recovery from a retained backup before reads/cache enumeration. All paths remain confined to the local project directory.
+- Added six regressions covering repeated language/group saves, install failure rollback, retained backup after recovery failure, interrupted week recovery, truncated temporary data and installed-byte verification failure. Full suite: 84 passed, 0 failed.
+- rc.3 code fixes the demonstrated operation under the strict mock; actual native success has not yet been confirmed. Next owner action: replace the script code with rc.3, keep existing data, and retry language/group setup.

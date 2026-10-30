@@ -1,6 +1,6 @@
 // Variables used by Scriptable.
 // icon-color: cyan; icon-glyph: graduation-cap;
-// TURIBA NEXT 1.0.0-rc.2 — independent student project. Native device acceptance pending.
+// TURIBA NEXT 1.0.0-rc.3 — independent student project. Native device acceptance pending.
 const __factories = {
 "app": function(module, exports) {
 "use strict";
@@ -837,14 +837,50 @@ function localAdapter(api) {
       "UNSAFE_STORAGE_PATH", "Invalid project data filename.");
     return fm.joinPath(root, name);
   }
+  function recover(target) {
+    const backup = target + ".bak";
+    if (!fm.fileExists(target) && fm.fileExists(backup)) fm.move(backup, target);
+  }
+  function clean(file) {
+    // Cleanup failure must not turn a committed save into a reported write failure.
+    try { if (fm.fileExists(file)) fm.remove(file); } catch (error) { /* Retry during a later write or explicit deletion. */ }
+  }
   return {
-    read: name => fm.fileExists(path(name)) ? fm.readString(path(name)) : null,
-    writeAtomic: (name, content) => {
-      const target = path(name), temporary = target + ".tmp-" + api.UUID.string();
-      try { fm.writeString(temporary, content); fm.move(temporary, target); }
-      finally { if (fm.fileExists(temporary)) fm.remove(temporary); }
+    read: name => {
+      const target = path(name); recover(target);
+      return fm.fileExists(target) ? fm.readString(target) : null;
     },
-    list: () => fm.listContents(root), remove: name => { const target = path(name); if (fm.fileExists(target)) fm.remove(target); }
+    writeAtomic: (name, content) => {
+      const target = path(name), temporary = target + ".tmp-" + api.UUID.string(), backup = target + ".bak";
+      recover(target);
+      let backedUp = false, installed = false;
+      try {
+        fm.writeString(temporary, content);
+        ensure(fm.readString(temporary) === content, "STORAGE_VERIFY_ERROR", "The temporary write could not be verified.");
+        if (fm.fileExists(target)) {
+          // Native iPhone behavior rejects move() when the destination already exists.
+          if (fm.fileExists(backup)) fm.remove(backup);
+          fm.move(target, backup); backedUp = true;
+        }
+        fm.move(temporary, target); installed = true;
+        ensure(fm.readString(target) === content, "STORAGE_VERIFY_ERROR", "The installed write could not be verified.");
+      } catch (error) {
+        if (backedUp) {
+          try {
+            if (installed && fm.fileExists(target)) fm.remove(target);
+            recover(target);
+          } catch (recoveryError) { /* Keep the backup for the next read/recovery attempt. */ }
+        } else if (installed) clean(target);
+        throw error;
+      } finally { clean(temporary); }
+      clean(backup);
+    },
+    list: () => {
+      // Recover interrupted replacements before Storage enumerates week records.
+      for (const name of fm.listContents(root).filter(name => name.endsWith(".json.bak"))) recover(path(name.slice(0, -4)));
+      return fm.listContents(root);
+    },
+    remove: name => { const target = path(name); if (fm.fileExists(target)) fm.remove(target); }
   };
 }
 
@@ -1041,7 +1077,8 @@ function cacheKey(group, weekStart) {
   return "week-" + encodeURIComponent(group) + "-" + weekStart + ".json";
 }
 
-// The adapter owns atomic/durable writes inside the project's local data directory.
+// The adapter owns verified replacement and recovery inside the project's local data directory.
+// The retained writeAtomic method name does not imply an atomic multi-file transaction.
 class Storage {
   constructor(adapter) { this.adapter = adapter; }
 
@@ -1256,6 +1293,6 @@ module.exports = { widgetModel, renderWidget, dateLabel };
 };
 const __cache = {};
 function __load(name) { if (__cache[name]) return __cache[name].exports; const module = {exports:{}}; __cache[name] = module; __factories[name](module, module.exports); return module.exports; }
-const __api = {FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color, Timer: typeof Timer === "undefined" ? null : Timer, version: "1.0.0-rc.2", stage: "bootstrap"};
+const __api = {FileManager, UUID, Request, config, args, Script, Device, Alert, Notification, ListWidget, Font, Color, Timer: typeof Timer === "undefined" ? null : Timer, version: "1.0.0-rc.3", stage: "bootstrap"};
 try { await __load("app").run(__api); }
 catch (error) { const lang = __load("localization").resolveLanguage(__api.language || "system", Device.preferredLanguages()); const t = __load("localization").translator(lang); const details = __load("diagnostics").errorReport(error, __api.stage, __api.version); if (config.runsInWidget) { const widget = new ListWidget(); widget.addText("TURĪBA NEXT"); widget.addText(t("error")); widget.addText(String(error.code || error.name || "UNEXPECTED_ERROR")); widget.refreshAfterDate = new Date(Date.now() + 900000); Script.setWidget(widget); } else { const alert = new Alert(); alert.title = "TURĪBA NEXT"; alert.message = t("failure") + "\n\n" + details; alert.addAction(t("done")); await alert.presentAlert(); } Script.complete(); }

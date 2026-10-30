@@ -1,4 +1,4 @@
-# Release Readiness — 1.0.0-rc.2
+# Release Readiness — 1.0.0-rc.3
 
 Date: 2026-10-30. Decision: **CANDIDATE PACKAGE PREPARED; NATIVE ACCEPTANCE PENDING**.
 
@@ -28,3 +28,7 @@ No public publication, paid service, broad device access or access to unrelated 
 ## rc.2 retest gate
 
 The owner reported rc.1 failing immediately after language selection. rc.2 adds stage/code/native-cause diagnostics and a dialog-dismissal grace period. The original root cause is not established and this update has not been confirmed on the phone. Retry the existing script without deleting local data; if it fails, record the diagnostic fields before further changes.
+
+## rc.3 confirmed storage fix
+
+Owner screenshot IMG_9303.PNG of rc.2 establishes a settings.save STORAGE_WRITE_ERROR caused by move refusing an existing destination. rc.3 removes that assumption and adds verified backup/install/rollback/recovery. The stricter native filesystem mock and six new regressions pass; the full suite has 84 passes and zero failures. Earlier statements that the cause was unknown describe the earlier rc.1/rc.2 investigation only. Native rc.3 setup success is still pending.

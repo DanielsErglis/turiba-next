@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0-rc.3 — 2026-10-30
+
+- Owner screenshot of rc.2 identified settings.save / STORAGE_WRITE_ERROR: native move refuses an existing destination. The previous overwrite assumption and permissive filesystem mock were incorrect.
+- Added verified temporary writes, backup-before-install, absent-destination moves, rollback and interrupted-write recovery. No settings reset or new permission is required.
+- Changed the application filesystem mock to reject existing destinations and added six focused replacement/recovery regressions. Full suite: 84 passed, 0 failed.
+- The code-level failure is reproduced and corrected under the stricter model. Successful native iPhone retest remains pending.
+
 ## 1.0.0-rc.2 — 2026-10-30
 
 - Investigated owner-reported rc.1 failure immediately after language selection. The screenshot did not expose the underlying exception; no root cause is claimed.

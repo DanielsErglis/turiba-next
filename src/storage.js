@@ -32,7 +32,8 @@ function cacheKey(group, weekStart) {
   return "week-" + encodeURIComponent(group) + "-" + weekStart + ".json";
 }
 
-// The adapter owns atomic/durable writes inside the project's local data directory.
+// The adapter owns verified replacement and recovery inside the project's local data directory.
+// The retained writeAtomic method name does not imply an atomic multi-file transaction.
 class Storage {
   constructor(adapter) { this.adapter = adapter; }
 
