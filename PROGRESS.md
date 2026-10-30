@@ -80,3 +80,12 @@ Owner: import dist/TURIBA NEXT.js, perform the initial smoke checks in docs/IPHO
 - Added installation/setup/update instructions in Russian (permitted user-documentation localization), English privacy/troubleshooting/readiness documents, changelog and a pending-only physical-iPhone checklist.
 - Native acceptance has not been performed. Scriptable permission/scheduling, native layout and optional automations remain pending and are not represented as passed.
 - All phase changes are being saved through the private GitHub connector; remote read-back and repository privacy are checked at handoff. The remote history is authoritative; no local cloned Git checkout is claimed.
+
+## Verified candidate handoff
+
+- Candidate package commit: 978fc54635084822dd9668206ca18ceee9cc9e34.
+- Final repository metadata confirmed visibility private and push permission true for DanielsErglis/turiba-next.
+- Exact remote read-back matched local PROGRESS.md, docs/INSTALL_RU.md, the complete built Scriptable file and the complete binary installation archive at the candidate commit.
+- Script SHA-256: 1dc2bb5e78fc6fdbbf565cac063618cd8f27f8d6bb333470cb6676d1831fac6f.
+- Archive SHA-256: 851775041727c3b1228c4aace92af0fc67b35e4ad4f2f12bff1541d8dce41ded.
+- Remaining required work depends on actual iPhone results. No device test, notification delivery or optional automation is marked passed. Continue by reviewing the owner's initial smoke-check report, then fix/retest any native differences and complete the checklist before final acceptance.
