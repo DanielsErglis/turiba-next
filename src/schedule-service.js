@@ -42,8 +42,10 @@ class ScheduleService {
     const fresh = marker && marker.version === 1 && marker.calendarWeek === calendarWeek && marker.serverWeek === serverWeek &&
       Number.isFinite(marker.checkedAt) && now >= marker.checkedAt && now - marker.checkedAt < REFRESH_MS;
     let issue = fresh ? marker.issue : null;
+    let verifiedWeekStarts = fresh && Array.isArray(marker.verifiedWeekStarts) ? marker.verifiedWeekStarts : [];
     if (options.force || !fresh) {
       issue = null;
+      verifiedWeekStarts = [];
       try {
         const catalog = await this.catalog(now, !!options.force);
         // On Sunday the server's current page is already next week; keep any cached current week.
@@ -52,12 +54,12 @@ class ScheduleService {
           try {
             const week = await this.client.loadSchedule(code, { catalog, catalogComplete: true,
               weekOffset: offset, expectedWeekStart: addDays(serverWeek, offset * 7) });
-            if (week.status === "published") this.storage.saveWeek(week, now);
+            if (week.status === "published") { this.storage.saveWeek(week, now); verifiedWeekStarts.push(week.weekStart); }
             else issue = issue || "SOURCE_" + week.status.toUpperCase();
           } catch (error) { issue = issue || error.code || "NETWORK_ERROR"; }
         }
       } catch (error) { issue = error.code || "NETWORK_ERROR"; }
-      try { this.storage.writeJson(markerKey, { version: 1, checkedAt: now, calendarWeek, serverWeek, issue }); }
+      try { this.storage.writeJson(markerKey, { version: 1, checkedAt: now, calendarWeek, serverWeek, issue, verifiedWeekStarts }); }
       catch (error) { issue = issue || error.code; }
     }
     const saved = this.storage.weeks(code);
@@ -66,6 +68,7 @@ class ScheduleService {
     const current = relevant.find(entry => entry.week.weekStart === calendarWeek);
     const stale = !!issue || relevant.some(entry => now < entry.syncedAt || now - entry.syncedAt >= REFRESH_MS);
     return { group: code, weeks: relevant.map(entry => entry.week), stale, issue,
+      reminderWeeks: relevant.filter(entry => verifiedWeekStarts.includes(entry.week.weekStart) && now >= entry.syncedAt && now - entry.syncedAt < REFRESH_MS).map(entry => entry.week),
       offline: ["NETWORK_ERROR", "NETWORK_TIMEOUT"].includes(issue),
       lastSync: current ? current.syncedAt : (relevant.length ? Math.max(...relevant.map(entry => entry.syncedAt)) : null),
       cacheIssues: saved.issues };
@@ -75,7 +78,7 @@ class ScheduleService {
     if (!group) return scheduleState({ now });
     const result = await this.synchronize(group, { now, force });
     return Object.assign(scheduleState(Object.assign({}, result, { now, selections: settings.selections[group] || [] })),
-      { lastSync: result.lastSync, weeks: result.weeks, group });
+      { lastSync: result.lastSync, weeks: result.weeks, reminderWeeks: result.reminderWeeks, group });
   }
 }
 

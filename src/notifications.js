@@ -4,7 +4,7 @@ const { ensure } = require("./errors");
 const { selectLessons } = require("./settings");
 const { timedLesson } = require("./engine");
 const { translator } = require("./localization");
-const { DAY } = require("./time");
+const { DAY, weekStart } = require("./time");
 const OWNER = "turiba-next", PREFIX = "turiba-next.v1.";
 
 function hash(value, seed) {
@@ -34,7 +34,7 @@ function reminderPlan(settings, weeks, now, language) {
     seen.set(identifier, key);
     const body = lesson.startTime + " · " + lesson.subject + " · " + (lesson.room || t("noRoom"));
     const mark = fingerprint(JSON.stringify([trigger, body, language]));
-    result.push({ identifier, trigger, title: "TURĪBA NEXT", body, userInfo: { owner: OWNER, fingerprint: mark } });
+    result.push({ identifier, trigger, title: "TURĪBA NEXT", body, userInfo: { owner: OWNER, fingerprint: mark, weekStart: weekStart(lesson.date) } });
     if (result.length === 32) break;
   }
   return result;
@@ -49,16 +49,19 @@ async function clearReminders(adapter) {
 async function reconcileReminders(settings, state, now, language, adapter) {
   // OFF and secondary widgets do not even enumerate notifications or construct a plan.
   if (!settings.notifications.enabled || state.group !== settings.group || !settings.group) return { scheduled: 0, skipped: true };
-  if (state.stale || state.offline || state.issue || state.coverageIncomplete) return { scheduled: 0, skipped: true };
-  const plan = reminderPlan(settings, state.weeks || [], now, language);
+  const scoped = Array.isArray(state.reminderWeeks);
+  if (scoped ? !state.reminderWeeks.length : state.stale || state.offline || state.issue || state.coverageIncomplete) return { scheduled: 0, skipped: true };
+  const weeks = scoped ? state.reminderWeeks : state.weeks || [];
+  const plan = reminderPlan(settings, weeks, now, language);
   const pending = (await adapter.pending()).filter(owns);
   const desired = new Set(plan.map(item => item.identifier));
-  const remove = pending.filter(item => !desired.has(item.identifier)).map(item => item.identifier);
+  const verified = new Set(weeks.map(week => week.weekStart));
+  const remove = pending.filter(item => !desired.has(item.identifier) && (!scoped || verified.has(item.userInfo.weekStart))).map(item => item.identifier);
   if (remove.length) await adapter.remove(remove);
   let scheduled = 0;
   for (const item of plan) {
     const existing = pending.find(candidate => candidate.identifier === item.identifier);
-    if (!existing || existing.userInfo.fingerprint !== item.userInfo.fingerprint) {
+    if (!existing || existing.userInfo.fingerprint !== item.userInfo.fingerprint || existing.userInfo.weekStart !== item.userInfo.weekStart) {
       await adapter.schedule(item); scheduled++;
     }
   }

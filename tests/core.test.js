@@ -150,6 +150,20 @@ test("Sunday sync preserves the cached calendar week and requests the actual ser
   assert.equal(calls[0].expectedWeekStart, "2026-11-02");
 });
 
+test("a forced failed refresh cannot reuse an earlier successful reminder-verification marker", async () => {
+  const storage = new Storage(memory()), now = at("2026-10-30", "10:00");
+  let offline = false;
+  const client = { loadCatalog: async () => catalog, loadSchedule: async (group, options) => {
+    if (offline) { const error = new Error("Offline"); error.code = "NETWORK_ERROR"; throw error; }
+    return week(options.weekOffset === 0 ? "tvl2d1-current" : "tvl2d1-next");
+  } };
+  const service = new ScheduleService(client, storage);
+  assert.equal((await service.synchronize("TVL2D1", { now })).reminderWeeks.length, 2);
+  offline = true;
+  const result = await service.synchronize("TVL2D1", { now: now + 1000, force: true });
+  assert.equal(result.reminderWeeks.length, 0); assert.equal(result.weeks.length, 2);
+});
+
 test("local data deletion is confined to the adapter scope and resets defaults", () => {
   const adapter = memory(), storage = new Storage(adapter);
   storage.saveSettings(defaults()); storage.writeJson("catalog.json", {});

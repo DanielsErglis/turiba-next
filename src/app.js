@@ -108,7 +108,7 @@ async function run(api) {
     if (settingsIssue) throw new Error("Local settings are unreadable; open TURIBA NEXT to recover.");
     state = await load(settings.group, true);
     if (settings.notifications.enabled) await reconcileReminders(settings, state, Date.now(), language(), reminders);
-    api.Script.setShortcutOutput(state.issue || "ok"); api.Script.complete(); return;
+    api.Script.setShortcutOutput(state.issue || (state.status === "setupRequired" ? "setupRequired" : "ok")); api.Script.complete(); return;
   }
   if (settingsIssue) {
     await tell(t("resetCorrupt"));

@@ -2,7 +2,7 @@
 
 ## Current state
 
-Phases 0–4 complete. Current phase: Phase 5 — Testing & Optimization. This is a development checkpoint, not a v1.0 release.
+Phases 0–5 development checks complete. Current phase: Phase 6 — Release Preparation. Physical-iPhone acceptance remains required before v1.0 can be accepted.
 
 ## Completed
 
@@ -38,19 +38,16 @@ Phases 0–4 complete. Current phase: Phase 5 — Testing & Optimization. This i
 - The negative `ned=-1` link returned a future week even after session initialization. Returned dates are authoritative; mismatched expected weeks are rejected. Historical retrieval is not claimed.
 - Catalog-known `DKL1V1` and an unknown code received the same unpublished message. Catalog verification is independent; empty/unpublished outcomes must not overwrite a previously published cache or imply a free day.
 - PIC contained no group links in the captured response. No unobserved PIC timetable format is claimed as supported.
-- Actual consultation rows were not observed; consultation/proposed-session behavior has synthetic tests. No native Scriptable transport, timezone-to-instant conversion, UI, cache or reminders are implemented yet.
-- Runtime timeouts/redirect restrictions are a required injected-transport contract; Phase 1 tests verify options and typed transport errors, not actual iOS networking behavior.
+- Actual consultation rows were not observed; consultation/proposed-session behavior has synthetic tests. Native behavior remains unverified until device acceptance.
+- Runtime timeouts and redirect rejection are now implemented in the Scriptable adapter and verified with mocks; actual iOS networking behavior is not claimed.
 
 ## Remaining phases
 
-3. Small/Medium renderer, themes and localization.
-4. Setup/settings, electives, manual/optional automated synchronization, optional reminders and deletion.
-5. Full automated checks, privacy review and performance improvements.
 6. Build, release/user documentation and owner-assisted iPhone acceptance.
 
 ## Next action
 
-Build Small/Medium widgets, shared localization and themes in Phase 3. Phase 2 now includes IANA Europe/Riga conversion, lesson/overlap states, per-group explicit choices, validated storage and a conservative synchronization service. Intl.DateTimeFormat.formatToParts support must be verified on the target Scriptable device; unsupported platforms fail explicitly instead of falling back to host time. Runtime storage and networking adapters follow in Phase 4.
+Finish installation/update/troubleshooting/privacy documentation and the candidate package, then request minimal physical-iPhone verification. Intl.DateTimeFormat.formatToParts and all native APIs must be exercised on the target Scriptable version. Do not mark the final product accepted before that evidence exists.
 
 ## Phase 3 checkpoint
 
@@ -67,3 +64,11 @@ Build Small/Medium widgets, shared localization and themes in Phase 3. Phase 2 n
 - Full suite: 67 passed, 0 failed, 0 skipped, including application setup, group switching, deletion scope, notification OFF, secondary groups and generated-bundle execution with Scriptable mocks.
 - Native iOS consent, scheduling, file replacement behavior and Shortcuts automation remain unverified until physical-device acceptance. Scriptable exposes scheduling but no separate documented notification authorization-request API; consent is expected on the first actual schedule attempt after opt-in, not via a fake reminder.
 - Next action: edge-case review, deterministic packaging, privacy/security verification, user documentation and device acceptance checklist.
+
+## Phase 5 checkpoint
+
+- Full suite: 73 passed, 0 failed, 0 skipped. Alternate-host-zone core suite: 14 passed, 0 failed, 0 skipped.
+- Fixed partial-week reminder behavior: a verified fresh week can reconcile its own reminders even when another week is unpublished; unverified weeks' pending reminders are preserved. Forced failed refreshes cannot reuse an earlier verification marker.
+- Confirmed that native notification rejection cannot break widget rendering and theme-only settings changes cause no timetable download.
+- Live SourceClient check succeeded with six HTTPS requests, 279 catalog groups and 14 TVL2D1 lessons for the expected week. This was Node on macOS, not native iOS.
+- Deterministic build/checksum and bounded package privacy/security checks passed. See docs/VALIDATION.md and docs/ARCHITECTURE.md for exact evidence, operational limits and remaining gates.

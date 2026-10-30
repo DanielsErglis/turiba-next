@@ -113,7 +113,7 @@ async function run(api) {
     if (settingsIssue) throw new Error("Local settings are unreadable; open TURIBA NEXT to recover.");
     state = await load(settings.group, true);
     if (settings.notifications.enabled) await reconcileReminders(settings, state, Date.now(), language(), reminders);
-    api.Script.setShortcutOutput(state.issue || "ok"); api.Script.complete(); return;
+    api.Script.setShortcutOutput(state.issue || (state.status === "setupRequired" ? "setupRequired" : "ok")); api.Script.complete(); return;
   }
   if (settingsIssue) {
     await tell(t("resetCorrupt"));
@@ -381,7 +381,7 @@ const { ensure } = __load("errors");
 const { selectLessons } = __load("settings");
 const { timedLesson } = __load("engine");
 const { translator } = __load("localization");
-const { DAY } = __load("time");
+const { DAY, weekStart } = __load("time");
 const OWNER = "turiba-next", PREFIX = "turiba-next.v1.";
 
 function hash(value, seed) {
@@ -411,7 +411,7 @@ function reminderPlan(settings, weeks, now, language) {
     seen.set(identifier, key);
     const body = lesson.startTime + " · " + lesson.subject + " · " + (lesson.room || t("noRoom"));
     const mark = fingerprint(JSON.stringify([trigger, body, language]));
-    result.push({ identifier, trigger, title: "TURĪBA NEXT", body, userInfo: { owner: OWNER, fingerprint: mark } });
+    result.push({ identifier, trigger, title: "TURĪBA NEXT", body, userInfo: { owner: OWNER, fingerprint: mark, weekStart: weekStart(lesson.date) } });
     if (result.length === 32) break;
   }
   return result;
@@ -426,16 +426,19 @@ async function clearReminders(adapter) {
 async function reconcileReminders(settings, state, now, language, adapter) {
   // OFF and secondary widgets do not even enumerate notifications or construct a plan.
   if (!settings.notifications.enabled || state.group !== settings.group || !settings.group) return { scheduled: 0, skipped: true };
-  if (state.stale || state.offline || state.issue || state.coverageIncomplete) return { scheduled: 0, skipped: true };
-  const plan = reminderPlan(settings, state.weeks || [], now, language);
+  const scoped = Array.isArray(state.reminderWeeks);
+  if (scoped ? !state.reminderWeeks.length : state.stale || state.offline || state.issue || state.coverageIncomplete) return { scheduled: 0, skipped: true };
+  const weeks = scoped ? state.reminderWeeks : state.weeks || [];
+  const plan = reminderPlan(settings, weeks, now, language);
   const pending = (await adapter.pending()).filter(owns);
   const desired = new Set(plan.map(item => item.identifier));
-  const remove = pending.filter(item => !desired.has(item.identifier)).map(item => item.identifier);
+  const verified = new Set(weeks.map(week => week.weekStart));
+  const remove = pending.filter(item => !desired.has(item.identifier) && (!scoped || verified.has(item.userInfo.weekStart))).map(item => item.identifier);
   if (remove.length) await adapter.remove(remove);
   let scheduled = 0;
   for (const item of plan) {
     const existing = pending.find(candidate => candidate.identifier === item.identifier);
-    if (!existing || existing.userInfo.fingerprint !== item.userInfo.fingerprint) {
+    if (!existing || existing.userInfo.fingerprint !== item.userInfo.fingerprint || existing.userInfo.weekStart !== item.userInfo.weekStart) {
       await adapter.schedule(item); scheduled++;
     }
   }
@@ -734,8 +737,10 @@ class ScheduleService {
     const fresh = marker && marker.version === 1 && marker.calendarWeek === calendarWeek && marker.serverWeek === serverWeek &&
       Number.isFinite(marker.checkedAt) && now >= marker.checkedAt && now - marker.checkedAt < REFRESH_MS;
     let issue = fresh ? marker.issue : null;
+    let verifiedWeekStarts = fresh && Array.isArray(marker.verifiedWeekStarts) ? marker.verifiedWeekStarts : [];
     if (options.force || !fresh) {
       issue = null;
+      verifiedWeekStarts = [];
       try {
         const catalog = await this.catalog(now, !!options.force);
         // On Sunday the server's current page is already next week; keep any cached current week.
@@ -744,12 +749,12 @@ class ScheduleService {
           try {
             const week = await this.client.loadSchedule(code, { catalog, catalogComplete: true,
               weekOffset: offset, expectedWeekStart: addDays(serverWeek, offset * 7) });
-            if (week.status === "published") this.storage.saveWeek(week, now);
+            if (week.status === "published") { this.storage.saveWeek(week, now); verifiedWeekStarts.push(week.weekStart); }
             else issue = issue || "SOURCE_" + week.status.toUpperCase();
           } catch (error) { issue = issue || error.code || "NETWORK_ERROR"; }
         }
       } catch (error) { issue = error.code || "NETWORK_ERROR"; }
-      try { this.storage.writeJson(markerKey, { version: 1, checkedAt: now, calendarWeek, serverWeek, issue }); }
+      try { this.storage.writeJson(markerKey, { version: 1, checkedAt: now, calendarWeek, serverWeek, issue, verifiedWeekStarts }); }
       catch (error) { issue = issue || error.code; }
     }
     const saved = this.storage.weeks(code);
@@ -758,6 +763,7 @@ class ScheduleService {
     const current = relevant.find(entry => entry.week.weekStart === calendarWeek);
     const stale = !!issue || relevant.some(entry => now < entry.syncedAt || now - entry.syncedAt >= REFRESH_MS);
     return { group: code, weeks: relevant.map(entry => entry.week), stale, issue,
+      reminderWeeks: relevant.filter(entry => verifiedWeekStarts.includes(entry.week.weekStart) && now >= entry.syncedAt && now - entry.syncedAt < REFRESH_MS).map(entry => entry.week),
       offline: ["NETWORK_ERROR", "NETWORK_TIMEOUT"].includes(issue),
       lastSync: current ? current.syncedAt : (relevant.length ? Math.max(...relevant.map(entry => entry.syncedAt)) : null),
       cacheIssues: saved.issues };
@@ -767,7 +773,7 @@ class ScheduleService {
     if (!group) return scheduleState({ now });
     const result = await this.synchronize(group, { now, force });
     return Object.assign(scheduleState(Object.assign({}, result, { now, selections: settings.selections[group] || [] })),
-      { lastSync: result.lastSync, weeks: result.weeks, group });
+      { lastSync: result.lastSync, weeks: result.weeks, reminderWeeks: result.reminderWeeks, group });
   }
 }
 

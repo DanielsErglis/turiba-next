@@ -97,7 +97,9 @@ test("group changes cancel only owned reminders before saving the new primary gr
   env.queue.push(0, { index: 0, text: "CSA1D1" }, -1);
   await fixedRun(env);
   assert.equal(JSON.parse(env.files.get(ROOT + "settings.json")).group, "CSA1D1");
-  assert.deepEqual(env.pending.map(item => item.identifier), ["other-script"]);
+  assert.ok(env.pending.some(item => item.identifier === "other-script"));
+  assert.ok(!env.pending.some(item => item.identifier === PREFIX + "old"));
+  assert.ok(env.calls.some(call => call[0] === "schedule"));
 });
 
 test("data deletion preserves another script's files and pending notifications", async () => {
@@ -125,6 +127,21 @@ test("secondary-group widgets never schedule the primary group's reminders", asy
   const env = environment(settings, { args: { widgetParameter: "CSA1D1" } }); await fixedRun(env);
   assert.ok(env.calls.every(call => call[0] === "request"));
   assert.equal(JSON.parse(env.files.get(ROOT + "settings.json")).group, "TVL2D1");
+});
+
+test("notification permission denial never breaks a configured widget", async () => {
+  const settings = defaults(); settings.group = "TVL2D1"; settings.notifications.enabled = true;
+  const env = environment(settings);
+  env.api.Notification.prototype.schedule = async () => { throw new Error("Permission denied"); };
+  await fixedRun(env);
+  assert.ok(env.result.widget); assert.ok(env.result.complete); assert.equal(env.dialogs.length, 0);
+});
+
+test("changing only the appearance performs no timetable request", async () => {
+  const settings = defaults(); settings.group = "TVL2D1";
+  const env = environment(settings, { config: { runsInWidget: false } });
+  env.queue.push(3, 2, -1); await fixedRun(env);
+  assert.equal(env.calls.length, 0); assert.equal(JSON.parse(env.files.get(ROOT + "settings.json")).theme, "dark");
 });
 
 test("the native transport converts documented timeout failures to a typed error and blocks redirects", async () => {

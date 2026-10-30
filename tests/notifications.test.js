@@ -60,3 +60,12 @@ test("notification rejection propagates for localized handling without altering 
   await assert.rejects(() => reconcileReminders(settings, { group: settings.group, weeks: [source] }, rigaInstant("2026-10-26", "08:00"), "en", api));
   assert.equal(JSON.stringify(source), original);
 });
+
+test("a verified current week can plan reminders when next week is unavailable, preserving unverified-week reminders", async () => {
+  const settings = defaults(), api = adapter(); settings.group = "TVL2D1"; settings.notifications.enabled = true;
+  api.items.push({ identifier: PREFIX + "unverified-future", userInfo: { owner: "turiba-next", weekStart: "2026-11-02" } });
+  const state = { group: settings.group, stale: true, issue: "SOURCE_UNPUBLISHED", reminderWeeks: [data()] };
+  const result = await reconcileReminders(settings, state, rigaInstant("2026-10-26", "08:00"), "en", api);
+  assert.ok(result.scheduled > 0);
+  assert.ok(api.items.some(item => item.identifier === PREFIX + "unverified-future"));
+});

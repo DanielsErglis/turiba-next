@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-30T13:21:40.820Z",
+  "environment": "Node.js on macOS; not Scriptable/iPhone",
+  "requests": 6,
+  "catalogGroups": 279,
+  "group": "TVL2D1",
+  "branch": "riga",
+  "expectedWeekStart": "2026-10-26",
+  "returnedWeekStart": "2026-10-26",
+  "status": "published",
+  "lessons": 14
+}
