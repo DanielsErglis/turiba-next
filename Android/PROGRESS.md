@@ -80,3 +80,9 @@ Hand the signed local private candidate and RU/LV/EN guides to the owner for the
 - Original iPhone suite rerun: 92 passed. All 113 baseline SHA-256 values still match. No iPhone runtime, fixtures, deliverables or historical records edited.
 - Private candidate is code 1/version 0.1.0-rc.1 in ignored delivery/. Owner key/password remain only in ignored .signing/ with restricted file modes. APK signature/16-KiB ZIP alignment and absence of fixture/key paths checked. Signing initially supplied the same password file twice; apksigner reads successive lines, so the helper now correctly reuses the keystore password for PKCS12. Public certificate/hash metadata is in docs/RELEASE.json. No private-key external backup or public APK upload performed.
 - RU/LV/EN installation/update/privacy/troubleshooting guidance, rebuild/signing instructions and physical-device form are prepared. Physical launcher interaction/restore, Pixel/Samsung/Xiaomi, real alarm timing, reboot/idle and overnight battery/network measurements remain unperformed. These are mandatory outstanding gates, not waived limitations. Full v1.0 readiness is not claimed.
+
+## First public test build — owner amendment, 2026-11-04
+
+- The owner explicitly requested adding the test APK to the GitHub Android directory and labeling it the first version. This authorizes this APK's public repository distribution; it does not authorize stores, keys or unrelated files.
+- Publish the unchanged signed 0.1.0-rc.1/versionCode 1 artifact under builds/first-test-version, with a first-test-version label, SHA-256, certificate metadata and pending physical gates. Do not relabel it as stable v1.0.
+- Rechecked local APK SHA-256 against release metadata before upload. No application source or version change is needed; no new test run is claimed for this packaging/documentation update. Remote publication is verified by blob identity/size and branch readback.

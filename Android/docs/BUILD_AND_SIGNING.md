@@ -28,4 +28,4 @@ The owner key is at ignored `Android/.signing/owner-release.jks`; its password i
 
 For a new update, choose a larger versionCode and appropriate versionName through `-PreleaseVersionCode=... -PreleaseVersionName=...`; pass the intended output path as the signing script's second argument. Never generate a replacement key to solve an update error. The debug certificate differs from the private release certificate.
 
-Only source publication to the authorized public repository is approved. Do not upload the APK/key to GitHub Releases, stores, public hosting or CI artifacts without separate authorization.
+Owner amendment 2026-11-04: the first test APK may be published inside Android/ on the authorized GitHub repository. The published file is the existing signed code 1 candidate, not a new stable v1.0 build. Signing keys/passwords remain private. Store publication, unrelated artifacts and additional distribution channels require separate authorization.

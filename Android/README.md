@@ -4,7 +4,7 @@ Native Android port of the existing Scriptable timetable product. This directory
 
 This is an independent student project, not an official university application. The owner authorized the public repository on 2026-11-04; store publication remains unauthorized.
 
-Private-test candidate: **0.1.0-rc.1**, Android 10+ (min 29, target 37). The signed APK stays local in ignored `delivery/`; it is not published in this public source repository. Hash/certificate: [release metadata](docs/RELEASE.json). Physical Pixel/Samsung/Xiaomi and overnight acceptance remain mandatory and pending; this is not a completed v1.0 release.
+Private-test candidate: **0.1.0-rc.1**, Android 10+ (min 29, target 37). The owner authorized publishing the **first test version**: [download APK](builds/first-test-version/TURIBA-NEXT-Android-0.1.0-rc.1.apk), [build notes and SHA-256](builds/first-test-version/README.md). The same signed artifact is retained locally in ignored `delivery/`. Hash/certificate: [release metadata](docs/RELEASE.json). Physical Pixel/Samsung/Xiaomi and overnight acceptance remain mandatory and pending; this is not a completed v1.0 release.
 
 Install and use: [Русский](docs/USER_GUIDE_RU.md), [Latviešu](docs/USER_GUIDE_LV.md), [English](docs/USER_GUIDE_EN.md). [Build/signing and key backup](docs/BUILD_AND_SIGNING.md). [Physical acceptance form](docs/DEVICE_ACCEPTANCE.md).
 

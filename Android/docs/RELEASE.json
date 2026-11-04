@@ -11,6 +11,8 @@
   "certificateSha256": "2c128a23c773d652b47fdbf74ec5b431070f308c20777db39776e1e5e974e602",
   "signature": "APK Signature Scheme v3, RSA 3072, apksigner verified",
   "zipAlignment": "zipalign -c -P 16 4 passed",
-  "distribution": "Local private-test artifact in ignored Android/delivery only; no public APK release",
-  "readiness": "Physical Pixel/Samsung/Xiaomi and overnight acceptance pending; not v1.0 complete"
+  "distribution": "Owner-authorized public test APK in Android/builds/first-test-version on android-development, 2026-11-04; no store publication",
+  "readiness": "Physical Pixel/Samsung/Xiaomi and overnight acceptance pending; not v1.0 complete",
+  "label": "First test version",
+  "repositoryPath": "Android/builds/first-test-version/TURIBA-NEXT-Android-0.1.0-rc.1.apk"
 }
