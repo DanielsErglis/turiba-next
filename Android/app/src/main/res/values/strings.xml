@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="reminders">Lesson reminders</string><string name="minutes">min</string>
+    <string name="reminder_delay">OFF by default. Only the main group and selected confirmed lessons. Android may delay delivery; reminders after the lesson starts are suppressed. No exact-alarm access is requested.</string>
+    <string name="notification_settings">Open Android notification settings</string><string name="notification_denied">Notifications are disabled in Android. The timetable and widgets continue to work.</string>
+    <string name="invalid_group">Enter a group code, for example TVL2D1.</string><string name="unknown_group">This group is absent from the verified public catalog.</string>
+    <string name="network_error">Could not connect. Saved timetable data is preserved. Try refreshing later.</string>
+    <string name="unpublished">Publication is unverified. This does not mean there are no lessons.</string><string name="structure_error">The source format could not be verified. Last valid data is preserved.</string>
+    <string name="storage_error">Saved data could not be read. Try refreshing, or use Delete My Data in settings.</string>
     <string name="app_name" translatable="false">TURĪBA NEXT</string>
     <string name="widget_offline">Offline</string><string name="widget_stale">Stale</string><string name="widget_choices">Choose courses</string><string name="widget_coverage">Week unverified</string>
     <string name="widget_square">TURĪBA NEXT · Square</string><string name="widget_rectangle">TURĪBA NEXT · Rectangle</string>
     <string name="language">Language</string><string name="system">System</string>
     <string name="theme">Theme</string><string name="light">Light</string><string name="dark">Dark</string>
     <string name="group">Study group</string><string name="save_group">Validate and save group</string>
-    <string name="setup">Choose your study group</string><string name="no_room">Room not specified</string>
+    <string name="setup">Choose your study group</string><string name="no_room">Room not provided</string>
     <string name="next">Next</string><string name="overlap">Overlapping lesson</string>
     <string name="offline">Offline · saved timetable</string><string name="stale">Saved data may be outdated</string>
     <string name="selection_required">Choose electives and subgroups below</string>

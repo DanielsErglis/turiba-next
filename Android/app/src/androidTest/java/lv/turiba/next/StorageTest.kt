@@ -115,4 +115,32 @@ class StorageTest {
         assertTrue(repository.widgets().isEmpty())
         assertEquals(0,calls)
     }
+    @Test fun manualRefreshJoiningAThrottledFlightStillFetches()=runBlocking {
+        repository.synchronize("TVL2D1",true)
+        val before=calls
+        val dispatcher=java.util.concurrent.Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+        val pausedScope=CoroutineScope(SupervisorJob()+dispatcher)
+        val released=java.util.concurrent.CountDownLatch(1)
+        val started=java.util.concurrent.CountDownLatch(1)
+        try {
+            pausedScope.launch { started.countDown();check(released.await(5,java.util.concurrent.TimeUnit.SECONDS)) }
+            assertTrue(started.await(5,java.util.concurrent.TimeUnit.SECONDS))
+            val paused=Repository(db,preferences,source,pausedScope) { Instant.parse("2026-11-04T08:00:00Z") }
+            val automatic=async { paused.synchronize("TVL2D1",false) }
+            delay(100)
+            val manual=async { paused.synchronize("TVL2D1",true) }
+            delay(100);released.countDown()
+            automatic.await();manual.await()
+            assertEquals(before+2,calls)
+        } finally { released.countDown();pausedScope.coroutineContext[Job]!!.cancelAndJoin();dispatcher.close() }
+    }
+    @Test fun confirmedDeletionFinishesWhenItsUiCallerIsCancelled()=runBlocking {
+        repository.edit { it.copy(group="TVL2D1",reminders=true) }
+        val entered=CompletableDeferred<Unit>();val release=CompletableDeferred<Unit>()
+        val deletion=launch { repository.deleteData { entered.complete(Unit);release.await() } }
+        entered.await();deletion.cancel();release.complete(Unit);deletion.join()
+        assertNull(preferences.read().group);assertFalse(preferences.read().reminders)
+        assertTrue(repository.widgets().isEmpty())
+        assertEquals(1L,db.schedule().generation()!!.value)
+    }
 }

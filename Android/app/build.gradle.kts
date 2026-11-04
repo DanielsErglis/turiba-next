@@ -12,7 +12,7 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "0.1.0-dev"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "lv.turiba.next.OfflineTestRunner"
     }
     buildFeatures { compose = true }
     bundle { language { enableSplit = false } }
@@ -22,12 +22,15 @@ android {
     }
     lint { abortOnError = true }
     testOptions { unitTests.isReturnDefaultValues = true }
-    sourceSets["androidTest"].assets.srcDir(rootProject.file("../tests/fixtures"))
+    sourceSets["androidTest"].assets.directories.add(rootProject.file("../tests/fixtures").absolutePath)
+    sourceSets["androidTest"].assets.directories.add(file("schemas").absolutePath)
 }
 ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 dependencies {
     implementation(project(":core"))
     implementation(platform("androidx.compose:compose-bom:2026.09.00"))
+    // Align the serialization runtime shared by the app and Room migration-test APK.
+    implementation(platform("org.jetbrains.kotlinx:kotlinx-serialization-bom:1.8.1"))
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling-preview")

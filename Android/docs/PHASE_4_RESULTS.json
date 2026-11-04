@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-04",
+  "platform": "AOSP API 36 arm64 emulator, Pixel 7 profile",
+  "command": "tools/gradle-local.sh :app:connectedDebugAndroidTest :app:lintDebug :core:test :app:testDebugUnitTest",
+  "result": "BUILD SUCCESSFUL",
+  "instrumented": {
+    "tests": "17",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "suites": [
+    {
+      "name": "lv.turiba.next.MigrationAndWorkTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.169"
+    },
+    {
+      "name": "lv.turiba.next.ReminderCoordinatorTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "5.187"
+    },
+    {
+      "name": "lv.turiba.next.StorageTest",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "4.238"
+    },
+    {
+      "name": "lv.turiba.next.WidgetRenderTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "21.997"
+    }
+  ],
+  "nativeRenderCasesWithinOneTest": 50,
+  "coreTests": 11,
+  "coreStateCases": 978,
+  "reminderPlanCases": 48,
+  "transportTests": 4,
+  "lint": {
+    "errors": 0,
+    "warnings": 1,
+    "warning": "Validated serialization BOM 1.8.1 has newer upstream versions"
+  },
+  "xmlSha256": "1409665fe0264a715b856b47cbea778f1fc37f43d241b9f27b4241853a3491d4",
+  "limitations": [
+    "No physical device acceptance",
+    "Controlled reminder platform, not actual alarm delivery",
+    "No overnight idle/battery measurements"
+  ]
+}

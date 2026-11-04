@@ -11,6 +11,7 @@ import lv.turiba.next.source.TimetableSource
 import java.time.*
 
 data class Snapshot(val settings: Settings, val group: String?, val weeks: List<Week>, val state: ScheduleState, val lastSync: Instant?, val verifiedWeeks: Set<String>, val asOf: Instant)
+data class SyncTicket(val generation: Long,val groups: Set<String>)
 
 class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private val source: TimetableSource,
                  private val scope: CoroutineScope, private val clock: ()->Instant = Instant::now) {
@@ -18,7 +19,7 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
     private val guard=Mutex()
     private val flightsGuard=Mutex()
     private val catalogGuard=Mutex()
-    private val flights=mutableMapOf<String,Deferred<Unit>>()
+    private val flights=mutableMapOf<String,Deferred<Boolean>>()
     val revision=MutableStateFlow(0L)
     var onChanged: (suspend ()->Unit)?=null
     private fun changed() { revision.value++; scope.launch { onChanged?.invoke() } }
@@ -30,23 +31,32 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
     }
     suspend fun removeWidget(id: Int) = guard.withLock { dao.removeWidget(id); changed() }
     suspend fun widgets()=dao.widgets()
+    suspend fun configuredTicket()=guard.withLock {
+        SyncTicket(dao.generation()?.value ?: 0L,buildSet { settings.read().group?.let { add(it) };dao.widgets().forEach { add(it.groupCode) } })
+    }
+    internal suspend fun <T> withConfiguredTicket(action: suspend(SyncTicket)->T): T = withContext(Dispatchers.IO) {
+        guard.withLock { action(SyncTicket(dao.generation()?.value ?: 0L,buildSet { settings.read().group?.let { add(it) };dao.widgets().forEach { add(it.groupCode) } })) }
+    }
+    internal suspend fun saveSettingsWhileLocked(value: Settings) { settings.save(value);changed() }
     suspend fun validateGroup(group: String) {
         synchronize(group,true)
         if (dao.catalog().none { it.code==group && clock().toEpochMilli()-it.syncedAt in 0 until 604_800_000 }) {
             throw ScheduleException(dao.sync(group)?.issue ?: "UNKNOWN_GROUP")
         }
     }
-    suspend fun deleteData(cancelOwnedWork: suspend ()->Unit) = guard.withLock {
+    suspend fun deleteData(cancelOwnedWork: suspend ()->Unit) = withContext(NonCancellable+Dispatchers.IO) { guard.withLock {
         // Persist generation first; workers completing after this point cannot reinstall old data.
         db.withTransaction { dao.erase() }
+        flightsGuard.withLock { flights.values.forEach { it.cancel() };flights.clear() }
         settings.clear()
         cancelOwnedWork()
+        dao.clearReminders()
         changed()
-    }
+    } }
     suspend fun synchronizeVisible(widgetId: Int?=null,force: Boolean=false) {
         val ticket=guard.withLock {
             val group=if(widgetId==null) settings.read().group else dao.widgets().find { it.appWidgetId==widgetId }?.groupCode
-            group?.let { it to (dao.generation()?.value ?: 0) }
+            group?.let { it to (dao.generation()?.value ?: 0L) }
         } ?: return
         synchronize(ticket.first,force,ticket.second)
     }
@@ -55,7 +65,13 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
         val flight=flightsGuard.withLock {
             flights[group]?.takeIf { !it.isCompleted } ?: scope.async(Dispatchers.IO) { perform(group,force,expectedGeneration) }.also { flights[group]=it }
         }
-        try { flight.await() } finally {
+        try {
+            val fetched=flight.await()
+            if(force && !fetched) {
+                flightsGuard.withLock { if(flights[group]===flight) flights.remove(group) }
+                synchronize(group,true,expectedGeneration)
+            }
+        } finally {
             flightsGuard.withLock { if (flights[group]===flight && flight.isCompleted) flights.remove(group) }
         }
     }
@@ -79,13 +95,13 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
         }
     }
     private suspend fun ensureGeneration(expected: Long) {
-        if ((dao.generation()?.value ?: 0)!=expected) throw CancellationException("Data deleted")
+        if ((dao.generation()?.value ?: 0L)!=expected) throw CancellationException("Data deleted")
     }
     private suspend fun perform(group: String, force: Boolean,expectedGeneration: Long?) = withContext(Dispatchers.IO) {
-        val (generation,marker)=guard.withLock { (dao.generation()?.value ?: 0) to dao.sync(group) }
+        val (generation,marker)=guard.withLock { (dao.generation()?.value ?: 0L) to dao.sync(group) }
         if(expectedGeneration!=null && expectedGeneration!=generation) throw CancellationException("Data deleted")
         val now=clock()
-        if (!force && marker != null && now.toEpochMilli()-marker.attemptedAt in 0 until 900_000) return@withContext
+        if (!force && marker != null && now.toEpochMilli()-marker.attemptedAt in 0 until 900_000) return@withContext false
         val verified=mutableListOf<String>(); var issue: String?=null
         try {
             val entries=catalog(now,force,generation)
@@ -93,8 +109,11 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
             val server=Riga.serverWeek(now)
             for (offset in if (server==Riga.weekStart(Riga.today(now))) listOf(0,1) else listOf(0)) {
                 try {
+                    guard.withLock { ensureGeneration(generation) }
                     val url=SourceUrl.schedule(group,offset)
-                    val week=Parser.schedule(source.html(url),group,entries,server.plusDays(offset*7L),url)
+                    val html=source.html(url)
+                    currentCoroutineContext().ensureActive()
+                    val week=Parser.schedule(html,group,entries,server.plusDays(offset*7L),url)
                     if (week.status=="published") {
                         guard.withLock {
                             ensureGeneration(generation)
@@ -112,12 +131,18 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
             ensureGeneration(generation)
             dao.putSync(SyncRecord(group,now.toEpochMilli(),issue,verified.joinToString("|"))); changed()
         }
+        true
     }
     suspend fun snapshot(groupOverride: String? = null, now: Instant = clock(), widgetId: Int? = null): Snapshot = withContext(Dispatchers.IO) {
-        guard.withLock {
+        guard.withLock { snapshotLocked(groupOverride,now,widgetId) }
+    }
+    internal suspend fun <T> withCurrentState(action: suspend (Snapshot)->T): T = withContext(Dispatchers.IO) {
+        guard.withLock { action(snapshotLocked(null,clock(),null)) }
+    }
+    private suspend fun snapshotLocked(groupOverride: String?,now: Instant,widgetId: Int?): Snapshot {
             val preferences=settings.read()
             val group=if(widgetId!=null) dao.widgets().find { it.appWidgetId==widgetId }?.groupCode else groupOverride ?: preferences.group
-            if (group==null) return@withLock Snapshot(preferences,null,emptyList(),Engine.state(null,emptyList(),emptySet(),now),null,emptySet(),now)
+            if (group==null) return Snapshot(preferences,null,emptyList(),Engine.state(null,emptyList(),emptySet(),now),null,emptySet(),now)
             val today=Riga.today(now); val marker=dao.sync(group)
             var issue=marker?.issue
             val records=dao.weeks(group).filter { it.weekEnd>=today.toString() && it.weekStart<=Riga.weekStart(today).plusDays(14).toString() }
@@ -134,9 +159,8 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
             val stale=issue!=null || records.any { now.toEpochMilli()-it.syncedAt !in 0 until 900_000 }
             val freshMarker=marker!=null && now.toEpochMilli()-marker.attemptedAt in 0 until 900_000
             val verified=if(freshMarker) marker.verifiedWeeks.split('|').filter { it.isNotEmpty() }.toSet() else emptySet()
-            Snapshot(preferences,group,weeks,Engine.state(group,weeks,preferences.choices[group].orEmpty(),now,
+            return Snapshot(preferences,group,weeks,Engine.state(group,weeks,preferences.choices[group].orEmpty(),now,
                 issue in listOf("NETWORK_ERROR","NETWORK_TIMEOUT"),stale,issue),records.maxOfOrNull { it.syncedAt }?.let(Instant::ofEpochMilli),verified,now)
-        }
     }
 }
 private fun Lesson.record(week: String,n: Int)=LessonRecord(group,week,n,date.toString(),startTime.toString(),endTime.toString(),subject,room,period,sourceGroup,subgroup,category,type,elective,requiresSelection,provisional,individualSchedule,deliveryModeUnspecified,changed,source)

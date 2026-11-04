@@ -17,6 +17,9 @@ data class LessonRecord(val groupCode: String, val weekStart: String, val ordina
 @Entity data class SyncRecord(@PrimaryKey val groupCode: String, val attemptedAt: Long, val issue: String?, val verifiedWeeks: String)
 @Entity data class WidgetRecord(@PrimaryKey val appWidgetId: Int, val groupCode: String)
 @Entity data class Generation(@PrimaryKey val id: Int = 1, val value: Long = 0)
+@Entity data class ReminderRecord(@PrimaryKey val id: String,val owner: String,val identity: String,
+    val groupCode: String,val weekStart: String,val triggerAt: Long,val fingerprint: String,val body: String,
+    val generation: Long,val delivered: Boolean=false)
 
 @Dao abstract class ScheduleDao {
     @Query("SELECT * FROM WeekRecord WHERE groupCode=:group ORDER BY weekStart") abstract suspend fun weeks(group: String): List<WeekRecord>
@@ -25,6 +28,8 @@ data class LessonRecord(val groupCode: String, val weekStart: String, val ordina
     @Query("SELECT * FROM SyncRecord WHERE groupCode=:group") abstract suspend fun sync(group: String): SyncRecord?
     @Query("SELECT * FROM WidgetRecord") abstract suspend fun widgets(): List<WidgetRecord>
     @Query("SELECT * FROM Generation WHERE id=1") abstract suspend fun generation(): Generation?
+    @Query("SELECT * FROM ReminderRecord") abstract suspend fun reminders(): List<ReminderRecord>
+    @Query("SELECT * FROM ReminderRecord WHERE id=:id") abstract suspend fun reminder(id: String): ReminderRecord?
     @Query("SELECT * FROM WeekRecord") abstract fun observeWeeks(): Flow<List<WeekRecord>>
     @Insert(onConflict = OnConflictStrategy.REPLACE) abstract suspend fun putWeek(record: WeekRecord)
     @Insert(onConflict = OnConflictStrategy.REPLACE) abstract suspend fun putLessons(records: List<LessonRecord>)
@@ -32,6 +37,9 @@ data class LessonRecord(val groupCode: String, val weekStart: String, val ordina
     @Insert(onConflict = OnConflictStrategy.REPLACE) abstract suspend fun putSync(record: SyncRecord)
     @Insert(onConflict = OnConflictStrategy.REPLACE) abstract suspend fun putWidget(record: WidgetRecord)
     @Insert(onConflict = OnConflictStrategy.REPLACE) abstract suspend fun putGeneration(record: Generation)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) abstract suspend fun putReminder(record: ReminderRecord)
+    @Query("DELETE FROM ReminderRecord WHERE id=:id") abstract suspend fun removeReminder(id: String)
+    @Query("DELETE FROM ReminderRecord") abstract suspend fun clearReminders()
     @Query("DELETE FROM LessonRecord WHERE groupCode=:group AND weekStart=:week") abstract suspend fun removeLessons(group: String, week: String)
     @Query("DELETE FROM WidgetRecord WHERE appWidgetId=:id") abstract suspend fun removeWidget(id: Int)
     @Query("DELETE FROM WeekRecord") abstract suspend fun clearWeeks()
@@ -43,9 +51,15 @@ data class LessonRecord(val groupCode: String, val weekStart: String, val ordina
         removeLessons(week.groupCode,week.weekStart); putWeek(week); putLessons(lessons)
     }
     @Transaction open suspend fun erase() {
-        putGeneration(Generation(value=(generation()?.value ?: 0) + 1))
+        putGeneration(Generation(value=(generation()?.value ?: 0L) + 1L))
         clearLessons(); clearWeeks(); clearCatalog(); clearSync(); clearWidgets()
     }
 }
-@Database(entities=[WeekRecord::class,LessonRecord::class,GroupRecord::class,SyncRecord::class,WidgetRecord::class,Generation::class],version=1,exportSchema=true)
+@Database(entities=[WeekRecord::class,LessonRecord::class,GroupRecord::class,SyncRecord::class,WidgetRecord::class,Generation::class,ReminderRecord::class],version=2,exportSchema=true)
 abstract class ScheduleDatabase : RoomDatabase() { abstract fun schedule(): ScheduleDao }
+
+val MIGRATION_1_2=object: androidx.room.migration.Migration(1,2) {
+    override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+        db.execSQL("CREATE TABLE IF NOT EXISTS `ReminderRecord` (`id` TEXT NOT NULL, `owner` TEXT NOT NULL, `identity` TEXT NOT NULL, `groupCode` TEXT NOT NULL, `weekStart` TEXT NOT NULL, `triggerAt` INTEGER NOT NULL, `fingerprint` TEXT NOT NULL, `body` TEXT NOT NULL, `generation` INTEGER NOT NULL, `delivered` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+    }
+}

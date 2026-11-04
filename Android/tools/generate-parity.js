@@ -51,7 +51,17 @@ const strings = ["Rīga", "😀", 'TVL2D_IB01\n"\\', "Русский", "Āčēģ
 fs.writeFileSync(path.join(out,"identity.golden"),strings.map(s => line([s,JSON.stringify([s,s]),fingerprint(s)])).join("\n")+"\n");
 const subjects=["z","ā","a","ä","A","Ā","Ž","Z","Å","á","Ābols","Apple"];
 fs.writeFileSync(path.join(out,"collation.golden"),subjects.slice().sort((a,b)=>a.localeCompare(b)).map(s=>line([s])).join("\n")+"\n");
-const provenance = { kind:"generated expectations, not captured source", generatedFrom:"unchanged JS modules",capturedManifest:"../../tests/fixtures/manifest.json",stateCases:states.length,files:{} };
+const reminderRows=[];
+const {reminderPlan}=require(path.join(root,"src/notifications"));
+for(const group of ["TVL2D1","CSA1D1"]) for(const lead of [5,10,15,30]) for(const language of ["en","lv","ru"]) for(const mode of ["none","all"]) {
+  const week=parser.parseSchedule(raw(group.toLowerCase()+"-current.html"),{group,catalog,catalogComplete:true});
+  const choices=mode==="all" ? week.lessons.filter(l=>l.requiresSelection).map(choiceKey) : [];
+  const settings={group,notifications:{enabled:true,leadMinutes:lead},selections:{[group]:choices}};
+  const plan=reminderPlan(settings,[week],Date.parse("2026-10-26T00:00:00Z"),language);
+  reminderRows.push(line([group,lead,language,mode,...plan.map(p=>JSON.stringify([p.identifier,String(p.trigger),p.body,p.userInfo.fingerprint,p.userInfo.weekStart]))]));
+}
+fs.writeFileSync(path.join(out,"reminders.golden.gz"),require("node:zlib").gzipSync(reminderRows.join("\n")+"\n"));
+const provenance = { kind:"generated expectations, not captured source", generatedFrom:"unchanged JS modules",capturedManifest:"../../tests/fixtures/manifest.json",stateCases:states.length,reminderPlanCases:reminderRows.length,files:{} };
 for (const file of ["parser","html","engine","time","settings","notifications"]) provenance.files["src/"+file+".js"]=crypto.createHash("sha256").update(fs.readFileSync(path.join(root,"src",file+".js"))).digest("hex");
 fs.writeFileSync(path.join(out,"provenance.json"),JSON.stringify(provenance,null,2)+"\n");
 console.log(`Generated ${files.length} schedule cases, ${catalog.length} catalog groups and ${states.length} state boundary cases.`);

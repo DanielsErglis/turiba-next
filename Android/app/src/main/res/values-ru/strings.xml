@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="reminders">Напоминания о занятиях</string><string name="minutes">мин</string>
+    <string name="reminder_delay">По умолчанию OFF. Только основная группа и выбранные подтверждённые занятия. Android может задерживать доставку; после начала пары напоминание не показывается. Специальный доступ к точным будильникам не запрашивается.</string>
+    <string name="notification_settings">Открыть настройки уведомлений Android</string><string name="notification_denied">Уведомления отключены в Android. Расписание и виджеты продолжают работать.</string>
+    <string name="invalid_group">Введите код группы, например TVL2D1.</string><string name="unknown_group">Группа отсутствует в проверенном публичном каталоге.</string>
+    <string name="network_error">Не удалось подключиться. Сохранённое расписание сохранено. Повторите обновление позже.</string>
+    <string name="unpublished">Публикация не подтверждена. Это не означает отсутствие занятий.</string><string name="structure_error">Формат источника не удалось проверить. Последние корректные данные сохранены.</string>
+    <string name="storage_error">Не удалось прочитать сохранённые данные. Обновите расписание или удалите мои данные через настройки.</string>
     <string name="widget_offline">Нет сети</string><string name="widget_stale">Устарело</string><string name="widget_choices">Выберите занятия</string><string name="widget_coverage">Неделя не подтверждена</string>
     <string name="widget_square">TURĪBA NEXT · Квадрат</string><string name="widget_rectangle">TURĪBA NEXT · Прямоугольник</string>
     <string name="language">Язык</string><string name="system">Системный</string>

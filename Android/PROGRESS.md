@@ -2,7 +2,7 @@
 
 ## Current state — 2026-11-04
 
-Phase 0 committed as cf7b40e78a9355433892be6173c5c45a43572cc7 and remotely read back. Phase 1 committed as 6d94f4307a6de580ff5de60ae17c287e4d4e6f6d. Phase 2 committed as 2c89635fc72501b70b7a38508feaededc742623c. Phase 3 widgets implemented and checked: final combined build/lint/JVM/instrumented command succeeded. Preparing Phase 3 commit. No physical-device acceptance or signed private-test release is claimed. Work is isolated in Android/ and android-development, based on main feebd7e129a3d071e731e14e665df92da00fb0a7.
+Phase 0 committed as cf7b40e78a9355433892be6173c5c45a43572cc7 and remotely read back. Phase 1 committed as 6d94f4307a6de580ff5de60ae17c287e4d4e6f6d. Phase 2 committed as 2c89635fc72501b70b7a38508feaededc742623c. Phase 3 committed as cb2d6c7e85b27a91f0b43db6a93f4c599b310542. Phase 4 implemented and checked; preparing its commit. No physical-device acceptance or signed private-test release is claimed. Work is isolated in Android/ and android-development, based on main feebd7e129a3d071e731e14e665df92da00fb0a7.
 
 ## Owner decisions
 
@@ -21,7 +21,7 @@ Phase 0 committed as cf7b40e78a9355433892be6173c5c45a43572cc7 and remotely read 
 
 ## Next action
 
-Commit Phase 3, then implement best-effort background updates and opt-in reminders in Phase 4. Preserve all iPhone runtime/delivery files and historical records.
+Commit Phase 4, then Phase 5 emulator/host/privacy/release verification. Android 10 AVD is created but has not been booted. Prepare a signed private-test candidate so the owner can perform the indispensable Pixel/Samsung/Xiaomi and overnight acceptance. Preserve all iPhone runtime/delivery files and historical records.
 
 ## Phase 1 — Data & Core
 
@@ -34,9 +34,19 @@ Commit Phase 3, then implement best-effort background updates and opt-in reminde
 
 ## Remaining
 
-4. Background & Reminders.
 5. Verification, including physical Pixel/Samsung/Xiaomi and overnight idle.
 6. Signed private-test APK and RU/LV/EN delivery/acceptance.
+
+## Phase 4 — Background & Reminders
+
+- Added pure reminder planning with exact compact JSON/UTF-16 identities and a generated 48-case corpus comparing every lead/language/selection combination to unchanged JS. Core suite now has 11 tests; all passed after matching the existing English missing-room label. Earlier initial compiler inference errors were fixed with explicit lazy-property types.
+- Added Room schema v2 reminder registry plus explicit 1→2 migration, owned immutable PendingIntents, inexact AlarmManager delivery and independent POST_NOTIFICATIONS opt-in. No exact-alarm permission is declared. OFF short-circuits before permission/registry/planner/platform calls; explicit disable/delete can clean owned records.
+- Added hourly unique constrained sync work, bounded transient retries, local-only state-boundary work and generation checks. Restore re-arms confirmed future reminders, and system boot/package/time events re-establish configured work. No permanent foreground service is used. OS delays and post-start suppression are explained in UI.
+- Serialized notification reconciliation/posting with deletion, preventing a simultaneous delivery from surviving completed Delete My Data. Added fake-platform native tests for OFF/ON, idempotence, re-arm, denial, choices/main-group changes, duplicate/late delivery and delete/post race; tests compiled but have not run yet at this checkpoint.
+- Added a test-only application/runner that disables automatic background restore, keeping fixture-based native tests offline. It is excluded from the production app. Migration and scoped WorkManager cancellation tests are being added. API 29 AOSP arm64 image r08 is installed, but no API 29 boot/test is claimed yet.
+- Final combined command `:app:connectedDebugAndroidTest :app:lintDebug :core:test :app:testDebugUnitTest` succeeded. API 36: 17 instrumented tests passed, zero failures/skips (2 migration/work, 6 reminder, 8 storage/concurrency/deletion, 1 native rendering test containing 50 variants). Core: 11 tests/48 reminder plan cases pass; transport: four pass. Lint: zero errors, one informational newer-version notice; BOM 1.8.1 is intentionally pinned to align Room migration tests with the app's existing serialization runtime.
+- Real native failures fixed: incompatible serialization core/json versions in Room MigrationTestHelper; clean-install Long generation default falsely invalidating reminders. Kept regression checks and verified delivery/rearm/delete/post behavior with the controlled platform. Added typed delivery outcomes, manual-force-versus-throttle race coverage, non-cancellable confirmed deletion and in-memory background error reporting.
+- docs/BACKGROUND_AND_REMINDERS.md records actual cadence, ownership, confirmation semantics, no-exact-alarm choice and remaining real OS/OEM/physical gates. No real AlarmManager timing, physical notification, reboot or overnight pass is claimed from controlled-platform tests.
 
 ## Phase 3 — Widgets
 

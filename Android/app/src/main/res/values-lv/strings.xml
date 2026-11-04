@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="reminders">Nodarbību atgādinājumi</string><string name="minutes">min</string>
+    <string name="reminder_delay">Pēc noklusējuma izslēgti. Tikai galvenajai grupai un atlasītām apstiprinātām nodarbībām. Android var aizkavēt piegādi; pēc nodarbības sākuma atgādinājums netiek rādīts. Precīzo modinātāju piekļuve netiek pieprasīta.</string>
+    <string name="notification_settings">Atvērt Android paziņojumu iestatījumus</string><string name="notification_denied">Android paziņojumi ir izslēgti. Saraksts un logrīki turpina darboties.</string>
+    <string name="invalid_group">Ievadiet grupas kodu, piemēram, TVL2D1.</string><string name="unknown_group">Šī grupa nav pārbaudītajā publiskajā katalogā.</string>
+    <string name="network_error">Neizdevās izveidot savienojumu. Saglabātais saraksts ir saglabāts. Mēģiniet vēlāk.</string>
+    <string name="unpublished">Publicēšana nav apstiprināta. Tas nenozīmē, ka nodarbību nav.</string><string name="structure_error">Avota formātu nevarēja pārbaudīt. Pēdējie derīgie dati ir saglabāti.</string>
+    <string name="storage_error">Saglabātos datus nevarēja nolasīt. Atjauniniet sarakstu vai iestatījumos dzēsiet manus datus.</string>
     <string name="widget_offline">Bezsaistē</string><string name="widget_stale">Novecojis</string><string name="widget_choices">Izvēlieties kursus</string><string name="widget_coverage">Nedēļa neapstiprināta</string>
     <string name="widget_square">TURĪBA NEXT · Kvadrāts</string><string name="widget_rectangle">TURĪBA NEXT · Taisnstūris</string>
     <string name="language">Valoda</string><string name="system">Sistēma</string>

@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -35,7 +37,7 @@ open class MainActivity : ComponentActivity() {
         if(configure) setResult(RESULT_CANCELED)
         setContent { AppScreen((application as NextApplication).repository,id,if(configure) ({
             setResult(RESULT_OK,android.content.Intent().putExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID,id ?: -1));finish()
-        }) else null,intent.getBooleanExtra("refresh",false)) }
+        }) else null,intent.getBooleanExtra("refresh",false) && savedInstanceState==null) }
     }
 }
 
@@ -50,6 +52,9 @@ open class MainActivity : ComponentActivity() {
     var showDelete by remember { mutableStateOf(false) }
     var showAbout by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { while(true) { delay(30_000); tick++ } }
+    LaunchedEffect(snapshot?.state?.refreshAt) {
+        snapshot?.state?.refreshAt?.let { next -> delay(java.time.Duration.between(Instant.now(),next).toMillis().coerceAtLeast(50));tick++ }
+    }
     LaunchedEffect(revision,tick) {
         try { snapshot=repository.snapshot(widgetId=widgetId) } catch (_: Exception) { failure="STORAGE_ERROR" }
     }
@@ -79,10 +84,16 @@ open class MainActivity : ComponentActivity() {
     fun action(block: suspend ()->Unit) {
         scope.launch {
             busy=true; failure=null
+            (baseContext.applicationContext as NextApplication).runtimeIssue.value=null
             try { block() } catch(e: CancellationException) { throw e }
             catch(e: Exception) { failure=(e as? ScheduleException)?.code ?: "OPERATION_FAILED" }
             finally { busy=false; tick++ }
         }
+    }
+    val app=baseContext.applicationContext as NextApplication
+    val backgroundFailure by app.runtimeIssue.collectAsState()
+    val notificationPermission=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        action { if(granted) app.setReminders(true) else failure="NOTIFICATION_PERMISSION_DENIED" }
     }
     CompositionLocalProvider(LocalContext provides localized) {
         MaterialTheme(colorScheme=colors) {
@@ -90,7 +101,7 @@ open class MainActivity : ComponentActivity() {
                 Column(Modifier.fillMaxSize().systemBarsPadding().verticalScroll(rememberScrollState()).padding(20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
                     Text("TURĪBA NEXT",fontSize=28.sp,color=MaterialTheme.colorScheme.primary)
                     Text(stringResource(R.string.language),style=MaterialTheme.typography.titleMedium)
-                    Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+                    FlowRow(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
                         listOf("system" to stringResource(R.string.system),"lv" to "LV","en" to "EN","ru" to "RU").forEach { (value,label) ->
                             FilterChip(selected=settings.language==value,onClick={action { repository.edit { it.copy(language=value) } }},label={Text(label)},enabled=!busy)
                         }
@@ -113,7 +124,7 @@ open class MainActivity : ComponentActivity() {
                                 if(state.stale) Text(stringResource(R.string.stale))
                                 if(state.selectionRequired) Text(stringResource(R.string.selection_required))
                                 if(state.coverageIncomplete) Text(stringResource(R.string.incomplete))
-                                state.issue?.let { Text(stringResource(R.string.source_error)+" · "+it) }
+                                state.issue?.let { Text(errorText(it)) }
                             }
                         }
                         Text(stringResource(R.string.last_sync)+": "+(snapshot!!.lastSync?.atZone(Riga.zone)?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) ?: "—"))
@@ -145,19 +156,42 @@ open class MainActivity : ComponentActivity() {
                         }
                     }
                     Text(stringResource(R.string.theme),style=MaterialTheme.typography.titleMedium)
-                    Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+                    FlowRow(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
                         listOf("system" to stringResource(R.string.system),"light" to stringResource(R.string.light),"dark" to stringResource(R.string.dark)).forEach { (value,label) ->
                             FilterChip(selected=settings.theme==value,onClick={action { repository.edit { it.copy(theme=value) } }},label={Text(label)},enabled=!busy)
                         }
                     }
+                    if(widgetId==null) {
+                        Row(Modifier.fillMaxWidth()) {
+                            Checkbox(checked=settings.reminders,onCheckedChange={ enabled ->
+                                if(!enabled) action { app.setReminders(false) }
+                                else if(android.os.Build.VERSION.SDK_INT>=33 && baseContext.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)!=android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                                    notificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                                } else action {
+                                    if(lv.turiba.next.reminders.AndroidReminderPlatform(baseContext).permitted()) app.setReminders(true)
+                                    else failure="NOTIFICATION_PERMISSION_DENIED"
+                                }
+                            },enabled=!busy && settings.group!=null)
+                            Text(stringResource(R.string.reminders)+(settings.group?.let { " · $it" } ?: ""),Modifier.padding(top=12.dp))
+                        }
+                        Text(stringResource(R.string.reminder_delay))
+                        FlowRow(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+                            listOf(5,10,15,30).forEach { lead ->
+                                FilterChip(selected=settings.leadMinutes==lead,onClick={action { repository.edit { it.copy(leadMinutes=lead) } }},enabled=!busy,label={Text("$lead "+stringResource(R.string.minutes))})
+                            }
+                        }
+                        if(failure=="NOTIFICATION_PERMISSION_DENIED") TextButton(onClick={
+                            baseContext.startActivity(android.content.Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(android.provider.Settings.EXTRA_APP_PACKAGE,baseContext.packageName))
+                        }) { Text(stringResource(R.string.notification_settings)) }
+                    }
                     Text(stringResource(R.string.widget_help))
                     if(busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-                    failure?.let { Text(stringResource(R.string.operation_failed)+" · "+it,color=MaterialTheme.colorScheme.error) }
+                    (failure ?: backgroundFailure)?.let { Text(errorText(it),color=MaterialTheme.colorScheme.error) }
                     TextButton(onClick={showAbout=true}) { Text(stringResource(R.string.about)) }
                     TextButton(onClick={showDelete=true},enabled=!busy) { Text(stringResource(R.string.delete_data),color=MaterialTheme.colorScheme.error) }
                     if(showAbout) AlertDialog(onDismissRequest={showAbout=false},title={Text(stringResource(R.string.about))},text={Text(stringResource(R.string.privacy))},confirmButton={TextButton(onClick={showAbout=false}) {Text(stringResource(R.string.close))}})
                     if(showDelete) AlertDialog(onDismissRequest={showDelete=false},title={Text(stringResource(R.string.delete_data))},text={Text(stringResource(R.string.delete_confirm))},
-                        confirmButton={TextButton(onClick={showDelete=false; action { repository.deleteData { }; input="" }}) { Text(stringResource(R.string.delete_data)) }},
+                        confirmButton={TextButton(onClick={showDelete=false; action { app.deleteData(); input="" }}) { Text(stringResource(R.string.delete_data)) }},
                         dismissButton={TextButton(onClick={showDelete=false}) { Text(stringResource(R.string.cancel)) }})
                 }
             }
@@ -170,3 +204,14 @@ open class MainActivity : ComponentActivity() {
     "finished"->R.string.finished; "noSchedule"->R.string.no_schedule; "setupRequired"->R.string.setup
     else->R.string.source_error
 })
+
+@Composable fun errorText(code: String): String=stringResource(when(code) {
+    "INVALID_GROUP"->R.string.invalid_group
+    "UNKNOWN_GROUP"->R.string.unknown_group
+    "NETWORK_ERROR","NETWORK_TIMEOUT"->R.string.network_error
+    "SOURCE_UNPUBLISHED","SOURCE_EMPTYUNCONFIRMED","SOURCE_UNVERIFIEDGROUP"->R.string.unpublished
+    "HTML_PARSE_ERROR","SOURCE_STRUCTURE_CHANGED","WEEK_MISMATCH","TIME_GRID_MISSING"->R.string.structure_error
+    "CORRUPT_CACHE","STORAGE_ERROR"->R.string.storage_error
+    "NOTIFICATION_PERMISSION_DENIED"->R.string.notification_denied
+    else->R.string.operation_failed
+})+" · "+code
