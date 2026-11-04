@@ -100,4 +100,19 @@ class StorageTest {
         assertEquals("CORRUPT_CACHE",snapshot.state.issue)
         assertTrue(snapshot.state.coverageIncomplete)
     }
+    @Test fun widgetGroupsStayIndependentAndDeletionCannotFallBackToPrimaryGroup()=runBlocking {
+        repository.edit { it.copy(group="TVL2D1") }
+        repository.setWidget(41,"CSA1D1");repository.setWidget(42,"BLL2S1")
+        assertEquals("CSA1D1",repository.snapshot(widgetId=41).group)
+        assertEquals("BLL2S1",repository.snapshot(widgetId=42).group)
+        assertEquals("TVL2D1",repository.snapshot().group)
+        repository.removeWidget(41)
+        assertNull(repository.snapshot(widgetId=41).group)
+        assertEquals("setupRequired",repository.snapshot(widgetId=41).state.status)
+        repository.deleteData { }
+        repository.synchronizeVisible(widgetId=42,true)
+        assertNull(repository.snapshot(widgetId=42).group)
+        assertTrue(repository.widgets().isEmpty())
+        assertEquals(0,calls)
+    }
 }

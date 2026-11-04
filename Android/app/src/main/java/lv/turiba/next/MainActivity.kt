@@ -3,6 +3,7 @@ package lv.turiba.next
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -23,14 +24,22 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class MainActivity : ComponentActivity() {
+open class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { AppScreen((application as NextApplication).repository) }
+        enableEdgeToEdge()
+        val id=intent.getIntExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID,-1).takeIf { it>=0 }
+        val configure=intent.action==android.appwidget.AppWidgetManager.ACTION_APPWIDGET_CONFIGURE
+        if(configure && id==null) { finish();return }
+        if(id!=null && android.appwidget.AppWidgetManager.getInstance(this).getAppWidgetInfo(id)?.provider?.packageName!=packageName) { finish();return }
+        if(configure) setResult(RESULT_CANCELED)
+        setContent { AppScreen((application as NextApplication).repository,id,if(configure) ({
+            setResult(RESULT_OK,android.content.Intent().putExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID,id ?: -1));finish()
+        }) else null,intent.getBooleanExtra("refresh",false)) }
     }
 }
 
-@Composable fun AppScreen(repository: Repository) {
+@Composable fun AppScreen(repository: Repository,widgetId: Int?=null,onConfigured: (()->Unit)?=null,autoSync: Boolean=false) {
     val scope=rememberCoroutineScope()
     val revision by repository.revision.collectAsState()
     var tick by remember { mutableLongStateOf(0) }
@@ -42,7 +51,16 @@ class MainActivity : ComponentActivity() {
     var showAbout by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { while(true) { delay(30_000); tick++ } }
     LaunchedEffect(revision,tick) {
-        try { snapshot=repository.snapshot() } catch (_: Exception) { failure="STORAGE_ERROR" }
+        try { snapshot=repository.snapshot(widgetId=widgetId) } catch (_: Exception) { failure="STORAGE_ERROR" }
+    }
+    LaunchedEffect(autoSync) {
+        if(autoSync) {
+            busy=true
+            try { repository.synchronizeVisible(widgetId,true) }
+            catch(e: CancellationException) { throw e }
+            catch(_: Exception) { failure="SYNC_FAILED" }
+            finally { busy=false;tick++ }
+        }
     }
     val settings=snapshot?.settings ?: Settings()
     val baseContext=LocalContext.current
@@ -53,7 +71,11 @@ class MainActivity : ComponentActivity() {
         baseContext.createConfigurationContext(configuration)
     }
     val dark=settings.theme=="dark" || settings.theme=="system" && isSystemInDarkTheme()
-    val colors=if(dark) darkColorScheme(primary=Color(0xff7cd5ff),background=Color(0xff071a2c),surface=Color(0xff102b45)) else lightColorScheme(primary=Color(0xff006398),background=Color(0xffedf6ff),surface=Color.White)
+    SideEffect { (baseContext as? android.app.Activity)?.window?.let {
+        androidx.core.view.WindowCompat.getInsetsController(it,it.decorView).isAppearanceLightStatusBars=!dark
+        androidx.core.view.WindowCompat.getInsetsController(it,it.decorView).isAppearanceLightNavigationBars=!dark
+    } }
+    val colors=if(dark) darkColorScheme(primary=Color(0xff7cd5ff),background=Color(0xff071a2c),surface=Color(0xff102b45),secondaryContainer=Color(0xff245071),onSecondaryContainer=Color(0xffeef6ff)) else lightColorScheme(primary=Color(0xff006398),background=Color(0xffedf6ff),surface=Color.White,secondaryContainer=Color(0xffcde9ff),onSecondaryContainer=Color(0xff102b45))
     fun action(block: suspend ()->Unit) {
         scope.launch {
             busy=true; failure=null
@@ -95,14 +117,15 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         Text(stringResource(R.string.last_sync)+": "+(snapshot!!.lastSync?.atZone(Riga.zone)?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) ?: "—"))
-                        Button(onClick={ action { repository.synchronize(snapshot!!.group!!,true) } },enabled=!busy) { Text(stringResource(R.string.sync)) }
+                        Button(onClick={ action { repository.synchronizeVisible(widgetId,true) } },enabled=!busy) { Text(stringResource(R.string.sync)) }
                     } else Text(stringResource(R.string.setup),style=MaterialTheme.typography.headlineSmall)
                     OutlinedTextField(value=input,onValueChange={input=it},label={Text(stringResource(R.string.group))},singleLine=true,modifier=Modifier.fillMaxWidth(),enabled=!busy)
                     Button(onClick={ action {
                         val group=normalizeGroup(input)
                         repository.validateGroup(group)
-                        repository.edit { it.copy(group=group) }
+                        if(widgetId==null) repository.edit { it.copy(group=group) } else repository.setWidget(widgetId,group)
                         input=""
+                        onConfigured?.invoke()
                     } },enabled=!busy && input.isNotBlank()) { Text(stringResource(R.string.save_group)) }
                     val alternatives=snapshot?.weeks.orEmpty().flatMap { it.lessons }.filter { it.requiresSelection }.distinctBy { it.choiceKey }
                     if(alternatives.isNotEmpty()) {

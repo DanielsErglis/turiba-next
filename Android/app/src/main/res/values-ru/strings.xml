@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="widget_offline">Нет сети</string><string name="widget_stale">Устарело</string><string name="widget_choices">Выберите занятия</string><string name="widget_coverage">Неделя не подтверждена</string>
+    <string name="widget_square">TURĪBA NEXT · Квадрат</string><string name="widget_rectangle">TURĪBA NEXT · Прямоугольник</string>
     <string name="language">Язык</string><string name="system">Системный</string>
     <string name="theme">Тема</string><string name="light">Светлая</string><string name="dark">Тёмная</string>
     <string name="group">Учебная группа</string><string name="save_group">Проверить и сохранить группу</string>

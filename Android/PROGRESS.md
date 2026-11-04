@@ -2,7 +2,7 @@
 
 ## Current state — 2026-11-04
 
-Phase 0 committed as cf7b40e78a9355433892be6173c5c45a43572cc7 and remotely read back. Phase 1 committed as 6d94f4307a6de580ff5de60ae17c287e4d4e6f6d. Phase 2 app/storage implemented with debug build, lint, JVM and AOSP-emulator storage checks passing. Preparing the Phase 2 commit. No physical-device acceptance or signed private-test release is claimed. Work is isolated in Android/ and android-development, based on main feebd7e129a3d071e731e14e665df92da00fb0a7.
+Phase 0 committed as cf7b40e78a9355433892be6173c5c45a43572cc7 and remotely read back. Phase 1 committed as 6d94f4307a6de580ff5de60ae17c287e4d4e6f6d. Phase 2 committed as 2c89635fc72501b70b7a38508feaededc742623c. Phase 3 widgets implemented and checked: final combined build/lint/JVM/instrumented command succeeded. Preparing Phase 3 commit. No physical-device acceptance or signed private-test release is claimed. Work is isolated in Android/ and android-development, based on main feebd7e129a3d071e731e14e665df92da00fb0a7.
 
 ## Owner decisions
 
@@ -21,7 +21,7 @@ Phase 0 committed as cf7b40e78a9355433892be6173c5c45a43572cc7 and remotely read 
 
 ## Next action
 
-Commit Phase 2, then implement responsive Glance widgets and per-instance configuration in Phase 3. Preserve all iPhone runtime/delivery files and historical records.
+Commit Phase 3, then implement best-effort background updates and opt-in reminders in Phase 4. Preserve all iPhone runtime/delivery files and historical records.
 
 ## Phase 1 — Data & Core
 
@@ -34,10 +34,18 @@ Commit Phase 2, then implement responsive Glance widgets and per-instance config
 
 ## Remaining
 
-3. Widgets.
 4. Background & Reminders.
 5. Verification, including physical Pixel/Samsung/Xiaomi and overnight idle.
 6. Signed private-test APK and RU/LV/EN delivery/acceptance.
+
+## Phase 3 — Widgets
+
+- Added square/rectangle responsive Glance providers, per-appWidgetId validated configuration, matching app/refresh intents, deletion/restoration mapping and live local snapshot observation. Missing mapping returns setup, never the primary group implicitly.
+- Added localized widget labels, separate rectangular room panel, next-subject/time footer, explicit date/start header, independent offline/stale/choice/coverage flags, overlap count and accessible refresh description. No provenance disclaimer on widgets.
+- Initial native tests exposed zero room height, then a six-pixel clipped room line on compact square. Fixed allocations rather than weakening the checks. `adb shell am instrument -w -e class lv.turiba.next.WidgetRenderTest lv.turiba.next.test/androidx.test.runner.AndroidJUnitRunner`: OK (1 test), covering 50 actual RemoteViews/native View cases and C216 no-clipping assertions.
+- Visually inspected original native outputs for rectangle/square, compact warning layout and font scale 2.0. Saved representative PNGs in docs/previews; details and unverified host/long-room cases in docs/WIDGET_VALIDATION.md. These are emulator/native View renders, not physical-device or launcher acceptance.
+- Added a sixth storage test for independent widget groups and deletion without primary fallback. Final `tools/gradle-local.sh :app:connectedDebugAndroidTest :app:lintDebug :app:testDebugUnitTest :core:test` succeeded: seven instrumented tests (six storage plus the 50-case native render test), four transport unit tests and nine core tests, zero failures. JVM checks already up to date were not falsely described as freshly executed. Native tests and changed application compilation ran. See actual Gradle/XML reports for timings.
+- The combined run reported seven nonfatal lint warnings. Moved API-31-only widget cell metadata into xml-v31 resources, extracted the loading brand string and adopted toUri. The sole targeted Overdraw suppression documents a launcher-hosted RemoteViews surface, which has no activity window background. Subsequent `:app:assembleDebug :app:lintDebug` succeeded with No issues found. Native rendering was not rerun for these metadata/KTX/loading-label-only corrections.
 
 ## Phase 2 — Storage & App
 

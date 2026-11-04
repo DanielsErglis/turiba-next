@@ -12,6 +12,8 @@ import lv.turiba.next.settings.SettingsStore
 class NextApplication : Application() {
     val scope=CoroutineScope(SupervisorJob()+Dispatchers.Default)
     val repository by lazy {
-        Repository(Room.databaseBuilder(this,ScheduleDatabase::class.java,"turiba-next.db").build(),SettingsStore(this),SourceClient(),scope)
+        Repository(Room.databaseBuilder(this,ScheduleDatabase::class.java,"turiba-next.db").build(),SettingsStore(this),SourceClient(),scope).also { repo ->
+            repo.onChanged={ lv.turiba.next.widget.WidgetUpdates.update(this) }
+        }
     }
 }

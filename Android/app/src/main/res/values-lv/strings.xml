@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="widget_offline">Bezsaistē</string><string name="widget_stale">Novecojis</string><string name="widget_choices">Izvēlieties kursus</string><string name="widget_coverage">Nedēļa neapstiprināta</string>
+    <string name="widget_square">TURĪBA NEXT · Kvadrāts</string><string name="widget_rectangle">TURĪBA NEXT · Taisnstūris</string>
     <string name="language">Valoda</string><string name="system">Sistēma</string>
     <string name="theme">Tēma</string><string name="light">Gaiša</string><string name="dark">Tumša</string>
     <string name="group">Studiju grupa</string><string name="save_group">Pārbaudīt un saglabāt grupu</string>

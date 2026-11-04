@@ -10,7 +10,7 @@ import lv.turiba.next.settings.*
 import lv.turiba.next.source.TimetableSource
 import java.time.*
 
-data class Snapshot(val settings: Settings, val group: String?, val weeks: List<Week>, val state: ScheduleState, val lastSync: Instant?, val verifiedWeeks: Set<String>)
+data class Snapshot(val settings: Settings, val group: String?, val weeks: List<Week>, val state: ScheduleState, val lastSync: Instant?, val verifiedWeeks: Set<String>, val asOf: Instant)
 
 class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private val source: TimetableSource,
                  private val scope: CoroutineScope, private val clock: ()->Instant = Instant::now) {
@@ -20,7 +20,8 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
     private val catalogGuard=Mutex()
     private val flights=mutableMapOf<String,Deferred<Unit>>()
     val revision=MutableStateFlow(0L)
-    private fun changed() { revision.value++ }
+    var onChanged: (suspend ()->Unit)?=null
+    private fun changed() { revision.value++; scope.launch { onChanged?.invoke() } }
     suspend fun edit(transform: (Settings)->Settings) = guard.withLock {
         settings.save(transform(settings.read())); changed()
     }
@@ -42,10 +43,17 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
         cancelOwnedWork()
         changed()
     }
-    suspend fun synchronize(groupValue: String, force: Boolean = false) {
+    suspend fun synchronizeVisible(widgetId: Int?=null,force: Boolean=false) {
+        val ticket=guard.withLock {
+            val group=if(widgetId==null) settings.read().group else dao.widgets().find { it.appWidgetId==widgetId }?.groupCode
+            group?.let { it to (dao.generation()?.value ?: 0) }
+        } ?: return
+        synchronize(ticket.first,force,ticket.second)
+    }
+    suspend fun synchronize(groupValue: String, force: Boolean = false, expectedGeneration: Long? = null) {
         val group=normalizeGroup(groupValue)
         val flight=flightsGuard.withLock {
-            flights[group]?.takeIf { !it.isCompleted } ?: scope.async(Dispatchers.IO) { perform(group,force) }.also { flights[group]=it }
+            flights[group]?.takeIf { !it.isCompleted } ?: scope.async(Dispatchers.IO) { perform(group,force,expectedGeneration) }.also { flights[group]=it }
         }
         try { flight.await() } finally {
             flightsGuard.withLock { if (flights[group]===flight && flight.isCompleted) flights.remove(group) }
@@ -73,8 +81,9 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
     private suspend fun ensureGeneration(expected: Long) {
         if ((dao.generation()?.value ?: 0)!=expected) throw CancellationException("Data deleted")
     }
-    private suspend fun perform(group: String, force: Boolean) = withContext(Dispatchers.IO) {
+    private suspend fun perform(group: String, force: Boolean,expectedGeneration: Long?) = withContext(Dispatchers.IO) {
         val (generation,marker)=guard.withLock { (dao.generation()?.value ?: 0) to dao.sync(group) }
+        if(expectedGeneration!=null && expectedGeneration!=generation) throw CancellationException("Data deleted")
         val now=clock()
         if (!force && marker != null && now.toEpochMilli()-marker.attemptedAt in 0 until 900_000) return@withContext
         val verified=mutableListOf<String>(); var issue: String?=null
@@ -104,10 +113,11 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
             dao.putSync(SyncRecord(group,now.toEpochMilli(),issue,verified.joinToString("|"))); changed()
         }
     }
-    suspend fun snapshot(groupOverride: String? = null, now: Instant = clock()): Snapshot = withContext(Dispatchers.IO) {
+    suspend fun snapshot(groupOverride: String? = null, now: Instant = clock(), widgetId: Int? = null): Snapshot = withContext(Dispatchers.IO) {
         guard.withLock {
-            val preferences=settings.read(); val group=groupOverride ?: preferences.group
-            if (group==null) return@withLock Snapshot(preferences,null,emptyList(),Engine.state(null,emptyList(),emptySet(),now),null,emptySet())
+            val preferences=settings.read()
+            val group=if(widgetId!=null) dao.widgets().find { it.appWidgetId==widgetId }?.groupCode else groupOverride ?: preferences.group
+            if (group==null) return@withLock Snapshot(preferences,null,emptyList(),Engine.state(null,emptyList(),emptySet(),now),null,emptySet(),now)
             val today=Riga.today(now); val marker=dao.sync(group)
             var issue=marker?.issue
             val records=dao.weeks(group).filter { it.weekEnd>=today.toString() && it.weekStart<=Riga.weekStart(today).plusDays(14).toString() }
@@ -125,7 +135,7 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
             val freshMarker=marker!=null && now.toEpochMilli()-marker.attemptedAt in 0 until 900_000
             val verified=if(freshMarker) marker.verifiedWeeks.split('|').filter { it.isNotEmpty() }.toSet() else emptySet()
             Snapshot(preferences,group,weeks,Engine.state(group,weeks,preferences.choices[group].orEmpty(),now,
-                issue in listOf("NETWORK_ERROR","NETWORK_TIMEOUT"),stale,issue),records.maxOfOrNull { it.syncedAt }?.let(Instant::ofEpochMilli),verified)
+                issue in listOf("NETWORK_ERROR","NETWORK_TIMEOUT"),stale,issue),records.maxOfOrNull { it.syncedAt }?.let(Instant::ofEpochMilli),verified,now)
         }
     }
 }

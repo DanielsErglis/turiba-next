@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name" translatable="false">TURĪBA NEXT</string>
+    <string name="widget_offline">Offline</string><string name="widget_stale">Stale</string><string name="widget_choices">Choose courses</string><string name="widget_coverage">Week unverified</string>
+    <string name="widget_square">TURĪBA NEXT · Square</string><string name="widget_rectangle">TURĪBA NEXT · Rectangle</string>
     <string name="language">Language</string><string name="system">System</string>
     <string name="theme">Theme</string><string name="light">Light</string><string name="dark">Dark</string>
     <string name="group">Study group</string><string name="save_group">Validate and save group</string>
