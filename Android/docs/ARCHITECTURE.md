@@ -1,6 +1,6 @@
 # Android architecture decision — 2026-11-04
 
-Status: chosen design within the owner's requested native stack; dependency resolution/build verification pending toolchain provisioning. No alternate framework or architecture approval is required.
+Status: implemented native stack, compiled debug/release and exercised on API 29/36/37 emulators. Physical acceptance remains pending. Resolved versions and dependency locks are committed; historical candidate research below records the original decision context.
 
 ## Modules and dependencies
 

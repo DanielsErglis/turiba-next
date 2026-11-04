@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-04",
+  "stage": "Phase 5 automated checkpoint; physical acceptance pending",
+  "devices": [
+    {
+      "kind": "emulator",
+      "api": 29,
+      "pageSize": null,
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reportSha256": "9ad01d902728575bfd3eb432da603c63b094661533cc2cb065f179fecbb25c34",
+      "reportTimestamp": "2026-11-04T13:22:27",
+      "widgetCases": 82,
+      "jsParity": {
+        "catalogGroups": 279,
+        "capturedScheduleCases": 18,
+        "stateCases": 978,
+        "reminderPlans": 48
+      },
+      "pageSizeNote": "Not separately measured"
+    },
+    {
+      "kind": "emulator",
+      "api": 37,
+      "pageSize": 16384,
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reportSha256": "4cd09e7331ee40d51d947f5aafa20c6208de61e028ca43254324fb0356746c98",
+      "reportTimestamp": "2026-11-04T15:35:31",
+      "widgetCases": 82,
+      "jsParity": {
+        "catalogGroups": 279,
+        "capturedScheduleCases": 18,
+        "stateCases": 978,
+        "reminderPlans": 48
+      },
+      "finalSourceRecheck": true
+    }
+  ],
+  "jvm": {
+    "coreTests": 12,
+    "transportTests": 4,
+    "failures": 0
+  },
+  "iphone": {
+    "nodeTests": 92,
+    "failures": 0,
+    "unchangedFilesSha256": 113
+  },
+  "notEstablished": [
+    "Physical Pixel/Samsung/Xiaomi acceptance",
+    "Overnight idle timing and battery/network measurements",
+    "Real launcher widget add/resize/click/restore",
+    "Real OS alarm delivery timing/reboot/force-stop behavior"
+  ],
+  "liveSource": {
+    "newCapturedPages": 7,
+    "date": "2026-11-04",
+    "userAgentRoutingFix": "TURIBA-NEXT/0.1 requests desktop HTML directly; redirects still rejected"
+  },
+  "releaseSmoke": {
+    "device": "API 37 / 16 KiB emulator",
+    "liveGroup": "TVL2D1",
+    "directDesktopHtmlSync": "passed",
+    "permissionDialog": "Explicit ON showed actual POST_NOTIFICATIONS dialog; deny kept OFF and schedule usable",
+    "update": "Same certificate code 1 -> code 2 probe installed without uninstall; UI retained group, RU, dark theme, selected Pakalpojumu mārketings and cached next Loģistika; reminders stayed OFF",
+    "limitations": "No widget mapping existed in this release smoke check; mapping preservation is covered by migration integration test only.",
+    "confirmedDelete": "Passed: configured update-probe returned to setup, reset language",
+    "finalDialogLocalization": "Final code 1 release installed; actual UI XML asserts Russian deletion title/body/cancel, no English title. Release build/lint rerun after this UI-only fix; full native suite last ran before this text-context-only change."
+  }
+}

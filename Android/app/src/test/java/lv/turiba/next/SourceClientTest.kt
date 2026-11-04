@@ -41,6 +41,7 @@ class SourceClientTest {
         error("INVALID_RESPONSE",Response(mime="application/json"))
         error("INVALID_RESPONSE",Response(body=ByteArray(2_000_001)))
         error("INVALID_RESPONSE",Response(body=byteArrayOf()))
+        error("INVALID_RESPONSE",Response(body=byteArrayOf(0xc3.toByte(),0x28)))
     }
     @Test fun timeoutsAreTypedAndTotalReadBudgetIsBounded() {
         error("NETWORK_TIMEOUT",Response(timeout=true))
@@ -51,6 +52,7 @@ class SourceClientTest {
         val response=Response(body="Rīga Āčēģīķļņšūž".toByteArray())
         assertEquals("Rīga Āčēģīķļņšūž",SourceClient({response}).html("https://nodarbibas.turiba.lv/"))
         assertFalse(response.instanceFollowRedirects)
+        assertEquals("TURIBA-NEXT/0.1",response.getRequestProperty("User-Agent"))
         assertEquals(20_000,response.connectTimeout)
         assertTrue(response.closed)
     }

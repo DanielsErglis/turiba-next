@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="widget_no_room">Auditorija —</string>
     <string name="reminders">Nodarbību atgādinājumi</string><string name="minutes">min</string>
     <string name="reminder_delay">Pēc noklusējuma izslēgti. Tikai galvenajai grupai un atlasītām apstiprinātām nodarbībām. Android var aizkavēt piegādi; pēc nodarbības sākuma atgādinājums netiek rādīts. Precīzo modinātāju piekļuve netiek pieprasīta.</string>
     <string name="notification_settings">Atvērt Android paziņojumu iestatījumus</string><string name="notification_denied">Android paziņojumi ir izslēgti. Saraksts un logrīki turpina darboties.</string>

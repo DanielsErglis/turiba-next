@@ -9,6 +9,7 @@ local.properties
 *.keystore
 signing.properties
 .signing/
+delivery/
 *.hprof
 *.log
 docs/ANDROID_SDK_LICENSE.txt

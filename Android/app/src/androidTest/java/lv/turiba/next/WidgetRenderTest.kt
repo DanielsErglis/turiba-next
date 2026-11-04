@@ -32,10 +32,10 @@ class WidgetRenderTest {
     private val instrumentation get()=InstrumentationRegistry.getInstrumentation()
     private val context get()=instrumentation.targetContext
     private val now=Instant.parse("2026-11-04T08:30:00Z")
-    private fun snapshot(language: String,theme: String,status: String="ongoing",warnings: Boolean=false): Snapshot {
+    private fun snapshot(language: String,theme: String,status: String="ongoing",warnings: Boolean=false,room: String?="C216"): Snapshot {
         // Explicitly synthetic UI data, not a captured schedule or publication claim.
         val lesson=Lesson(LocalDate.parse("2026-11-04"),LocalTime.parse("10:00"),LocalTime.parse("11:30"),
-            "Integrētā mārketinga komunikācija", "C216",1,"TVL2D1","TVL2D1",null,"Synthetic UI","lesson",false,false,false,false,false,false,Parser.ORIGIN)
+            "Integrētā mārketinga komunikācija", room,1,"TVL2D1","TVL2D1",null,"Synthetic UI","lesson",false,false,false,false,false,false,Parser.ORIGIN)
         val next=lesson.copy(startTime=LocalTime.parse("12:55"),endTime=LocalTime.parse("14:25"),subject="Uzņēmējdarbības vadība")
         val settings=Settings(group="TVL2D1",language=language,theme=theme)
         val state=ScheduleState(status,if(status in listOf("ongoing","soon","upcoming")) lesson else null,next,
@@ -63,9 +63,15 @@ class WidgetRenderTest {
         for(rectangle in listOf(false,true)) for(scale in listOf(1.3f,2f)) for(warnings in listOf(false,true)) {
             render(rectangle,"ru","dark",false,"ongoing",save=true,fontScale=scale,warnings=warnings);count++
         }
-        assertEquals(50,count)
+        for(rectangle in listOf(false,true)) for(large in listOf(false,true)) for(room in listOf(null,"A204/1","35. kab.","C214 ITN","ekskursija","Liepājas filiāle, 35. kab.")) {
+            render(rectangle,"en","dark",large,"ongoing",save=true,room=room);count++
+        }
+        for(rectangle in listOf(false,true)) for(large in listOf(false,true)) for(language in listOf("lv","ru")) {
+            render(rectangle,language,"dark",large,"ongoing",save=true,room=null);count++
+        }
+        assertEquals(82,count)
     }
-    private suspend fun render(rectangle: Boolean,language: String,theme: String,large: Boolean,status: String,save: Boolean,fontScale: Float=1f,warnings: Boolean=false) {
+    private suspend fun render(rectangle: Boolean,language: String,theme: String,large: Boolean,status: String,save: Boolean,fontScale: Float=1f,warnings: Boolean=false,room: String?="C216") {
         val configuration=Configuration(context.resources.configuration)
         configuration.setLocale(Locale.forLanguageTag(language))
         configuration.fontScale=fontScale
@@ -73,7 +79,7 @@ class WidgetRenderTest {
         val localized=context.createConfigurationContext(configuration)
         val width=if(rectangle) if(large) 360 else 280 else if(large) 250 else 150
         val height=if(large) if(rectangle) 180 else 250 else 150
-        val remote=RenderWidget(localized,snapshot(language,theme,status,warnings),rectangle).compose(localized,size=DpSize(width.dp,height.dp))
+        val remote=RenderWidget(localized,snapshot(language,theme,status,warnings,room),rectangle).compose(localized,size=DpSize(width.dp,height.dp))
         instrumentation.runOnMainSync {
             val parent=FrameLayout(localized)
             val view=remote.apply(localized,parent)
@@ -87,17 +93,17 @@ class WidgetRenderTest {
                 val bitmap=Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888)
                 parent.draw(Canvas(bitmap))
                 val dir=File(context.filesDir,"widget-checks").also { check(it.mkdirs() || it.isDirectory) }
-                File(dir,"${if(rectangle) "rectangle" else "square"}-$language-$theme-$width-$status-f$fontScale-w$warnings.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG,100,it) }
+                File(dir,"${if(rectangle) "rectangle" else "square"}-$language-$theme-$width-$status-f$fontScale-w$warnings-r${(room ?: "missing").hashCode()}.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG,100,it) }
                 bitmap.recycle()
             }
             assertTrue("No native text for $rectangle/$language/$theme/$status",texts.isNotEmpty())
             assertFalse(texts.any { it.text.toString().contains("Error loading") })
             if(status=="ongoing") {
-                val room=texts.firstOrNull { it.text.toString()=="C216" }
-                assertNotNull("Room text missing",room)
-                assertTrue("Room has no native height $rectangle/$language/$width",room!!.height>0)
-                assertTrue("Room text clipped $rectangle/$language/$width: layout=${room.layout.height} view=${room.height} padding=${room.paddingTop+room.paddingBottom}; "+texts.joinToString { "${it.text}=${it.width}x${it.height}" },room.layout.height<=room.height-room.paddingTop-room.paddingBottom)
-                assertTrue("Room ellipsis $rectangle/$language/$width",(0 until room.layout.lineCount).all { room.layout.getEllipsisCount(it)==0 })
+                val nativeRoom=texts.firstOrNull { it.text.toString()==(room ?: localized.getString(R.string.widget_no_room)) }
+                assertNotNull("Room text missing",nativeRoom)
+                assertTrue("Room has no native height $rectangle/$language/$width/$room",nativeRoom!!.height>0)
+                assertTrue("Room text clipped $rectangle/$language/$width/$room: layout=${nativeRoom.layout.height} view=${nativeRoom.height} padding=${nativeRoom.paddingTop+nativeRoom.paddingBottom}; "+texts.joinToString { "${it.text}=${it.width}x${it.height}" },nativeRoom.layout.height<=nativeRoom.height-nativeRoom.paddingTop-nativeRoom.paddingBottom)
+                assertTrue("Room ellipsis $rectangle/$language/$width/$room",(0 until nativeRoom.layout.lineCount).all { nativeRoom.layout.getEllipsisCount(it)==0 })
             }
         }
     }

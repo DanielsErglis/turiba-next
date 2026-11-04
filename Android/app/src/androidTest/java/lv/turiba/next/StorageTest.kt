@@ -34,7 +34,12 @@ class StorageTest {
             fail?.let { if(it=="NETWORK_ERROR") throw ScheduleException(it) }
             val name=if(url.endsWith("ned=1")) "tvl2d1-two.html" else "tvl2d1-next.html"
             val html=fixture(name)
-            return if(fail=="malformed") html.dropLast(100) else html
+            return when(fail) {
+                "malformed"->html.dropLast(100)
+                // Synthetic publication marker using the exact captured source message.
+                "unpublished"->html.replace(Regex("(<tbody class=\"content2\">)[\\s\\S]*?(</tbody>)"),"$1<tr><td class=\"nav_public\">Atvainojiet, nodarbību saraksts šajā nedēļā nav publicēts</td></tr>$2")
+                else->html
+            }
         }
     }
     @Before fun setUp()= runBlocking {
@@ -66,6 +71,9 @@ class StorageTest {
         assertEquals(original,db.schedule().weeks("TVL2D1"))
         assertEquals("HTML_PARSE_ERROR",repository.snapshot("TVL2D1").state.issue)
         assertTrue(repository.snapshot("TVL2D1").verifiedWeeks.isEmpty())
+        fail="unpublished";repository.synchronize("TVL2D1",true)
+        assertEquals(original,db.schedule().weeks("TVL2D1"))
+        assertEquals("SOURCE_UNPUBLISHED",repository.snapshot("TVL2D1").state.issue)
     }
     @Test fun concurrentGroupSyncCoalescesAndUnknownGroupDoesNotFetchSchedule()=runBlocking {
         entered=CompletableDeferred(); block=CompletableDeferred()

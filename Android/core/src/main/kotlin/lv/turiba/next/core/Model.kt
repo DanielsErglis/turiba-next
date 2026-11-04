@@ -48,8 +48,9 @@ object Json {
     fun array(vararg values: String): String = values.joinToString(",", "[", "]") { quote(it) }
 }
 
+private val groupPattern=Regex("^[A-Z0-9][A-Z0-9_/-]{1,31}$")
 fun normalizeGroup(value: String): String {
     val result = value.trim().uppercase(java.util.Locale.ROOT)
-    checkSource(Regex("^[A-Z0-9][A-Z0-9_/-]{1,31}$").matches(result), "INVALID_GROUP")
+    checkSource(groupPattern.matches(result), "INVALID_GROUP")
     return result
 }

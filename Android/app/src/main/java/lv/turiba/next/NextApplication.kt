@@ -37,6 +37,10 @@ open class NextApplication : Application() {
         super.onCreate()
         if(automaticRestore) scope.launch { background.restore() }
     }
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if(automaticRestore) scope.launch { background.changed() }
+    }
     suspend fun setReminders(enabled: Boolean) {
         repository.edit { it.copy(reminders=enabled) }
         if(enabled) reminders.reconcile() else reminders.cancelOwned()

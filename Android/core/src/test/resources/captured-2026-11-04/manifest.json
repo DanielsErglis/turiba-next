@@ -1,0 +1,86 @@
+[
+  {
+    "file": "home.html",
+    "url": "https://nodarbibas.turiba.lv/",
+    "retrievedAt": "2026-11-04T15:31:09.768634+00:00",
+    "status": 200,
+    "contentType": "text/html",
+    "bytes": 17941,
+    "sha256": "98f16aa8227b72d6d035a5a0a1ea93094f8705cf5e6918147600c31eca7a70cb",
+    "provenance": "captured public HTML",
+    "userAgent": "TURIBA-NEXT/0.1",
+    "limitations": "Point-in-time source observation; publication and room ambiguity retained."
+  },
+  {
+    "file": "lim1.html",
+    "url": "https://nodarbibas.turiba.lv/?lim=1",
+    "retrievedAt": "2026-11-04T15:31:09.898555+00:00",
+    "status": 200,
+    "contentType": "text/html",
+    "bytes": 12569,
+    "sha256": "8ab13b48519d88d6e92b30720ba2108a144c053b3a7553b71dd624b0e149fec0",
+    "provenance": "captured public HTML",
+    "userAgent": "TURIBA-NEXT/0.1",
+    "limitations": "Point-in-time source observation; publication and room ambiguity retained."
+  },
+  {
+    "file": "lim3.html",
+    "url": "https://nodarbibas.turiba.lv/?lim=3",
+    "retrievedAt": "2026-11-04T15:31:10.091602+00:00",
+    "status": 200,
+    "contentType": "text/html",
+    "bytes": 12593,
+    "sha256": "fdb90ad1ed9633611ad52386c24cad431365d43dbe6ae5e4161dc5c1d8cc6ea3",
+    "provenance": "captured public HTML",
+    "userAgent": "TURIBA-NEXT/0.1",
+    "limitations": "Point-in-time source observation; publication and room ambiguity retained."
+  },
+  {
+    "file": "lim4.html",
+    "url": "https://nodarbibas.turiba.lv/?lim=4",
+    "retrievedAt": "2026-11-04T15:31:10.222301+00:00",
+    "status": 200,
+    "contentType": "text/html",
+    "bytes": 10888,
+    "sha256": "843e83113d3db1c4d6767356544d53e5993451dbcf80bac8900e919dfe3fc93c",
+    "provenance": "captured public HTML",
+    "userAgent": "TURIBA-NEXT/0.1",
+    "limitations": "Point-in-time source observation; publication and room ambiguity retained."
+  },
+  {
+    "file": "lim5.html",
+    "url": "https://nodarbibas.turiba.lv/?lim=5",
+    "retrievedAt": "2026-11-04T15:31:10.365921+00:00",
+    "status": 200,
+    "contentType": "text/html",
+    "bytes": 10365,
+    "sha256": "a9734b69806df5ce1b445b6512d89b4be3540f595617b8b6aa7b46e1f1faae0c",
+    "provenance": "captured public HTML",
+    "userAgent": "TURIBA-NEXT/0.1",
+    "limitations": "Point-in-time source observation; publication and room ambiguity retained."
+  },
+  {
+    "file": "tvl2d1-current.html",
+    "url": "https://nodarbibas.turiba.lv/pub_nod.asp?Grupa=TVL2D1&ned=0",
+    "retrievedAt": "2026-11-04T15:31:10.674290+00:00",
+    "status": 200,
+    "contentType": "text/html",
+    "bytes": 9718,
+    "sha256": "920519c94cdd4b169251e0a0b05d87f3f75b10133493606e12dd8597b056f40d",
+    "provenance": "captured public HTML",
+    "userAgent": "TURIBA-NEXT/0.1",
+    "limitations": "Point-in-time source observation; publication and room ambiguity retained."
+  },
+  {
+    "file": "tvl2d1-next.html",
+    "url": "https://nodarbibas.turiba.lv/pub_nod.asp?Grupa=TVL2D1&ned=1",
+    "retrievedAt": "2026-11-04T15:31:10.983523+00:00",
+    "status": 200,
+    "contentType": "text/html",
+    "bytes": 10593,
+    "sha256": "78244e3bd6d6c8cbf74f19a3c407c83229e2fb96ac08525760615d2cacb222ed",
+    "provenance": "captured public HTML",
+    "userAgent": "TURIBA-NEXT/0.1",
+    "limitations": "Point-in-time source observation; publication and room ambiguity retained."
+  }
+]

@@ -2,13 +2,13 @@
 
 ## Current state — 2026-11-04
 
-Phase 0 committed as cf7b40e78a9355433892be6173c5c45a43572cc7 and remotely read back. Phase 1 committed as 6d94f4307a6de580ff5de60ae17c287e4d4e6f6d. Phase 2 committed as 2c89635fc72501b70b7a38508feaededc742623c. Phase 3 committed as cb2d6c7e85b27a91f0b43db6a93f4c599b310542. Phase 4 implemented and checked; preparing its commit. No physical-device acceptance or signed private-test release is claimed. Work is isolated in Android/ and android-development, based on main feebd7e129a3d071e731e14e665df92da00fb0a7.
+Phases 0–4 committed through 0a3be64027cd850862d126d6370569b1ed672fc1. Phase 5 automated verification and private candidate preparation are recorded below; mandatory physical Pixel/Samsung/Xiaomi and overnight acceptance are still pending. Phase 6 final acceptance is not complete. Android work stays in Android/ and android-development, based on unchanged main feebd7e129a3d071e731e14e665df92da00fb0a7.
 
 ## Owner decisions
 
 - Native Android development requested, rather than copying the iPhone project.
 - Existing PUBLIC DanielsErglis/turiba-next repository explicitly authorized on 2026-11-04. Keep Android in its own directory. No change to visibility; no store/public-hosted APK distribution authorized.
-- Android SDK license acceptance explicitly authorized on 2026-11-04 for project-local tooling.
+- Android SDK license acceptance explicitly authorized on 2026-11-04 for project-local tooling. The owner separately authorized android-sdk-arm-dbt-license and API 37 verification.
 
 ## Phase 0 results
 
@@ -21,7 +21,7 @@ Phase 0 committed as cf7b40e78a9355433892be6173c5c45a43572cc7 and remotely read 
 
 ## Next action
 
-Commit Phase 4, then Phase 5 emulator/host/privacy/release verification. Android 10 AVD is created but has not been booted. Prepare a signed private-test candidate so the owner can perform the indispensable Pixel/Samsung/Xiaomi and overnight acceptance. Preserve all iPhone runtime/delivery files and historical records.
+Hand the signed local private candidate and RU/LV/EN guides to the owner for the mandatory physical checks in docs/DEVICE_ACCEPTANCE.md. Record actual OEM/overnight results, fix observed failures and only then close Phase 5 and final Phase 6 delivery. No automatic continuation is configured. Do not merge into main or publish the APK.
 
 ## Phase 1 — Data & Core
 
@@ -67,3 +67,16 @@ Commit Phase 4, then Phase 5 emulator/host/privacy/release verification. Android
 - `tools/gradle-local.sh :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug`: successful. Four transport unit tests pass, including unsafe host before connection, redirects/HTTP/non-HTML/body limits, timeout budgets and UTF-8. Lint final report: No issues found. An initial lint error about non-observable Configuration access was fixed using LocalConfiguration; locale split/icon warnings were fixed rather than suppressed.
 - Installed official emulator 37.2.13 and AOSP default arm64 API 36 image r02, with Pixel 7 hardware profile in project-local AVD directories. Standardized cmdline-tools/latest placement after the first avdmanager invocation warned about inferred SDK root. First instrumented attempt saw the device offline during first boot; after sys.boot_completed=1, `tools/gradle-local.sh :app:connectedDebugAndroidTest` succeeded with five storage tests: defaults/no theme fetch; network/parse cache preservation; coalescing/unknown group; deletion during in-flight network; incomplete-cache rejection.
 - These are AOSP API 36 emulator results, not physical Pixel, Samsung, Xiaomi or target-API-37 device acceptance. Debug and test APKs are developer artifacts under ignored app/build/; raw fixtures occur only in the test APK assets, not the application APK. UI visual/accessibility/launcher validation continues in later phases.
+
+## Phase 5 — Automated verification and physical-test candidate
+
+- API 29 AOSP arm64: 22 instrumented tests passed, zero failures/errors/skips. API 37 Google APIs ARM 16-KiB image: 22 passed, including the final post-transport/manifest rerun. Confirmed API 37 and PAGESIZE 16384 through adb; API 29 page size was not separately measured. API 36 Phase 4 evidence remains 17 tests/50 renders, not falsely upgraded to this later suite.
+- The native suite includes 279 catalog groups, 18 captured schedules, 978 shared-JS state cases, 48 reminder plans, explicit Riga DST/Unicode/collation, migration, cache/error/deletion/concurrency, OFF/ON/denial/ownership/races, and 82 native widget rendering cases. Actual AlarmManager PendingIntent creation and owned notification posting/cancellation pass; alarm timing is not established by that test.
+- Expanded long/missing-room rendering, strict UTF-8 rejection and cached date/time validation. Cached immutable regex patterns eliminate repeated compilation without changing the shared golden outputs. AAPT expands .gz test assets and strips the suffix: fixed the test reader after the first native parity run failed to find those files. Actual corpus assertions remain unchanged. Notification framework assertions wait for asynchronous NMS updates; permission is not revoked inside instrumentation because Android may kill its UID.
+- Final JVM checks: 12 core tests and four transport tests, all pass. Seven fresh captured desktop HTML pages have independent URL/date/hash/agent provenance and test-only packaging. The live signed-APK check exposed mobile User-Agent routing to mobile.asp; changed the identifier to TURIBA-NEXT/0.1 after bounded 200-vs-302 evidence, retained unconditional redirect rejection and added a request-header regression. New captures verify current/next published TVL2D1 weeks beginning November 2/9.
+- Release build and release lint pass: zero errors, one informational newer-version warning for the intentionally aligned serialization BOM. Dependency locks are committed. Final merged manifest removes WorkManager's unused foreground-service permission/service; retains INTERNET, ACCESS_NETWORK_STATE, POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, WorkManager WAKE_LOCK and the generated signature-scoped dynamic-receiver permission. No exact-alarm permission.
+- Signed release UI on API 37 successfully validates/saves TVL2D1 from the live official source, shows Loģistika as the next lesson and requires explicit course selection. Explicit ON shows the actual Android permission dialog; denial keeps reminders OFF and the schedule usable. A same-certificate code 1→2 private probe retains group, RU language, dark theme, selected Pakalpojumu mārketings and cached timetable. No widget mapping existed in that release UI check; mapping migration is independently tested. Confirmed Delete My Data returns to setup/reset language. Found and corrected dialog localization using the chosen resources rather than the Dialog's base context.
+- A native rerun attempted while the differently signed release was installed failed at APK installation; AGP still printed BUILD SUCCESSFUL. This was not counted as a test pass. Removed only the disposable emulator installation, reran and verified the actual XML: 22 tests, zero failures/errors/skips.
+- Original iPhone suite rerun: 92 passed. All 113 baseline SHA-256 values still match. No iPhone runtime, fixtures, deliverables or historical records edited.
+- Private candidate is code 1/version 0.1.0-rc.1 in ignored delivery/. Owner key/password remain only in ignored .signing/ with restricted file modes. APK signature/16-KiB ZIP alignment and absence of fixture/key paths checked. Signing initially supplied the same password file twice; apksigner reads successive lines, so the helper now correctly reuses the keystore password for PKCS12. Public certificate/hash metadata is in docs/RELEASE.json. No private-key external backup or public APK upload performed.
+- RU/LV/EN installation/update/privacy/troubleshooting guidance, rebuild/signing instructions and physical-device form are prepared. Physical launcher interaction/restore, Pixel/Samsung/Xiaomi, real alarm timing, reboot/idle and overnight battery/network measurements remain unperformed. These are mandatory outstanding gates, not waived limitations. Full v1.0 readiness is not claimed.

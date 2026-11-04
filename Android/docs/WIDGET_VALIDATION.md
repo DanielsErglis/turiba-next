@@ -25,3 +25,7 @@ These PNGs are original emulator/native View render outputs, with no image editi
 - [Rectangle, 360×180dp, dark](previews/rectangle-native-api36.png)
 - [Square, 250×250dp, dark](previews/square-native-api36.png)
 - [Compact rectangle, RU, font scale 2.0, independent warnings](previews/compact-warnings-native-api36.png)
+# Phase 5 extension — 2026-11-04
+
+The rendering test now executes 82 native RemoteViews cases on API 29 and API 37/16 KiB. Added actual source-style room strings A204/1, 35. kab., C214 ITN and ekskursija, a separately synthetic long Liepāja label, and missing-room labels in all three languages at both sizes/layouts. Room height, layout fit and absence of ellipsis are asserted. Compact layouts reduce typography for long room strings and use a short localized missing-room label. No claim of launcher/physical acceptance follows from these View renders.
+

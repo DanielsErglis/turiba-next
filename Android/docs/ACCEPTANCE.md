@@ -1,6 +1,6 @@
 # Acceptance matrix
 
-All Android checks are pending at the initial Phase 0 audit. Existing 92 JS tests are baseline evidence, not Android test results.
+Current automated evidence is in PHASE_5_RESULTS.json and PROGRESS.md. Physical Pixel/Samsung/Xiaomi and overnight acceptance remain pending. The phase gate table preserves the required scope; passing automated checks does not close physical gates.
 
 | Phase | Required evidence before closure |
 | --- | --- |
@@ -16,8 +16,8 @@ All Android checks are pending at the initial Phase 0 audit. Existing 92 JS test
 
 | Device / OS | Intended support | Emulator evidence | Physical evidence |
 | --- | --- | --- | --- |
-| Android 10 API 29 baseline | Yes | Pending; host/image feasibility must be checked | Pending |
-| Pixel / AOSP API 35–37 | Yes | Pending | Mandatory, pending |
+| Android 10 API 29 baseline | Yes | AOSP arm64, 22 native tests / 82 widget renders passed | Pending |
+| Pixel / AOSP API 35–37 | Yes | API 36: 17 tests / 50 renders; API 37 16 KiB: 22 tests / 82 renders | Mandatory, pending |
 | Samsung One UI Android 10+ | Yes, by model/version | An AOSP image cannot validate One UI | Mandatory, pending |
 | Xiaomi/Redmi/POCO HyperOS; relevant MIUI Android 10+ | Yes, by model/version | An AOSP image cannot validate OEM restrictions | Mandatory, pending |
 | OnePlus OxygenOS | Planned | Not OEM proof | Pending available device |

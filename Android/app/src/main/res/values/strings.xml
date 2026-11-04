@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="widget_no_room">Room —</string>
     <string name="reminders">Lesson reminders</string><string name="minutes">min</string>
     <string name="reminder_delay">OFF by default. Only the main group and selected confirmed lessons. Android may delay delivery; reminders after the lesson starts are suppressed. No exact-alarm access is requested.</string>
     <string name="notification_settings">Open Android notification settings</string><string name="notification_denied">Notifications are disabled in Android. The timetable and widgets continue to work.</string>

@@ -22,7 +22,9 @@ class SourceClient(private val open: (java.net.URI)->HttpsURLConnection = { it.t
             connection.connectTimeout=20_000; connection.readTimeout=20_000
             connection.requestMethod="GET"
             connection.setRequestProperty("Accept","text/html")
-            connection.setRequestProperty("User-Agent","TURIBA-NEXT-Android/0.1")
+            // The source redirects agents containing "Android" to a different mobile HTML format.
+            // Request the captured desktop contract directly; redirects remain forbidden.
+            connection.setRequestProperty("User-Agent","TURIBA-NEXT/0.1")
             val status=connection.responseCode
             if (status in 300..399) throw ScheduleException("UNSAFE_REDIRECT")
             if (status != HttpURLConnection.HTTP_OK) throw ScheduleException("HTTP_ERROR")
@@ -42,7 +44,10 @@ class SourceClient(private val open: (java.net.URI)->HttpsURLConnection = { it.t
                 output.toByteArray()
             }
             if (bytes.isEmpty() || bytes.size>2_000_000) throw ScheduleException("INVALID_RESPONSE")
-            String(bytes,Charsets.UTF_8)
+            try {
+                Charsets.UTF_8.newDecoder().onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT).decode(java.nio.ByteBuffer.wrap(bytes)).toString()
+            } catch(_: java.nio.charset.CharacterCodingException) { throw ScheduleException("INVALID_RESPONSE") }
         } catch (e: ScheduleException) { throw e }
         catch (_: SocketTimeoutException) { throw ScheduleException("NETWORK_TIMEOUT") }
         catch (_: java.io.IOException) { throw ScheduleException("NETWORK_ERROR") }

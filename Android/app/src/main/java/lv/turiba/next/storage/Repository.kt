@@ -164,4 +164,10 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
     }
 }
 private fun Lesson.record(week: String,n: Int)=LessonRecord(group,week,n,date.toString(),startTime.toString(),endTime.toString(),subject,room,period,sourceGroup,subgroup,category,type,elective,requiresSelection,provisional,individualSchedule,deliveryModeUnspecified,changed,source)
-private fun LessonRecord.lesson()=Lesson(LocalDate.parse(date),LocalTime.parse(startTime),LocalTime.parse(endTime),subject,room,period,groupCode,sourceGroup,subgroup,category,type,elective,requiresSelection,provisional,individualSchedule,deliveryModeUnspecified,changed,source)
+private fun LessonRecord.lesson(): Lesson {
+    require(Regex("^\\d{4}-\\d{2}-\\d{2}$").matches(date))
+    val clock=Regex("^(?:[01]\\d|2[0-3]):[0-5]\\d$")
+    require(clock.matches(startTime) && clock.matches(endTime) && sourceGroup.isNotBlank())
+    SourceUrl.validate(source)
+    return Lesson(LocalDate.parse(date),LocalTime.parse(startTime),LocalTime.parse(endTime),subject,room,period,groupCode,sourceGroup,subgroup,category,type,elective,requiresSelection,provisional,individualSchedule,deliveryModeUnspecified,changed,source)
+}

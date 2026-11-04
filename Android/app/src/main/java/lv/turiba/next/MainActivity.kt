@@ -189,10 +189,10 @@ open class MainActivity : ComponentActivity() {
                     (failure ?: backgroundFailure)?.let { Text(errorText(it),color=MaterialTheme.colorScheme.error) }
                     TextButton(onClick={showAbout=true}) { Text(stringResource(R.string.about)) }
                     TextButton(onClick={showDelete=true},enabled=!busy) { Text(stringResource(R.string.delete_data),color=MaterialTheme.colorScheme.error) }
-                    if(showAbout) AlertDialog(onDismissRequest={showAbout=false},title={Text(stringResource(R.string.about))},text={Text(stringResource(R.string.privacy))},confirmButton={TextButton(onClick={showAbout=false}) {Text(stringResource(R.string.close))}})
-                    if(showDelete) AlertDialog(onDismissRequest={showDelete=false},title={Text(stringResource(R.string.delete_data))},text={Text(stringResource(R.string.delete_confirm))},
-                        confirmButton={TextButton(onClick={showDelete=false; action { app.deleteData(); input="" }}) { Text(stringResource(R.string.delete_data)) }},
-                        dismissButton={TextButton(onClick={showDelete=false}) { Text(stringResource(R.string.cancel)) }})
+                    if(showAbout) AlertDialog(onDismissRequest={showAbout=false},title={Text(localized.getString(R.string.about))},text={Text(localized.getString(R.string.privacy))},confirmButton={TextButton(onClick={showAbout=false}) {Text(localized.getString(R.string.close))}})
+                    if(showDelete) AlertDialog(onDismissRequest={showDelete=false},title={Text(localized.getString(R.string.delete_data))},text={Text(localized.getString(R.string.delete_confirm))},
+                        confirmButton={TextButton(onClick={showDelete=false; action { app.deleteData(); input="" }}) { Text(localized.getString(R.string.delete_data)) }},
+                        dismissButton={TextButton(onClick={showDelete=false}) { Text(localized.getString(R.string.cancel)) }})
                 }
             }
         }

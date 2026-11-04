@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="widget_no_room">Аудитория —</string>
     <string name="reminders">Напоминания о занятиях</string><string name="minutes">мин</string>
     <string name="reminder_delay">По умолчанию OFF. Только основная группа и выбранные подтверждённые занятия. Android может задерживать доставку; после начала пары напоминание не показывается. Специальный доступ к точным будильникам не запрашивается.</string>
     <string name="notification_settings">Открыть настройки уведомлений Android</string><string name="notification_denied">Уведомления отключены в Android. Расписание и виджеты продолжают работать.</string>

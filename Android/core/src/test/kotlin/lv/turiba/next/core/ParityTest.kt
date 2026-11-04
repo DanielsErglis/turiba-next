@@ -31,6 +31,24 @@ class ParityTest {
     @Test fun catalogMatchesAll279SourceGroups() {
         assertEquals(lines("catalog.golden"), catalog().map { strings(it.code,it.branch,it.source) })
     }
+    @Test fun currentDesktopContractHasCapturedCatalogAndTwoPublishedWeeks() {
+        val folder=File(root,"Android/core/src/test/resources/captured-2026-11-04")
+        val manifest=folder.resolve("manifest.json").readText()
+        val entries=Regex("\\\"file\\\": \\\"([^\\\"]+)\\\"[\\s\\S]*?\\\"sha256\\\": \\\"([a-f0-9]{64})\\\"").findAll(manifest).toList()
+        assertEquals(7,entries.size)
+        for(entry in entries) {
+            val digest=MessageDigest.getInstance("SHA-256").digest(folder.resolve(entry.groupValues[1]).readBytes()).joinToString("") { "%02x".format(it) }
+            assertEquals(entry.groupValues[1],entry.groupValues[2],digest)
+        }
+        val latest=Parser.mergeCatalogs(listOf("home","lim1","lim3","lim4","lim5").map { Parser.catalog(folder.resolve("$it.html").readText()) })
+        assertEquals(279,latest.size)
+        for((name,date) in listOf("current" to "2026-11-02","next" to "2026-11-09")) {
+            val week=Parser.schedule(folder.resolve("tvl2d1-$name.html").readText(),"TVL2D1",latest)
+            assertEquals(LocalDate.parse(date),week.weekStart)
+            assertEquals("published",week.status)
+            assertTrue(week.lessons.isNotEmpty())
+        }
+    }
     @Test fun allCapturedSchedulesMatchJavaScriptExactly() {
         for (f in raw.listFiles()!!.filter { it.name !in catalogNames && it.name != "pic.html" }.sortedBy { it.name }) {
             val actual = try {
@@ -89,6 +107,10 @@ class ParityTest {
         error("UNKNOWN_GROUP") { Parser.schedule(File(raw,"unknown-group.html").readText(),"NONEXISTENTPHASE0",catalog()) }
         error("HTML_PARSE_ERROR") { Parser.catalog(File(raw,"pic.html").readText()) }
         error("GROUP_MISMATCH") { Parser.schedule(html,"CSA1D1",catalog()) }
+        val empty=html.replace(Regex("(<tbody class=\"content2\">)[\\s\\S]*?(</tbody>)"),"$1$2")
+        val result=Parser.schedule(empty,"TVL2D1",catalog())
+        assertEquals("emptyUnconfirmed",result.status)
+        assertEquals("error",Engine.state("TVL2D1",listOf(result),emptySet(),Instant.parse("2026-10-26T08:00:00Z")).status)
     }
     @Test fun unsafeOriginsAndNegativeHistoricalRequestsAreRejected() {
         for (url in listOf("http://nodarbibas.turiba.lv/","https://nodarbibas.turiba.lv.evil.test/","https://evil@nodarbibas.turiba.lv/","https://nodarbibas.turiba.lv:444/","https://evil.test/nodarbibas.turiba.lv/")) error("UNSAFE_SOURCE") { SourceUrl.validate(url) }

@@ -10,8 +10,8 @@ android {
         applicationId = "lv.turiba.next"
         minSdk = 29
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0-dev"
+        versionCode = providers.gradleProperty("releaseVersionCode").orElse("1").get().toInt()
+        versionName = providers.gradleProperty("releaseVersionName").orElse("0.1.0-rc.1").get()
         testInstrumentationRunner = "lv.turiba.next.OfflineTestRunner"
     }
     buildFeatures { compose = true }
@@ -24,6 +24,7 @@ android {
     testOptions { unitTests.isReturnDefaultValues = true }
     sourceSets["androidTest"].assets.directories.add(rootProject.file("../tests/fixtures").absolutePath)
     sourceSets["androidTest"].assets.directories.add(file("schemas").absolutePath)
+    sourceSets["androidTest"].assets.directories.add(rootProject.file("core/src/test/resources").absolutePath)
 }
 ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 dependencies {

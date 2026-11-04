@@ -68,6 +68,8 @@ open class ScheduleWidget(private val rectangular: Boolean): GlanceAppWidget() {
         .setData("turibanext://widget/$id/${if(refresh) "refresh" else "open"}".toUri()))
     val state=snapshot?.state
     val current=state?.current
+    val roomLabel=current?.room ?: context.getString(R.string.widget_no_room)
+    val longRoom=roomLabel.length>10
     fun textSize(value: Int)=(value / maxOf(1f,fontScale/(if(compact) 1.1f else 1.2f))).sp
     val status=context.getString(when(state?.status) {
         "ongoing"->R.string.ongoing; "soon"->R.string.soon; "upcoming"->R.string.upcoming
@@ -92,14 +94,22 @@ open class ScheduleWidget(private val rectangular: Boolean): GlanceAppWidget() {
         Spacer(GlanceModifier.height(5.dp))
         Row(GlanceModifier.fillMaxWidth().defaultWeight(),verticalAlignment=Alignment.CenterVertically) {
             Column(GlanceModifier.defaultWeight()) {
-                Text(current?.subject ?: "—",style=TextStyle(color=foreground,fontSize=textSize(if(tight) 16 else if(size.height>=210.dp) 26 else 20),fontWeight=FontWeight.Bold),maxLines=if(tight || compact && !rectangular || warnings.isNotEmpty() && size.height<210.dp) 1 else if(size.height>=210.dp) 3 else 2)
+                Text(current?.subject ?: "—",style=TextStyle(color=foreground,fontSize=textSize(if(tight) 16 else if(compact && longRoom) 18 else if(size.height>=210.dp) 26 else 20),fontWeight=FontWeight.Bold),maxLines=if(tight || compact && !rectangular || warnings.isNotEmpty() && size.height<210.dp) 1 else if(size.height>=210.dp) 3 else 2)
                 if(rectangular && !tight || !rectangular && size.height>=210.dp) current?.let { Text((if(it.date!=lv.turiba.next.core.Riga.today(snapshot.asOf)) "${it.date} · " else "")+"${it.startTime}–${it.endTime}",style=TextStyle(color=accent,fontSize=textSize(12)),maxLines=2) }
-                if(!sideRoom && current!=null) Text(current.room ?: context.getString(R.string.no_room),style=TextStyle(color=accent,fontSize=textSize(if(current.room==null) 12 else if(compact && fontScale>1.1f) 22 else if(compact) 24 else 26),fontWeight=FontWeight.Bold),maxLines=2)
+                if(!sideRoom && current!=null) Text(roomLabel,style=TextStyle(color=accent,fontSize=textSize(if(current.room==null || longRoom) 12 else if(compact && fontScale>1.1f) 22 else if(compact) 24 else 26),fontWeight=FontWeight.Bold),maxLines=2)
             }
             if(sideRoom && current!=null) {
                 Spacer(GlanceModifier.width(10.dp))
-                Box(GlanceModifier.width(if(!rectangular) 52.dp else if(size.width>=350.dp) 100.dp else 82.dp).fillMaxHeight().background(roomColor).cornerRadius(14.dp).padding(if(tight) 4.dp else 8.dp),contentAlignment=Alignment.Center) {
-                    Text(current.room ?: context.getString(R.string.no_room),style=TextStyle(color=foreground,fontSize=textSize(if(current.room==null) 12 else if(tight) 14 else if(size.width>=350.dp) 30 else 24),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center),maxLines=3)
+                Box(GlanceModifier.width(if(!rectangular) 52.dp else if(size.width>=350.dp) 100.dp else 82.dp).fillMaxHeight().background(roomColor).cornerRadius(14.dp).padding(if(tight || compact && longRoom) 4.dp else 8.dp),contentAlignment=Alignment.Center) {
+                    val roomSize=when {
+                        current.room==null || longRoom -> 12
+                        tight -> 14
+                        roomLabel.length>6 -> if(compact) 13 else 18
+                        roomLabel.length>4 -> if(compact) 18 else 22
+                        size.width>=350.dp -> 30
+                        else -> 24
+                    }
+                    Text(roomLabel,GlanceModifier.semantics { contentDescription=current.room ?: context.getString(R.string.no_room) },style=TextStyle(color=foreground,fontSize=textSize(roomSize),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center),maxLines=if(tight && longRoom) 1 else 3)
                 }
             }
         }
