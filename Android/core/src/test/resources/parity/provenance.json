@@ -1,0 +1,14 @@
+{
+  "kind": "generated expectations, not captured source",
+  "generatedFrom": "unchanged JS modules",
+  "capturedManifest": "../../tests/fixtures/manifest.json",
+  "stateCases": 978,
+  "files": {
+    "src/parser.js": "78c991e5b5c9bf5ea15d768505624f7b7626607b1cb363d3711291ae99d0a926",
+    "src/html.js": "fb3ff167541862551ff243ccb741290f50f169ce2cb4dcdeafc0c9c871871a9f",
+    "src/engine.js": "dd632738cba1342bc68a3c938b42a4a745d17bc5b9dece2398dc88276745f012",
+    "src/time.js": "e9638378e4c87ffa6548efa5e6627ab909fd3c8238c1bd70cb560209ab57ccf7",
+    "src/settings.js": "2a0d015b6a1e0d2782b7940fdb9e7a61ac9d55974f4a3650dd2382024c22ca31",
+    "src/notifications.js": "906355834e70f162dbca6a847b166fd1a1474c10986dcb09db6e40aadcd5b635"
+  }
+}
