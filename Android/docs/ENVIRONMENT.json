@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-04",
+  "host": "macOS arm64",
+  "repository": "DanielsErglis/turiba-next",
+  "visibility": "public",
+  "visibilityAuthorization": "Explicit owner amendment in chat on 2026-11-04",
+  "branch": "android-development",
+  "baseCommit": "feebd7e129a3d071e731e14e665df92da00fb0a7",
+  "baseTree": "ea072b63e4ff2b3edefc7163da722686bed2f4fd",
+  "initialTooling": {
+    "java": "Oracle Java 8 only",
+    "androidStudio": "not found in /Applications",
+    "sdk": "not found at standard probed paths",
+    "gradle": "not on PATH",
+    "adb": "not on PATH"
+  },
+  "provisioned": {
+    "jdk": "Temurin 17.0.21+9, java -version executed",
+    "gradle": "9.6.0, --version executed",
+    "sdk": "CLI extracted; platform installation in progress"
+  },
+  "network": "Sandbox DNS failed; approved escalated curl to official SDK catalog returned HTTP 200",
+  "sdkLicense": "Owner explicitly authorized acceptance on 2026-11-04",
+  "downloads": {
+    "repository.xml": "634ca69fc0af6ee9ffc14ec63aa4ff9b756e30ea45cde494165fd6fd06e22d0d",
+    "jdk.tar.gz": "78b08c7f5a0598242d5719c022e19479cb4a3aa45c37c19726a757a469ed1c15",
+    "cmdline-tools.zip": "58da8f215781cc0208743e88b65ae259780c55e7eb40e50373d377cf369232d6",
+    "gradle.zip": "bbaeb2fef8710818cf0e261201dab964c572f92b942812df0c3620d62a529a01"
+  },
+  "baselineTests": {
+    "command": "/Users/danielerglis/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --test tests/*.test.js",
+    "passed": 92,
+    "failed": 0,
+    "skipped": 0
+  },
+  "remoteBlobMatches": [
+    "package.json",
+    "src/parser.js",
+    "src/engine.js",
+    "dist/TURIBA NEXT.js",
+    "PROGRESS.md"
+  ]
+}

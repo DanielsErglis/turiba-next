@@ -1,0 +1,14 @@
+.DS_Store
+.toolchain/
+.gradle/
+.kotlin/
+**/build/
+local.properties
+.idea/
+*.jks
+*.keystore
+signing.properties
+.signing/
+*.hprof
+*.log
+docs/ANDROID_SDK_LICENSE.txt
