@@ -60,6 +60,14 @@ class ParityTest {
             assertEquals(values[2], ReminderIdentity.fingerprint(values[0]))
         }
     }
+    @Test fun tiedLessonsUseTheSameDiacriticCollationAsJavaScript() {
+        val expected=lines("collation.golden").map { it.single() }
+        val original=week(File(raw,"tvl2d1-current.html"))
+        val sample=original.lessons.first().copy(requiresSelection=false)
+        val lessons=expected.reversed().map { sample.copy(subject=it) }
+        val state=Engine.state(original.group,listOf(original.copy(lessons=lessons)),emptySet(),sample.start)
+        assertEquals(expected,(listOf(state.current!!) + state.concurrent).map { it.subject })
+    }
     @Test fun rigaGapsOverlapsAndCalendarBoundariesAreExplicit() {
         error("NONEXISTENT_LOCAL_TIME") { Riga.instant(LocalDate.parse("2026-03-29"),LocalTime.parse("03:30")) }
         error("AMBIGUOUS_LOCAL_TIME") { Riga.instant(LocalDate.parse("2026-10-25"),LocalTime.parse("03:30")) }

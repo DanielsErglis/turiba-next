@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language">Valoda</string><string name="system">Sistēma</string>
+    <string name="theme">Tēma</string><string name="light">Gaiša</string><string name="dark">Tumša</string>
+    <string name="group">Studiju grupa</string><string name="save_group">Pārbaudīt un saglabāt grupu</string>
+    <string name="setup">Izvēlieties studiju grupu</string><string name="no_room">Auditorija nav norādīta</string>
+    <string name="next">Nākamā</string><string name="overlap">Nodarbības pārklājas</string>
+    <string name="offline">Bezsaistē · saglabāts saraksts</string><string name="stale">Saglabātie dati var būt novecojuši</string>
+    <string name="selection_required">Izvēlieties kursus un apakšgrupas zemāk</string>
+    <string name="incomplete">Šīs nedēļas publicēšana nav apstiprināta</string>
+    <string name="source_error">Saraksts nav pieejams vai apstiprināts</string>
+    <string name="last_sync">Pēdējā veiksmīgā sinhronizācija (Rīga)</string><string name="sync">Atjaunināt sarakstu</string>
+    <string name="choices">Izvēles kursi un apakšgrupas</string>
+    <string name="choices_help">Atlasiet tikai nodarbības, kuras apmeklējat. Pārējās alternatīvas netiek iekļautas.</string>
+    <string name="widget_help">Pēc kursu izvēles pievienojiet TURĪBA NEXT sākuma ekrāna logrīku izvēlnē.</string>
+    <string name="operation_failed">Darbību neizdevās pabeigt</string><string name="about">Par lietotni / Privātums</string>
+    <string name="privacy">Neatkarīgs studentu projekts, nevis oficiāla augstskolas lietotne. Pieprasījumi izmanto tikai HTTPS uz nodarbibas.turiba.lv. Bez kontiem, analītikas, reklāmas, augstskolas paroles vai attālinātiem žurnāliem. Iestatījumi un kešatmiņa glabājas lietotnes iekšējā krātuvē; mākoņa dublēšana ir izslēgta. Netiek apgalvots, ka vietējie dati ir šifrēti. Fona darbību laiks ir atkarīgs no Android un akumulatora ierobežojumiem.</string>
+    <string name="delete_data">Dzēst manus datus</string><string name="delete_confirm">Dzēst iestatījumus, izvēles, sarakstu un atgādinājumus? Logrīki atgriezīsies sākotnējā stāvoklī.</string>
+    <string name="close">Aizvērt</string><string name="cancel">Atcelt</string>
+    <string name="ongoing">Notiek</string><string name="soon">Drīz sāksies</string><string name="upcoming">Gaidāma</string>
+    <string name="finished">Šodien pabeigts</string><string name="no_schedule">Šodien nav atlasītu nodarbību</string>
+</resources>

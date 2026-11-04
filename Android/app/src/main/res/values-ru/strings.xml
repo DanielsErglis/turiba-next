@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language">Язык</string><string name="system">Системный</string>
+    <string name="theme">Тема</string><string name="light">Светлая</string><string name="dark">Тёмная</string>
+    <string name="group">Учебная группа</string><string name="save_group">Проверить и сохранить группу</string>
+    <string name="setup">Выберите учебную группу</string><string name="no_room">Аудитория не указана</string>
+    <string name="next">Следующая</string><string name="overlap">Пересечение занятий</string>
+    <string name="offline">Нет сети · сохранённое расписание</string><string name="stale">Сохранённые данные могут устареть</string>
+    <string name="selection_required">Выберите факультативы и подгруппы ниже</string>
+    <string name="incomplete">Публикация текущей недели не подтверждена</string>
+    <string name="source_error">Расписание недоступно или не подтверждено</string>
+    <string name="last_sync">Последняя успешная синхронизация (Рига)</string><string name="sync">Обновить расписание</string>
+    <string name="choices">Факультативы и подгруппы</string>
+    <string name="choices_help">Отметьте только свои занятия. Невыбранные альтернативы исключаются.</string>
+    <string name="widget_help">После выбора занятий добавьте TURĪBA NEXT через меню виджетов главного экрана.</string>
+    <string name="operation_failed">Не удалось выполнить действие</string><string name="about">О приложении / Приватность</string>
+    <string name="privacy">Независимый студенческий проект, не официальное приложение университета. Запросы расписания идут только по HTTPS к nodarbibas.turiba.lv. Без аккаунтов, аналитики, рекламы, университетских паролей и удалённых журналов. Настройки и кэш хранятся внутри приложения; облачное резервирование отключено. Шифрование локальных данных не заявляется. Время фоновой работы зависит от Android и ограничений батареи.</string>
+    <string name="delete_data">Удалить мои данные</string><string name="delete_confirm">Удалить настройки, выбор занятий, кэш и напоминания? Виджеты вернутся к первоначальной настройке.</string>
+    <string name="close">Закрыть</string><string name="cancel">Отмена</string>
+    <string name="ongoing">Идёт сейчас</string><string name="soon">Скоро начнётся</string><string name="upcoming">Предстоящая</string>
+    <string name="finished">На сегодня завершено</string><string name="no_schedule">Сегодня нет выбранных занятий</string>
+</resources>

@@ -5,3 +5,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "TuribaNextAndroid"
 include(":core")
+include(":app")

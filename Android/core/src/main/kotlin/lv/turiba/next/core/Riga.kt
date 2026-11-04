@@ -30,7 +30,8 @@ object Engine {
         val valid = weeks.filter { it.group == group && it.status == "published" }
         val coverage = valid.any { today >= it.weekStart && today <= it.weekEnd }
         val raw = valid.flatMap { it.lessons }
-        val lessons = selected(raw, group, choices).sortedWith(compareBy<Lesson> { it.start }.thenBy { it.end }.thenBy { it.subject })
+        val collator=java.text.Collator.getInstance(java.util.Locale.US)
+        val lessons = selected(raw, group, choices).sortedWith(compareBy<Lesson> { it.start }.thenBy { it.end }.thenComparator { a,b -> collator.compare(a.subject,b.subject) })
         lessons.forEach { checkSource(it.end > it.start, "INVALID_LESSON") }
         val active = lessons.filter { it.start <= now && now < it.end }
         val future = lessons.filter { it.start > now }

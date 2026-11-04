@@ -49,6 +49,8 @@ fs.writeFileSync(path.join(out,"states.golden.gz"),require("node:zlib").gzipSync
 fs.rmSync(path.join(out,"states.golden"),{force:true});
 const strings = ["Rīga", "😀", 'TVL2D_IB01\n"\\', "Русский", "Āčēģīķļņšūž"];
 fs.writeFileSync(path.join(out,"identity.golden"),strings.map(s => line([s,JSON.stringify([s,s]),fingerprint(s)])).join("\n")+"\n");
+const subjects=["z","ā","a","ä","A","Ā","Ž","Z","Å","á","Ābols","Apple"];
+fs.writeFileSync(path.join(out,"collation.golden"),subjects.slice().sort((a,b)=>a.localeCompare(b)).map(s=>line([s])).join("\n")+"\n");
 const provenance = { kind:"generated expectations, not captured source", generatedFrom:"unchanged JS modules",capturedManifest:"../../tests/fixtures/manifest.json",stateCases:states.length,files:{} };
 for (const file of ["parser","html","engine","time","settings","notifications"]) provenance.files["src/"+file+".js"]=crypto.createHash("sha256").update(fs.readFileSync(path.join(root,"src",file+".js"))).digest("hex");
 fs.writeFileSync(path.join(out,"provenance.json"),JSON.stringify(provenance,null,2)+"\n");
