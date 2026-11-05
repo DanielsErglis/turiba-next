@@ -9,7 +9,7 @@
     <string name="unpublished">Publicēšana nav apstiprināta. Tas nenozīmē, ka nodarbību nav.</string><string name="structure_error">Avota formātu nevarēja pārbaudīt. Pēdējie derīgie dati ir saglabāti.</string>
     <string name="storage_error">Saglabātos datus nevarēja nolasīt. Atjauniniet sarakstu vai iestatījumos dzēsiet manus datus.</string>
     <string name="widget_offline">Bezsaistē</string><string name="widget_stale">Novecojis</string><string name="widget_choices">Izvēlieties kursus</string><string name="widget_coverage">Nedēļa neapstiprināta</string>
-    <string name="widget_square">TURĪBA NEXT · Kvadrāts</string><string name="widget_rectangle">TURĪBA NEXT · Taisnstūris</string>
+    <string name="widget_square">Mazs · 2×2</string><string name="widget_rectangle">Plats · 4×2</string>
     <string name="language">Valoda</string><string name="system">Sistēma</string>
     <string name="theme">Tēma</string><string name="light">Gaiša</string><string name="dark">Tumša</string>
     <string name="group">Studiju grupa</string><string name="save_group">Pārbaudīt un saglabāt grupu</string>
@@ -29,4 +29,19 @@
     <string name="close">Aizvērt</string><string name="cancel">Atcelt</string>
     <string name="ongoing">Notiek</string><string name="soon">Drīz sāksies</string><string name="upcoming">Gaidāma</string>
     <string name="finished">Šodien pabeigts</string><string name="no_schedule">Šodien nav atlasītu nodarbību</string>
+    <string name="widget_configure">Logrīka grupa</string>
+    <string name="widget_save">Saglabāt logrīku</string>
+    <string name="widget_group_help">Katram logrīkam ir sava grupa. Pēc saglabāšanas atveriet logrīku un izvēlieties kursus.</string>
+<string name="widget_preview_example">Logrīka piemērs</string>
+<string name="widget_short_offline">Tīkls</string>
+<string name="widget_short_stale">Vecs</string>
+<string name="widget_short_choices">Izv</string>
+<string name="widget_short_coverage">?</string>
+<string name="widget_now">Notiek</string>
+<string name="widget_soon">Drīz</string>
+<string name="widget_later">Vēlāk</string>
+<string name="widget_done">Beidzies</string>
+<string name="widget_empty">Nav pāru</string>
+<string name="widget_set_group">Grupa</string>
+<string name="widget_check">Pārbaudīt</string>
 </resources>

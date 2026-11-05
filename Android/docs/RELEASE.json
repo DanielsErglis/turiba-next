@@ -1,18 +1,18 @@
 {
-  "candidate": "0.1.0-rc.1",
-  "versionCode": 1,
+  "label": "Second test version - Redmi widget fixes",
+  "candidate": "0.1.0-rc.2",
+  "versionCode": 2,
   "applicationId": "lv.turiba.next",
   "minSdk": 29,
   "targetSdk": 37,
-  "date": "2026-11-04",
-  "file": "TURIBA-NEXT-Android-0.1.0-rc.1.apk",
-  "bytes": 28785173,
-  "sha256": "129bb7dd642ebf271d15c3af7e9df2d38a70a64da7c0a1141f7d4d7a11a5b77b",
+  "date": "2026-11-05",
+  "file": "TURIBA-NEXT-Android-0.1.0-rc.2.apk",
+  "bytes": 28830510,
+  "sha256": "7c58c20becc196f0f3baaa6f675e9ce07e18dc21370f00c09d62dd4e1d7e4f9f",
   "certificateSha256": "2c128a23c773d652b47fdbf74ec5b431070f308c20777db39776e1e5e974e602",
   "signature": "APK Signature Scheme v3, RSA 3072, apksigner verified",
   "zipAlignment": "zipalign -c -P 16 4 passed",
-  "distribution": "Owner-authorized public test APK in Android/builds/first-test-version on android-development, 2026-11-04; no store publication",
-  "readiness": "Physical Pixel/Samsung/Xiaomi and overnight acceptance pending; not v1.0 complete",
-  "label": "First test version",
-  "repositoryPath": "Android/builds/first-test-version/TURIBA-NEXT-Android-0.1.0-rc.1.apk"
+  "distribution": "Owner-approved second test APK in Android/builds/second-test-version on android-development",
+  "repositoryPath": "Android/builds/second-test-version/TURIBA-NEXT-Android-0.1.0-rc.2.apk",
+  "readiness": "Redmi corrections implemented; exact physical HyperOS grid retest and full OEM/overnight acceptance pending"
 }

@@ -22,6 +22,28 @@ class MigrationAndWorkTest {
     private val instrumentation get()=InstrumentationRegistry.getInstrumentation()
     private val context get()=instrumentation.targetContext
     @get:Rule val helper=MigrationTestHelper(InstrumentationRegistry.getInstrumentation(),ScheduleDatabase::class.java)
+    @Test fun removingLastWidgetOnlyGroupCancelsPeriodicWorkButNotAnotherGroupsWork()=runBlocking {
+        val preferences=SettingsStore(context);preferences.clear()
+        val db=Room.inMemoryDatabaseBuilder(context,ScheduleDatabase::class.java).build()
+        val scope=CoroutineScope(SupervisorJob()+Dispatchers.Default)
+        val source=object: TimetableSource {
+            override suspend fun catalog(): List<CatalogEntry> = error("No network expected")
+            override suspend fun html(url: String): String = error("No network expected")
+        }
+        val repository=Repository(db,preferences,source,scope)
+        val background=Background(context,repository) { error("OFF must not plan reminders") }
+        val work=WorkManager.getInstance(context)
+        fun active()=work.getWorkInfosForUniqueWork(Background.PERIODIC).get(10,TimeUnit.SECONDS).filter { !it.state.isFinished }
+        try {
+            withContext(Dispatchers.IO) { work.cancelUniqueWork(Background.PERIODIC).result.get(10,TimeUnit.SECONDS) }
+            repository.setWidget(601,"TVL2D1");repository.setWidget(602,"CSA1D1");background.changed()
+            assertEquals(1,withContext(Dispatchers.IO) { active().size })
+            repository.removeWidget(601);background.changed()
+            assertEquals("The second widget still needs periodic sync",1,withContext(Dispatchers.IO) { active().size })
+            repository.removeWidget(602);background.changed()
+            assertTrue("No periodic wakeups should remain",withContext(Dispatchers.IO) { active().isEmpty() })
+        } finally { background.cancelOwnedWhileLocked();scope.cancel();preferences.clear();db.close() }
+    }
     @Test fun migrationKeepsCatalogWidgetGenerationAndPreferences()=runBlocking {
         val preferences=SettingsStore(context)
         val original=Settings(group="TVL2D1",language="ru",theme="dark",leadMinutes=15,choices=mapOf("TVL2D1" to setOf("chosen")))

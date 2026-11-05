@@ -9,7 +9,7 @@
     <string name="unpublished">Публикация не подтверждена. Это не означает отсутствие занятий.</string><string name="structure_error">Формат источника не удалось проверить. Последние корректные данные сохранены.</string>
     <string name="storage_error">Не удалось прочитать сохранённые данные. Обновите расписание или удалите мои данные через настройки.</string>
     <string name="widget_offline">Нет сети</string><string name="widget_stale">Устарело</string><string name="widget_choices">Выберите занятия</string><string name="widget_coverage">Неделя не подтверждена</string>
-    <string name="widget_square">TURĪBA NEXT · Квадрат</string><string name="widget_rectangle">TURĪBA NEXT · Прямоугольник</string>
+    <string name="widget_square">Малый · 2×2</string><string name="widget_rectangle">Широкий · 4×2</string>
     <string name="language">Язык</string><string name="system">Системный</string>
     <string name="theme">Тема</string><string name="light">Светлая</string><string name="dark">Тёмная</string>
     <string name="group">Учебная группа</string><string name="save_group">Проверить и сохранить группу</string>
@@ -29,4 +29,19 @@
     <string name="close">Закрыть</string><string name="cancel">Отмена</string>
     <string name="ongoing">Идёт сейчас</string><string name="soon">Скоро начнётся</string><string name="upcoming">Предстоящая</string>
     <string name="finished">На сегодня завершено</string><string name="no_schedule">Сегодня нет выбранных занятий</string>
+    <string name="widget_configure">Группа виджета</string>
+    <string name="widget_save">Сохранить виджет</string>
+    <string name="widget_group_help">У каждого виджета своя группа. После сохранения откройте виджет для выбора факультативов.</string>
+<string name="widget_preview_example">Пример виджета</string>
+<string name="widget_short_offline">Сеть</string>
+<string name="widget_short_stale">Кэш</string>
+<string name="widget_short_choices">Выб</string>
+<string name="widget_short_coverage">?</string>
+<string name="widget_now">Идёт</string>
+<string name="widget_soon">Скоро</string>
+<string name="widget_later">Позже</string>
+<string name="widget_done">Конец</string>
+<string name="widget_empty">Нет пар</string>
+<string name="widget_set_group">Группа</string>
+<string name="widget_check">Проверьте</string>
 </resources>

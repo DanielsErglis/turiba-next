@@ -12,6 +12,7 @@ import java.time.*
 
 data class Snapshot(val settings: Settings, val group: String?, val weeks: List<Week>, val state: ScheduleState, val lastSync: Instant?, val verifiedWeeks: Set<String>, val asOf: Instant)
 data class SyncTicket(val generation: Long,val groups: Set<String>)
+data class WidgetConfigurationTicket(val appWidgetId: Int,val generation: Long,val existingGroup: String?,val mainGroup: String?)
 
 class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private val source: TimetableSource,
                  private val scope: CoroutineScope, private val clock: ()->Instant = Instant::now) {
@@ -30,6 +31,27 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
         dao.putWidget(WidgetRecord(id,normalizeGroup(group))); changed()
     }
     suspend fun removeWidget(id: Int) = guard.withLock { dao.removeWidget(id); changed() }
+    suspend fun widgetConfiguration(id: Int)=guard.withLock {
+        require(id>=0)
+        WidgetConfigurationTicket(id,dao.generation()?.value ?: 0L,dao.widgets().find { it.appWidgetId==id }?.groupCode,settings.read().group)
+    }
+    suspend fun completeWidgetConfiguration(ticket: WidgetConfigurationTicket,group: String,stillBound: ()->Boolean) = guard.withLock {
+        if((dao.generation()?.value ?: 0L)!=ticket.generation || !stillBound()) throw ScheduleException("CONFIGURATION_EXPIRED")
+        val existing=dao.widgets().find { it.appWidgetId==ticket.appWidgetId }?.groupCode
+        if(existing!=ticket.existingGroup) throw ScheduleException("CONFIGURATION_EXPIRED")
+        dao.putWidget(WidgetRecord(ticket.appWidgetId,normalizeGroup(group)));changed()
+    }
+    // Reads and transfers under one mutation lock. A preceding Delete My Data leaves no old mapping to revive.
+    suspend fun restoreWidgets(oldIds: IntArray,newIds: IntArray) = guard.withLock {
+        require(oldIds.size==newIds.size && oldIds.toSet().size==oldIds.size && newIds.toSet().size==newIds.size)
+        val original=dao.widgets().associateBy { it.appWidgetId }
+        db.withTransaction {
+            oldIds.zip(newIds).forEach { (old,new) ->
+                if(old!=new && new>=0 && original[new]==null) original[old]?.let { dao.putWidget(WidgetRecord(new,it.groupCode));dao.removeWidget(old) }
+            }
+        }
+        changed()
+    }
     suspend fun widgets()=dao.widgets()
     suspend fun configuredTicket()=guard.withLock {
         SyncTicket(dao.generation()?.value ?: 0L,buildSet { settings.read().group?.let { add(it) };dao.widgets().forEach { add(it.groupCode) } })
@@ -42,6 +64,16 @@ class Repository(val db: ScheduleDatabase, val settings: SettingsStore, private 
         synchronize(group,true)
         if (dao.catalog().none { it.code==group && clock().toEpochMilli()-it.syncedAt in 0 until 604_800_000 }) {
             throw ScheduleException(dao.sync(group)?.issue ?: "UNKNOWN_GROUP")
+        }
+    }
+    suspend fun saveGroup(group: String,widgetId: Int?=null,stillBound: ()->Boolean={true}) {
+        val widget=widgetId?.let { widgetConfiguration(it) }
+        val generation=widget?.generation ?: guard.withLock { dao.generation()?.value ?: 0L }
+        validateGroup(group)
+        if(widget!=null) completeWidgetConfiguration(widget,group,stillBound)
+        else guard.withLock {
+            ensureGeneration(generation)
+            settings.save(settings.read().copy(group=normalizeGroup(group)));changed()
         }
     }
     suspend fun deleteData(cancelOwnedWork: suspend ()->Unit) = withContext(NonCancellable+Dispatchers.IO) { guard.withLock {

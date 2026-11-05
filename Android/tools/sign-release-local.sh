@@ -7,7 +7,7 @@ SIGNER="$PROJECT_DIR/.toolchain/sdk/build-tools/36.0.0/apksigner"
 ALIGNER="$PROJECT_DIR/.toolchain/sdk/build-tools/36.0.0/zipalign"
 KEY_DIR="$PROJECT_DIR/.signing"
 INPUT=${1:-"$PROJECT_DIR/app/build/outputs/apk/release/app-release-unsigned.apk"}
-OUTPUT=${2:-"$PROJECT_DIR/delivery/TURIBA-NEXT-Android-0.1.0-rc.1.apk"}
+OUTPUT=${2:-"$PROJECT_DIR/delivery/TURIBA-NEXT-Android-0.1.0-rc.2.apk"}
 test -f "$KEY_DIR/owner-release.jks"
 test -f "$KEY_DIR/password"
 mkdir -p "$(dirname -- "$OUTPUT")"

@@ -10,6 +10,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -48,7 +49,7 @@ open class MainActivity : ComponentActivity() {
     var snapshot by remember { mutableStateOf<Snapshot?>(null) }
     var failure by remember { mutableStateOf<String?>(null) }
     var busy by remember { mutableStateOf(false) }
-    var input by remember { mutableStateOf("") }
+    var input by rememberSaveable(widgetId) { mutableStateOf("") }
     var showDelete by remember { mutableStateOf(false) }
     var showAbout by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { while(true) { delay(30_000); tick++ } }
@@ -133,8 +134,9 @@ open class MainActivity : ComponentActivity() {
                     OutlinedTextField(value=input,onValueChange={input=it},label={Text(stringResource(R.string.group))},singleLine=true,modifier=Modifier.fillMaxWidth(),enabled=!busy)
                     Button(onClick={ action {
                         val group=normalizeGroup(input)
-                        repository.validateGroup(group)
-                        if(widgetId==null) repository.edit { it.copy(group=group) } else repository.setWidget(widgetId,group)
+                        repository.saveGroup(group,widgetId) {
+                            widgetId==null || android.appwidget.AppWidgetManager.getInstance(baseContext).getAppWidgetInfo(widgetId)?.provider?.packageName==baseContext.packageName
+                        }
                         input=""
                         onConfigured?.invoke()
                     } },enabled=!busy && input.isNotBlank()) { Text(stringResource(R.string.save_group)) }

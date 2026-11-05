@@ -43,7 +43,10 @@ class Background(private val context: Context,private val repository: Repository
         }
     }
     private suspend fun recurring()=repository.withConfiguredTicket { ticket ->
-        if(ticket.groups.isEmpty()) return@withConfiguredTicket
+        if(ticket.groups.isEmpty()) {
+            cancelOwnedWhileLocked()
+            return@withConfiguredTicket
+        }
         val request=PeriodicWorkRequestBuilder<SyncWorker>(1,TimeUnit.HOURS)
             .setInitialDelay(1,TimeUnit.HOURS)
             .setInputData(workDataOf(GENERATION to ticket.generation))

@@ -101,6 +101,13 @@ class StorageTest {
         assertTrue(db.schedule().catalog().isEmpty())
         assertEquals("setupRequired",repository.snapshot().state.status)
     }
+    @Test fun deletingDuringGroupValidationCannotCommitTheOldMainGroup()=runBlocking {
+        entered=CompletableDeferred();block=CompletableDeferred()
+        val validation=async { repository.saveGroup("TVL2D1") }
+        entered!!.await();repository.deleteData { };block!!.complete(Unit)
+        try { validation.await();fail("Old validation must be cancelled") } catch(_: CancellationException) { }
+        assertNull(preferences.read().group);assertTrue(repository.widgets().isEmpty())
+    }
     @Test fun incompleteCacheIsRejectedInsteadOfInventingLessons()=runBlocking {
         repository.synchronize("TVL2D1",true)
         db.schedule().removeLessons("TVL2D1","2026-11-02")
@@ -122,6 +129,39 @@ class StorageTest {
         assertNull(repository.snapshot(widgetId=42).group)
         assertTrue(repository.widgets().isEmpty())
         assertEquals(0,calls)
+    }
+    @Test fun newConfigurationCopiesConfirmedPrimaryWithoutNetworkAndKeepsChoices()=runBlocking {
+        repository.edit { it.copy(group="TVL2D1",choices=mapOf("TVL2D1" to setOf("explicit"))) }
+        val ticket=repository.widgetConfiguration(71)
+        assertNull(ticket.existingGroup);assertEquals("TVL2D1",ticket.mainGroup)
+        repository.completeWidgetConfiguration(ticket,ticket.mainGroup!!) { true }
+        assertEquals("TVL2D1",repository.snapshot(widgetId=71).group)
+        assertEquals(setOf("explicit"),preferences.read().choices["TVL2D1"])
+        assertEquals(0,calls)
+    }
+    @Test fun deletionOrAnUnboundIdInvalidatesInFlightConfiguration()=runBlocking {
+        repository.edit { it.copy(group="TVL2D1") }
+        val ticket=repository.widgetConfiguration(72)
+        repository.deleteData { }
+        try { repository.completeWidgetConfiguration(ticket,"TVL2D1") { true };fail("Deleted data must not return") }
+        catch(e: ScheduleException) { assertEquals("CONFIGURATION_EXPIRED",e.code) }
+        val next=repository.widgetConfiguration(73)
+        try { repository.completeWidgetConfiguration(next,"TVL2D1") { false };fail("Unbound widget") }
+        catch(e: ScheduleException) { assertEquals("CONFIGURATION_EXPIRED",e.code) }
+        assertTrue(repository.widgets().isEmpty());assertNull(preferences.read().group)
+    }
+    @Test fun restorationIsAtomicAndCannotReviveDeletedMappingsOrOverwriteAnotherGroup()=runBlocking {
+        repository.setWidget(81,"TVL2D1");repository.setWidget(82,"CSA1D1")
+        repository.restoreWidgets(intArrayOf(81,82),intArrayOf(91,92))
+        assertNull(repository.snapshot(widgetId=81).group);assertNull(repository.snapshot(widgetId=82).group)
+        assertEquals("TVL2D1",repository.snapshot(widgetId=91).group)
+        assertEquals("CSA1D1",repository.snapshot(widgetId=92).group)
+        val stale=repository.widgetConfiguration(93);repository.setWidget(93,"BLL2S1")
+        try { repository.completeWidgetConfiguration(stale,"TVL2D1") { true };fail("Concurrent mapping change") }
+        catch(e: ScheduleException) { assertEquals("CONFIGURATION_EXPIRED",e.code) }
+        assertEquals("BLL2S1",repository.snapshot(widgetId=93).group)
+        repository.deleteData { };repository.restoreWidgets(intArrayOf(91,92),intArrayOf(101,102))
+        assertTrue(repository.widgets().isEmpty())
     }
     @Test fun manualRefreshJoiningAThrottledFlightStillFetches()=runBlocking {
         repository.synchronize("TVL2D1",true)

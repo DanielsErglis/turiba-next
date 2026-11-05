@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-05",
+  "version": "0.1.0-rc.2",
+  "versionCode": 2,
+  "stage": "Native automated checks and signed upgrade; physical HyperOS retest pending",
+  "api37": {
+    "api": 37,
+    "pageSize": 16384,
+    "tests": 33,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "reportSha256": "f6d716ca5b101691e3ebb2e1ba0037423b9c2b8672ca2d307acac580fb3ddae9",
+    "reportTimestamp": "2026-11-05T11:50:22",
+    "widgetRenderCases": 180,
+    "registeredProviderHostCases": 5
+  },
+  "signedUpgrade": {
+    "from": "published signed 0.1.0-rc.1/code 1",
+    "to": "delivered signed 0.1.0-rc.2/code 2",
+    "device": "API 37/16 KiB disposable emulator, radios off",
+    "seed": "PASS",
+    "verify": "PASS",
+    "preserved": [
+      "main group",
+      "RU language",
+      "dark theme",
+      "explicit choice",
+      "exact cached Room week/lesson fingerprint",
+      "two actual bound widget IDs",
+      "independent widget groups"
+    ],
+    "deleteAfterUpgrade": "PASS",
+    "probeType": "Same-certificate test-only instrumentation; no probe runner or fixtures in production APK"
+  },
+  "jvm": {
+    "core": 12,
+    "transport": 4,
+    "failures": 0
+  },
+  "iphone": {
+    "nodeTests": 92,
+    "failures": 0,
+    "unchangedBaselineFiles": 113
+  },
+  "reproducedBeforeFix": {
+    "registeredProviderHostTests": 3,
+    "failures": 3,
+    "observations": [
+      "150dp legacy height",
+      "no inherited primary group",
+      "BACKGROUND_ERROR after actual framework deletion"
+    ]
+  },
+  "limits": [
+    "Physical Redmi model/OS/grid unknown; owner cannot currently access device",
+    "No claim that emulator metadata tests establish HyperOS cell allocation",
+    "Protected APPWIDGET_RESTORED callback invoked directly with real host-bound IDs; instrumentation UID cannot originate a protected system broadcast",
+    "Actual AlarmManager timing, overnight idle/battery/network and complete Pixel/Samsung/Xiaomi acceptance remain pending",
+    "Existing launcher instances can retain old spans after APK update; resize or re-add only the widget"
+  ],
+  "api29": {
+    "api": 29,
+    "pageSize": 4096,
+    "tests": 33,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "reportSha256": "9e5ca5e5191b444ae590a84a25f4a11c41304d0cdf03f10a7fe9bb3e9e4f72df",
+    "reportTimestamp": "2026-11-05T11:58:17",
+    "widgetRenderCases": 180,
+    "registeredProviderHostCases": 5
+  },
+  "deliveredApkSha256": "7c58c20becc196f0f3baaa6f675e9ce07e18dc21370f00c09d62dd4e1d7e4f9f"
+}

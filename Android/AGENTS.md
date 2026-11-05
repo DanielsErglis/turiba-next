@@ -14,3 +14,4 @@ The owner explicitly adopted the attached Android brief on 2026-11-04. Within th
 - Project-local toolchain and caches belong in ignored .toolchain/.gradle directories. Signing keys/passwords must never enter Git, chat or logs.
 - Record actual checks and limitations after every phase and commit through the authenticated GitHub connector if Git transport is unavailable. Do not claim emulator or device results without execution. Physical Pixel, Samsung and Xiaomi acceptance is required before full completion.
 - Android SDK license acceptance was explicitly authorized by the owner on 2026-11-04 for this project.
+- On 2026-11-05 the owner approved the Redmi audit correction plan, same-key second test build and GitHub publication. Preserve the first test APK.

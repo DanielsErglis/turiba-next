@@ -10,8 +10,8 @@ android {
         applicationId = "lv.turiba.next"
         minSdk = 29
         targetSdk = 37
-        versionCode = providers.gradleProperty("releaseVersionCode").orElse("1").get().toInt()
-        versionName = providers.gradleProperty("releaseVersionName").orElse("0.1.0-rc.1").get()
+        versionCode = providers.gradleProperty("releaseVersionCode").orElse("2").get().toInt()
+        versionName = providers.gradleProperty("releaseVersionName").orElse("0.1.0-rc.2").get()
         testInstrumentationRunner = "lv.turiba.next.OfflineTestRunner"
     }
     buildFeatures { compose = true }

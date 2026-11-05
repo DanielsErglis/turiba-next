@@ -1,0 +1,18 @@
+{
+  "label": "Second test version - Redmi widget fixes",
+  "candidate": "0.1.0-rc.2",
+  "versionCode": 2,
+  "applicationId": "lv.turiba.next",
+  "minSdk": 29,
+  "targetSdk": 37,
+  "date": "2026-11-05",
+  "file": "TURIBA-NEXT-Android-0.1.0-rc.2.apk",
+  "bytes": 28830510,
+  "sha256": "7c58c20becc196f0f3baaa6f675e9ce07e18dc21370f00c09d62dd4e1d7e4f9f",
+  "certificateSha256": "2c128a23c773d652b47fdbf74ec5b431070f308c20777db39776e1e5e974e602",
+  "signature": "APK Signature Scheme v3, RSA 3072, apksigner verified",
+  "zipAlignment": "zipalign -c -P 16 4 passed",
+  "distribution": "Owner-approved second test APK in Android/builds/second-test-version on android-development",
+  "repositoryPath": "Android/builds/second-test-version/TURIBA-NEXT-Android-0.1.0-rc.2.apk",
+  "readiness": "Redmi corrections implemented; exact physical HyperOS grid retest and full OEM/overnight acceptance pending"
+}

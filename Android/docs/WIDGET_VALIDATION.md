@@ -29,3 +29,11 @@ These PNGs are original emulator/native View render outputs, with no image editi
 
 The rendering test now executes 82 native RemoteViews cases on API 29 and API 37/16 KiB. Added actual source-style room strings A204/1, 35. kab., C214 ITN and ekskursija, a separately synthetic long Liepāja label, and missing-room labels in all three languages at both sizes/layouts. Room height, layout fit and absence of ellipsis are asserted. Compact layouts reduce typography for long room strings and use a short localized missing-room label. No claim of launcher/physical acceptance follows from these View renders.
 
+
+## RC2 correction - 2026-11-05
+
+SizeMode.Exact now uses the host-reported bounds. The visible card is bounded to square/approximately 2:1 proportions; provider target/legacy minimum and resize metadata separately define occupation. Targets are 2x2/4x2; legacy minimum height is 110dp. Text at 110-149dp uses a compact template with localized status/warning labels and full accessibility descriptions. Long official subject strings can ellipsize; room strings and independent warning visibility are asserted.
+
+The matrix now contains 180 cases: the original 82 plus 96 combinations of minimum size/locale/missing-short-long room/warnings/font scale and two tall-host cases. The tall-host assertions inspect actual native bitmap alpha bounds to prevent stretching. Five additional registered-provider host tests cover size metadata/options, RESULT_OK default-main-group initialization, recreation/cancel, restoration callback and actual system deletion. Protected restoration is invoked as a callback with real bound IDs, not falsely claimed as an instrumentation-originated protected broadcast.
+
+Old-code host regressions reproduced three failures before fixes. Early compact attempts clipped room lines, including the 130dp tall-host case; the typography/spacing/template threshold was corrected and original fit/no-ellipsis checks retained. Representative PNGs were inspected as original software-rendered native Views. They do not establish launcher clipping or physical Redmi grid behavior. The owner's device/model/build/grid are currently unavailable for retest.

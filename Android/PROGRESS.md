@@ -2,7 +2,7 @@
 
 ## Current state — 2026-11-04
 
-Phases 0–4 committed through 0a3be64027cd850862d126d6370569b1ed672fc1. Phase 5 automated verification and private candidate preparation are recorded below; mandatory physical Pixel/Samsung/Xiaomi and overnight acceptance are still pending. Phase 6 final acceptance is not complete. Android work stays in Android/ and android-development, based on unchanged main feebd7e129a3d071e731e14e665df92da00fb0a7.
+Phases 0-4 committed through 0a3be64027cd850862d126d6370569b1ed672fc1; the first public test build was committed as 680adca8eda071220f22fa1312ecb99430dd0ee6. Owner-approved Redmi corrections are implemented in 0.1.0-rc.2/code 2. Final API 29 and API 37/16-KiB suites each pass 33 instrumented tests, including 180 native View cases and five registered-provider host tests. Same-key signed upgrade preserves actual widget IDs and stored data. Full physical/OEM/overnight Phase 5/6 acceptance remains pending. Work remains isolated in Android/ and android-development.
 
 ## Owner decisions
 
@@ -21,7 +21,7 @@ Phases 0–4 committed through 0a3be64027cd850862d126d6370569b1ed672fc1. Phase 5
 
 ## Next action
 
-Hand the signed local private candidate and RU/LV/EN guides to the owner for the mandatory physical checks in docs/DEVICE_ACCEPTANCE.md. Record actual OEM/overnight results, fix observed failures and only then close Phase 5 and final Phase 6 delivery. No automatic continuation is configured. Do not merge into main or publish the APK.
+Deliver the second test build for a physical Redmi retest when the owner has access. Record the exact model, Android/HyperOS build, launcher and grid; verify new placement and resize/re-add old instances if the host retains their old span. Complete physical Pixel/Samsung/Xiaomi and overnight checks before closing Phases 5/6. No automatic continuation is configured. Do not merge main or publish to stores.
 
 ## Phase 1 — Data & Core
 
@@ -86,3 +86,18 @@ Hand the signed local private candidate and RU/LV/EN guides to the owner for the
 - The owner explicitly requested adding the test APK to the GitHub Android directory and labeling it the first version. This authorizes this APK's public repository distribution; it does not authorize stores, keys or unrelated files.
 - Publish the unchanged signed 0.1.0-rc.1/versionCode 1 artifact under builds/first-test-version, with a first-test-version label, SHA-256, certificate metadata and pending physical gates. Do not relabel it as stable v1.0.
 - Rechecked local APK SHA-256 against release metadata before upload. No application source or version change is needed; no new test run is claimed for this packaging/documentation update. Remote publication is verified by blob identity/size and branch readback.
+
+## RC2 - owner-approved Redmi corrections, 2026-11-05
+
+- Approval: the owner accepted the complete audit correction plan, implementation locally/on GitHub and a second test APK. Preserve the first APK and its identity unchanged. The physical device is currently unavailable; no exact Redmi/HyperOS/grid inference is claimed.
+- Added three registered-provider/AppWidgetHost regressions before implementation. All three failed on the original code: legacy 150dp height, no inherited primary group, BACKGROUND_ERROR after real framework deletion. Kept these tests.
+- Added dedicated retained widget configuration, automatic explicit new-add initialization from saved main group without network, independent instance mappings, RESULT_OK ID completion, saved draft/generation, recreation/cancel and bound-ID checks. A missing mapping still does not globally fall back to primary. Main-screen group validation also captures generation to prevent a late save after deletion.
+- Switched to exact host bounds with square/approximately 2:1 visible cards. Provider defaults target 2x2/4x2, legacy minimum height 110dp, explicit resize ranges and native previews/short labels. Existing host spans may survive an APK update; guides explain resizing or re-adding only the widget. Minimal cards use localized short statuses/warnings with full accessibility descriptions. Official subject names remain unchanged.
+- Moved deletion into Glance onDelete, which owns broadcast completion. Restore has one explicit async owner and an atomic Room mapping transfer; no competing framework onUpdate dispatch. Removing the last widget-only group cancels owned periodic/boundary work while preserving jobs needed by other groups.
+- Final native results: API 29/4-KiB and API 37/16-KiB each 33 passed, zero failures/errors/skips. Each run contains 180 rendering cases, five registered-provider host cases, 12 storage/concurrency cases, three migration/work cases, four native parity cases, six coordinator cases and one actual notification platform case. Tests retain strict room-fit/no-ellipsis and independent-warning checks. Tall-host cases inspect actual native bitmap bounds.
+- Compact iterations exposed clipping at font scale 2, a long Latvian room and 130dp tall-host geometry. Adjusted spacing/type/template threshold and short localized warning/status labels; did not weaken fit assertions. The final suite passes. Protected APPWIDGET_RESTORED cannot be sent by instrumentation: its callback is invoked with real host-bound IDs, while deletion is an actual framework broadcast. No physical restore result is claimed.
+- Source/client JVM command passed: 12 core results remain valid/up-to-date and four transport tests reran. Debug/release compilation and release lint passed; zero errors, one existing newer-serialization-BOM warning. No runtime dependency/version change or database migration was needed.
+- The manual test-only signed upgrade probe initially could not register a second runner through the generated test manifest. Integrated explicit seed/verify mode into the registered OfflineTestRunner; ordinary no-mode runs still execute all JUnit cases. Both final normal native suites pass with that runner. Test-only runner/fixtures are absent from the application APK.
+- Signed upgrade: install published code 1, seed offline controlled fixture cache/settings and two real bound widget IDs, install the delivered code 2 APK with the same certificate, then verify. Both seed and verify returned PASS. Group, RU, dark, explicit choice, exact Room record fingerprint, widget IDs and their independent groups survive; Delete My Data after upgrade passes. Only the disposable emulator radios were disabled/restored.
+- Inspected original native PNGs. These are software-rendered Android Views, not physical HyperOS acceptance. Full root JS suite rerun: 92 pass; all 113 iPhone baseline file hashes match. First APK SHA-256 is unchanged.
+- Candidate metadata and exact evidence: docs/RELEASE.json and docs/RC2_RESULTS.json. The owner signing key/password remain ignored and private. Only the new signed APK/public metadata, source and engineering records are published to android-development. No store release or main merge.

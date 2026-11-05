@@ -71,14 +71,24 @@ class WidgetRenderTest {
         }
         assertEquals(82,count)
     }
-    private suspend fun render(rectangle: Boolean,language: String,theme: String,large: Boolean,status: String,save: Boolean,fontScale: Float=1f,warnings: Boolean=false,room: String?="C216") {
+    @Test fun minimumAndTallHostSizesKeepReadableRoomsAndBoundedCardProportions()=runBlocking {
+        var count=0
+        for(rectangle in listOf(false,true)) for(language in listOf("en","lv","ru")) for(room in listOf(null,"A408","A204/1","Liepājas filiāle, 35. kab.")) for(warnings in listOf(false,true)) for(scale in listOf(1f,2f)) {
+            render(rectangle,language,"dark",false,"ongoing",save=true,fontScale=scale,warnings=warnings,room=room,widthOverride=if(rectangle) 250 else 110,heightOverride=110);count++
+        }
+        for(rectangle in listOf(false,true)) {
+            render(rectangle,"ru","dark",false,"ongoing",save=true,widthOverride=if(rectangle) 280 else 130,heightOverride=350);count++
+        }
+        assertEquals(98,count)
+    }
+    private suspend fun render(rectangle: Boolean,language: String,theme: String,large: Boolean,status: String,save: Boolean,fontScale: Float=1f,warnings: Boolean=false,room: String?="C216",widthOverride: Int?=null,heightOverride: Int?=null) {
         val configuration=Configuration(context.resources.configuration)
         configuration.setLocale(Locale.forLanguageTag(language))
         configuration.fontScale=fontScale
         if(theme=="system" && large) configuration.uiMode=(configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or Configuration.UI_MODE_NIGHT_YES
         val localized=context.createConfigurationContext(configuration)
-        val width=if(rectangle) if(large) 360 else 280 else if(large) 250 else 150
-        val height=if(large) if(rectangle) 180 else 250 else 150
+        val width=widthOverride ?: if(rectangle) if(large) 360 else 280 else if(large) 250 else 150
+        val height=heightOverride ?: if(large) if(rectangle) 180 else 250 else 150
         val remote=RenderWidget(localized,snapshot(language,theme,status,warnings,room),rectangle).compose(localized,size=DpSize(width.dp,height.dp))
         instrumentation.runOnMainSync {
             val parent=FrameLayout(localized)
@@ -92,6 +102,11 @@ class WidgetRenderTest {
             if(save || !rectangle && !large && language=="en" && theme=="system") {
                 val bitmap=Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888)
                 parent.draw(Canvas(bitmap))
+                val expectedHeight=minOf(height,if(rectangle) width/2 else width)
+                if(height>expectedHeight+2) {
+                    val lastOpaque=(0 until h).lastOrNull { android.graphics.Color.alpha(bitmap.getPixel(w/2,it))>0 } ?: -1
+                    assertTrue("Card stretched to host height $width×$height, painted to $lastOpaque",lastOpaque<=expectedHeight*density+2)
+                }
                 val dir=File(context.filesDir,"widget-checks").also { check(it.mkdirs() || it.isDirectory) }
                 File(dir,"${if(rectangle) "rectangle" else "square"}-$language-$theme-$width-$status-f$fontScale-w$warnings-r${(room ?: "missing").hashCode()}.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG,100,it) }
                 bitmap.recycle()
@@ -104,6 +119,13 @@ class WidgetRenderTest {
                 assertTrue("Room has no native height $rectangle/$language/$width/$room",nativeRoom!!.height>0)
                 assertTrue("Room text clipped $rectangle/$language/$width/$room: layout=${nativeRoom.layout.height} view=${nativeRoom.height} padding=${nativeRoom.paddingTop+nativeRoom.paddingBottom}; "+texts.joinToString { "${it.text}=${it.width}x${it.height}" },nativeRoom.layout.height<=nativeRoom.height-nativeRoom.paddingTop-nativeRoom.paddingBottom)
                 assertTrue("Room ellipsis $rectangle/$language/$width/$room",(0 until nativeRoom.layout.lineCount).all { nativeRoom.layout.getEllipsisCount(it)==0 })
+            }
+            if(warnings && heightOverride==110) {
+                for(label in listOf(R.string.widget_short_offline,R.string.widget_short_stale,R.string.widget_short_choices,R.string.widget_short_coverage))
+                    assertTrue("Independent warning missing",texts.any { it.text.contains(localized.getString(label)) })
+                val flags=texts.single { it.text.contains(localized.getString(R.string.widget_short_coverage)) }
+                assertTrue("Warning text clipped",flags.layout.height<=flags.height-flags.paddingTop-flags.paddingBottom)
+                assertTrue("Warning text ellipsized",(0 until flags.layout.lineCount).all { flags.layout.getEllipsisCount(it)==0 })
             }
         }
     }

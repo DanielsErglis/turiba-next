@@ -10,7 +10,7 @@
     <string name="storage_error">Saved data could not be read. Try refreshing, or use Delete My Data in settings.</string>
     <string name="app_name" translatable="false">TURĪBA NEXT</string>
     <string name="widget_offline">Offline</string><string name="widget_stale">Stale</string><string name="widget_choices">Choose courses</string><string name="widget_coverage">Week unverified</string>
-    <string name="widget_square">TURĪBA NEXT · Square</string><string name="widget_rectangle">TURĪBA NEXT · Rectangle</string>
+    <string name="widget_square">Small · 2×2</string><string name="widget_rectangle">Wide · 4×2</string>
     <string name="language">Language</string><string name="system">System</string>
     <string name="theme">Theme</string><string name="light">Light</string><string name="dark">Dark</string>
     <string name="group">Study group</string><string name="save_group">Validate and save group</string>
@@ -30,4 +30,20 @@
     <string name="close">Close</string><string name="cancel">Cancel</string>
     <string name="ongoing">In progress</string><string name="soon">Starts soon</string><string name="upcoming">Upcoming</string>
     <string name="finished">Finished for today</string><string name="no_schedule">No selected lessons today</string>
+    <string name="widget_configure">Widget group</string>
+    <string name="widget_save">Save widget</string>
+    <string name="widget_group_help">Each widget keeps its own group. Choose electives by opening the widget after saving.</string>
+<string name="widget_preview_example">Example preview</string>
+<string name="widget_preview_room" translatable="false">A204</string>
+<string name="widget_short_offline">Net</string>
+<string name="widget_short_stale">Old</string>
+<string name="widget_short_choices">Pick</string>
+<string name="widget_short_coverage">?</string>
+<string name="widget_now">Now</string>
+<string name="widget_soon">Soon</string>
+<string name="widget_later">Later</string>
+<string name="widget_done">Done</string>
+<string name="widget_empty">No lessons</string>
+<string name="widget_set_group">Set group</string>
+<string name="widget_check">Check</string>
 </resources>

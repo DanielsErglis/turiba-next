@@ -15,11 +15,11 @@ This workspace additionally has an ignored project-local toolchain. `tools/gradl
 
 ## Signing continuity
 
-The private candidate uses application ID `lv.turiba.next`, code 1, name 0.1.0-rc.1, one RSA-3072 owner certificate. Public certificate digest and candidate SHA-256 are in RELEASE.json. Signature scheme v3 is appropriate to minSdk 29; the local apksigner verification and 16-KiB zip alignment check pass. No key/password is committed or published.
+The private candidate uses application ID `lv.turiba.next`, code 2, name 0.1.0-rc.2, one RSA-3072 owner certificate. Public certificate digest and candidate SHA-256 are in RELEASE.json. Signature scheme v3 is appropriate to minSdk 29; the local apksigner verification and 16-KiB zip alignment check pass. No key/password is committed or published.
 
 The owner key is at ignored `Android/.signing/owner-release.jks`; its password is in ignored `.signing/password`. Directory mode 700 and key/password mode 600. **Securely back up both files outside this workspace in owner-controlled protected storage before relying on updates.** Losing the key prevents same-identity updates. Do not paste the password in chat or commit either file. No external backup has been performed by the agent.
 
-`tools/sign-release-local.sh` signs the unsigned release with that existing key, aligns ZIP entries and verifies the result. It deliberately refuses missing keys. Default output is ignored `delivery/TURIBA-NEXT-Android-0.1.0-rc.1.apk`. Example:
+`tools/sign-release-local.sh` signs the unsigned release with that existing key, aligns ZIP entries and verifies the result. It deliberately refuses missing keys. Default output is ignored `delivery/TURIBA-NEXT-Android-0.1.0-rc.2.apk`. Example:
 
 ```sh
 ./tools/gradle-local.sh :app:assembleRelease
@@ -29,3 +29,5 @@ The owner key is at ignored `Android/.signing/owner-release.jks`; its password i
 For a new update, choose a larger versionCode and appropriate versionName through `-PreleaseVersionCode=... -PreleaseVersionName=...`; pass the intended output path as the signing script's second argument. Never generate a replacement key to solve an update error. The debug certificate differs from the private release certificate.
 
 Owner amendment 2026-11-04: the first test APK may be published inside Android/ on the authorized GitHub repository. The published file is the existing signed code 1 candidate, not a new stable v1.0 build. Signing keys/passwords remain private. Store publication, unrelated artifacts and additional distribution channels require separate authorization.
+
+Owner approval on 2026-11-05 additionally covers publication of the second Redmi-fix candidate. Preserve the first-test-version APK unchanged. The separate UpgradeProbeRunner exists only in the test APK, can be signed locally with the owner key for a disposable emulator, and is never distributed as the application. It is not a JUnit case in the normal suite.
